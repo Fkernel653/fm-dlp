@@ -78,9 +78,9 @@ This tool requires a YouTube Data API key to function. **Note:** The API key in 
 3. Enable the **YouTube Data API v3**
 4. Go to "Credentials" and create an API key
 5. Copy the API key and paste it into key.env:
-   ```
+```
    YOUTUBE_DATA_API_KEY=
-   ```
+```
 
 ### Download Path Configuration
 
