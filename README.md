@@ -79,7 +79,7 @@ This tool requires a YouTube Data API key to function. **Note:** The API key in 
 4. Go to "Credentials" and create an API key
 5. Copy the API key and paste it into key.env:
 ```
-   YOUTUBE_DATA_API_KEY=
+   YOUTUBE_DATA_API_KEY=<YOUR API KEY>
 ```
 
 ### Download Path Configuration
@@ -106,11 +106,11 @@ python fm-dlp.py <command> [arguments]
 
 #### Search for Videos
 ```bash
-python fm-dlp.py search "your query here"
+python fm-dlp.py <limit> search "your query here"
 ```
 Example:
 ```bash
-python fm-dlp.py search "Sewerslvt"
+python fm-dlp.py 50 search "Sewerslvt"
 ```
 This will display up to 50 results with:
 - Video title (in cyan)
@@ -204,7 +204,7 @@ fm-dlp/
 
 ### API Features
 
-- **Max Results**: Up to 50 videos per search (configurable)
+- **Max Results**: The limit you have to set
 - **Video Duration**: Filtered to medium-length (4-20 minutes)
 - **Content Type**: Videos only (excludes channels and playlists)
 - **Response Format**: JSON with snippet and ID information
