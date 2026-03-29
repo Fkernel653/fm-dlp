@@ -1,123 +1,121 @@
-"""YouTube search module using the official Google API v3.
+"""
+YouTube search module using the scrapetube library.
 
-This module handles searching for videos and formatting the results
-for display in the terminal with color-coding. It includes filtering
-to ensure results match the original query in title or channel name.
+This module handles searching for videos on YouTube without requiring an API key.
+It includes filtering to ensure results match the original query in title or channel name,
+and formats the results for display in the terminal with color-coding.
 """
 
-from modules.colors import RESET, BOLD, RED, GREEN, BLUE, MAGENTA, CYAN
-from pathlib import Path
-from dotenv import load_dotenv
-import requests
-import os
+from modules.colors import RESET, BOLD, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN
+import scrapetube
 
 
-def searching(limit, query):
+def searching(query: str, limit: int):
     """
-    Execute a YouTube search using the official Google API and format results.
+    Search YouTube for videos matching the given query and yield formatted results.
+
+    This function uses scrapetube to fetch video results, then filters them to only
+    include videos where the query appears in either the title or channel name.
+    Each matching video is formatted with color-coded information for terminal display.
 
     Args:
-        query (str): User's search terms (e.g., "python tutorial").
-        maxResults (int): Number of videos to return, capped at YouTube's 50 limit.
-
-    Returns:
-        Generator: Yields formatted video information strings one at a time.
+        query (str): The search term to look for on YouTube.
+        limit (int): Maximum number of raw results to fetch before filtering.
 
     Yields:
-        str: Color-coded terminal output with video details for each result.
+        str: Formatted string containing video information (title, channel, date,
+             views, duration, and URL) with ANSI color codes for terminal display.
+             If no results match after filtering, yields an error message.
 
     Note:
-        The function exits on errors instead of returning error strings,
-        ensuring cleaner error handling flow in the CLI. Results are filtered
-        to only include videos where the query appears in title or channel name.
+        The actual number of results may be less than the limit due to filtering.
+        The function handles keyboard interrupts and various connection errors gracefully.
+
+    Raises:
+        SystemExit: Exits with code 1 if no videos match the query after filtering.
     """
-    # Build query parameters according to YouTube API v3 specification
-
-    parent_folder = Path(__file__).parent
-    env_file = Path(parent_folder).parent / "key.env"
-
-    load_dotenv(env_file)
-
-    params = {
-        "part": "snippet",  # Request basic metadata (title, description, thumbnails)
-        "q": query,  # URL-encoded search string from user
-        "videoDuration": "medium",  # Filter: medium = 4-20 minutes (also 'short' or 'long')
-        "maxResults": min(limit, 50),  # Enforce API limit to avoid rejection
-        "type": "video",  # Exclude channels and playlists from results
-        "key": os.getenv(
-            "YOUTUBE_DATA_API_KEY"
-        ),  # API key for authentication and quota tracking
-    }
-
     try:
-        # Execute HTTP GET with 10-second timeout to prevent hanging
-        r = requests.get(
-            "https://www.googleapis.com/youtube/v3/search", params=params, timeout=10
+        # Fetch raw search results from YouTube using scrapetube
+        videos = scrapetube.get_search(
+            query, limit, sort_by="relevance", results_type="video"
         )
 
-        # HTTP 200 means successful response with data
-        if r.status_code == 200:
-            # Convert JSON response to Python dictionary
-            data = r.json()
-            # Extract the list of video items, default to empty if missing
-            results = data.get("items", [])
+        filtered_results = []
+        
+        # Filter videos to ensure query appears in title OR channel name
+        for video in videos:
+            # Extract title text safely, defaulting to "N/A" if missing or malformed
+            title = (
+                video["title"]["runs"][0]["text"] 
+                if "runs" in video.get("title", {}) 
+                else "N/A"
+            ).lower()
+            
+            # Extract channel name safely
+            channel = (
+                video["ownerText"]["runs"][0]["text"] 
+                if "ownerText" in video 
+                else "N/A"
+            ).lower()
+            
+            query_lower = query.lower()
 
-            # Handle empty result sets gracefully
-            if not results:
-                yield f"{RED}\nNo videos found\n{RESET}"
-                return
+            # Keep video if query matches title OR channel name
+            if query_lower in title or query_lower in channel:
+                filtered_results.append(video)
 
-            # Filter results to ensure query appears in title or channel name
-            filtered_results = []
-            for item in results:
-                snippets = item.get("snippet", {})
+        # Handle case where no videos pass the filter
+        if not filtered_results:
+            yield f"{RED}\nNo videos matching '{query}' after filtering\n{RESET}"
+            return exit(1)
 
-                title = snippets.get("title", "").lower()
-                channel = snippets.get("channelTitle", "").lower()
-                query_lower = query.lower()
+        # Format and yield each filtered video's information
+        for num, video in enumerate(filtered_results, start=1):
+            # Safely extract all video metadata with fallback values
+            video_id = video.get("videoId", "N/A")
+            title = (
+                video["title"]["runs"][0]["text"] 
+                if "runs" in video.get("title", {}) 
+                else "N/A"
+            )
+            channel = (
+                video["ownerText"]["runs"][0]["text"] 
+                if "ownerText" in video 
+                else "N/A"
+            )
+            date = (
+                video["publishedTimeText"]["simpleText"]
+                if "publishedTimeText" in video 
+                else "N/A"
+            )
+            views = (
+                video["viewCountText"]["simpleText"]
+                if "viewCountText" in video 
+                else "N/A"
+            )
+            duration = (
+                video["lengthText"]["accessibility"]["accessibilityData"]["label"]
+                if "lengthText" in video 
+                else "N/A"
+            )
 
-                if query_lower in title or query_lower in channel:
-                    filtered_results.append(item)
-
-            if not filtered_results:
-                yield f"{RED}\nNo videos matching '{query}' after filtering\n{RESET}"
-                return
-
-            # Enumerate with 1-based indexing for user-friendly numbering
-            for num, item in enumerate(filtered_results, start=1):
-                # Safely extract nested dictionaries with fallbacks
-                ids = item.get("id", {})  # Contains videoId, playlistId, etc.
-                snippets = item.get("snippet", {})  # Contains title, channel, date
-
-                # Extract metadata with 'N/A' fallback for missing fields
-                channel_title = snippets.get(
-                    "channelTitle", "N/A"
-                )  # Uploader's channel name
-                title = snippets.get("title", "N/A")  # Video title (may contain emojis)
-                creation_date = snippets.get("publishedAt", "N/A")  # ISO 8601 timestamp
-                video_id = ids.get("videoId", "N/A")  # 11-character unique identifier
-
-                # Format with ANSI escape sequences for terminal colors
-                # Each color constant provides visual distinction for different data types
-                video_info = f"""
+            # Build formatted output with color-coded labels and values
+            video_info = f"""
 {BOLD}{num}. {CYAN}Title: {RESET}'{title}'
-{MAGENTA}Channel Title: {RESET}'{channel_title}'
-{BLUE}Creation Date: {RESET}'{creation_date}'
+{MAGENTA}Channel: {RESET}'{channel}'
+{BLUE}Creation Date: {RESET}'{date}'
+{GREEN}Views: {RESET}'{views}'
+{YELLOW}Duration: {RESET}'{duration}'
 {RED}URL: {RESET}{BOLD}https://www.youtube.com/watch?v={video_id}{RESET}
 """
-                yield video_info
 
-        else:
-            # Non-200 status code indicates API problem (quota exceeded, invalid key, etc.)
-            print(f"{RED}\nError{RESET} {r.status_code}\n")
-            return exit(1)  # Exit with error code to prevent further execution
-
-    except requests.exceptions.RequestException as e:
-        # Catch network errors, DNS failures, connection timeouts
-        print(f"{RED}\nRequest error:{RESET} {e}\n")
-        return exit(1)  # Exit with error code
+            yield video_info
 
     except KeyboardInterrupt:
-        # Handle Ctrl+C gracefully with user-friendly message
-        print(f"{GREEN}\n\tGoodbye!\n{RESET}")
-        return exit(0)
+        # Graceful exit when user presses Ctrl+C during search
+        yield f"{GREEN}Goodbye!{RESET}"
+
+    except (ConnectionAbortedError, ConnectionError, ConnectionRefusedError, ConnectionResetError) as e:
+        # Handle various network-related connection errors uniformly
+        yield f"{RED}Error: {RESET}{e}"
+        return exit(1)

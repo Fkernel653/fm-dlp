@@ -1,6 +1,6 @@
-# FM-dlp - YouTube Audio Downloader
+# FM-dlp - YouTube Music Downloader
 
-A powerful command-line tool for searching and downloading audio from YouTube videos. Built with Python, this tool combines the YouTube Data API for searching with yt-dlp for high-quality audio extraction.
+A powerful command-line tool for searching and downloading audio from YouTube videos. Built with Python, this tool uses scrapetube for searching (no API key required!) and yt-dlp for high-quality audio extraction.
 
 ![Python Version](https://img.shields.io/badge/python-3.6+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -8,14 +8,14 @@ A powerful command-line tool for searching and downloading audio from YouTube vi
 
 ## 📋 Features
 
-- **YouTube Video Search**: Search for videos using the official YouTube Data API v3
+- **YouTube Video Search**: Search for videos using scrapetube (no API key needed!)
 - **Smart Result Filtering**: Automatically filters results to ensure query appears in title or channel name
 - **High-Quality Audio Download**: Extract audio in M4A format at 256 kbps quality
 - **Configurable Download Path**: Set and save your preferred download directory persistently
 - **User-Friendly Interface**: Colorful terminal output with intuitive command system
 - **Random User Agents**: Avoid detection by rotating user agents for each request
 - **Comprehensive Error Handling**: Graceful handling of network errors, API limits, and user interruptions
-- **Search Results Display**: View video titles, channels, upload dates, and direct URLs
+- **Search Results Display**: View video titles, channels, upload dates, view counts, durations, and direct URLs
 
 ## 🚀 Installation
 
@@ -56,31 +56,17 @@ cd fm-dlp
 pip install -r requirements.txt
 ```
 
-### Requirements.txt
+### Requirements
 
-Create a `requirements.txt` file with:
+The `requirements.txt` file includes:
 ```
 fake-useragent
-python-dotenv
+scrapetube
 yt-dlp
-requests
 clite
 ```
 
 ## 🔧 Configuration
-
-### YouTube API Key
-
-This tool requires a YouTube Data API key to function. **Note:** The API key in the code is a placeholder and must be replaced with your own:
-
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the **YouTube Data API v3**
-4. Go to "Credentials" and create an API key
-5. Copy the API key and paste it into key.env:
-```
-   YOUTUBE_DATA_API_KEY=<YOUR API KEY>
-```
 
 ### Download Path Configuration
 
@@ -106,17 +92,22 @@ python fm-dlp.py <command> [arguments]
 
 #### Search for Videos
 ```bash
-python fm-dlp.py <limit> search "your query here"
+python fm-dlp.py search "your query here" --limit=10
 ```
 Example:
 ```bash
-python fm-dlp.py 50 search "Sewerslvt"
+python fm-dlp.py search "Sewerslvt" --limit=5
 ```
-This will display up to 50 results with:
+
+The `--limit` parameter is optional (defaults to 10). Results are filtered to ensure your search query appears in either the video title or channel name.
+
+Each result displays:
 - Video title (in cyan)
 - Channel name (in magenta)
 - Upload date (in blue)
-- Direct YouTube URL (in red)
+- View count (in green)
+- Duration (in yellow)
+- YouTube URL (in red, bold)
 
 #### Download Audio
 ```bash
@@ -124,9 +115,12 @@ python fm-dlp.py download "youtube_url"
 ```
 Example:
 ```bash
-python fm-dlp.py download "https://www.youtube.com/watch?v=dWn5DBo33ds"
+python fm-dlp.py download "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 ```
+
 Downloads will be saved to your configured directory as M4A files with 256 kbps quality.
+
+**Note:** The download path must be configured first using the `config` command.
 
 #### Configure Download Path
 ```bash
@@ -149,9 +143,10 @@ The program uses consistent ANSI color codes for better readability:
 | Color | Usage |
 |-------|-------|
 | 🔴 **Red** | Errors, warnings, and video URLs |
-| 🟢 **Green** | Success messages and goodbye |
+| 🟢 **Green** | Success messages, view counts, and goodbye |
 | 🔵 **Blue** | Upload dates and information |
 | 🟣 **Magenta** | Channel names and metadata |
+| 🟡 **Yellow** | Video durations and warnings |
 | 🔷 **Cyan** | Video titles and headings |
 | **Bold White** | Numbers and emphasized text |
 
@@ -163,11 +158,10 @@ The program uses consistent ANSI color codes for better readability:
 fm-dlp/
 ├── fm-dlp.py              # Main CLI entry point (using clite)
 ├── config.json            # Persistent configuration (auto-generated)
-├── key.env                # A file containing an API key for the searching.py (Edit it)
 ├── requirements.txt       # Python dependencies
 ├── README.md              # This documentation
 └── modules/
-    ├── searching.py       # YouTube API search functionality
+    ├── searching.py       # YouTube search with scrapetube
     ├── downloader.py      # Audio download with yt-dlp
     ├── configer.py        # Configuration management
     ├── helper.py          # Help menu display
@@ -176,24 +170,38 @@ fm-dlp/
 
 ### Component Details
 
+#### fm-dlp.py
+- Main CLI entry point using the `clite` framework
+- Defines commands: `search`, `download`, `config`, `help`
+- Uses type hints for automatic argument parsing
+- Delegates each command to its corresponding module
+
 #### searching.py
-- Interfaces with YouTube Data API v3
-- Filters results to ensure query relevance
+- Uses `scrapetube` library to search YouTube (no API key required!)
+- Filters results to ensure query relevance in title or channel name
 - Returns formatted, color-coded output
-- Handles API errors and rate limiting
+- Handles network errors and keyboard interrupts gracefully
 
 #### downloader.py
-- Uses yt-dlp for robust video downloading
+- Uses `yt-dlp` for robust video downloading
 - Extracts best available audio stream
-- Converts to M4A format with FFmpeg
-- Implements random User-Agent rotation
-- Handles georestrictions and extraction errors
+- Converts to M4A format with FFmpeg (256 kbps AAC)
+- Implements random User-Agent rotation via `fake-useragent`
+- Reads download path from `config.json`
+- Handles georestrictions, extraction errors, and download failures
 
 #### configer.py
 - Manages JSON-based configuration
 - Validates path existence
 - Acts as both getter and setter
-- Provides clear error messages
+- Provides clear error messages for corrupted or missing configs
+
+#### helper.py
+- Provides help menu text with command descriptions
+
+#### colors.py
+- Defines ANSI color codes for consistent terminal styling
+- Includes RESET, BOLD, ITALIC, and six standard colors
 
 ### Audio Specifications
 
@@ -202,25 +210,26 @@ fm-dlp/
 - **Bitrate**: 256 kbps (high quality)
 - **Source**: Best available audio stream from YouTube
 
-### API Features
+### Search Features
 
-- **Max Results**: The limit you have to set
-- **Video Duration**: Filtered to medium-length (4-20 minutes)
-- **Content Type**: Videos only (excludes channels and playlists)
-- **Response Format**: JSON with snippet and ID information
+- **No API Key Required**: Uses scrapetube instead of YouTube Data API
+- **Result Filtering**: Automatic filtering by title/channel relevance
+- **Video Information**: Title, channel, date, views, duration, URL
+- **Graceful Error Handling**: Network errors, keyboard interrupts
 
 ## ⚠️ Important Considerations
-
-### API Key Requirements
-- **Valid API Key Required**: The program won't work without a valid YouTube Data API key
-- **Quota Limits**: YouTube API has daily quota limits (typically 10,000 units per day)
-- **Each search costs**: Approximately 100 quota units
 
 ### System Requirements
 - **Internet Connection**: Required for both search and download functions
 - **FFmpeg**: Must be installed and accessible in system PATH
 - **Disk Space**: Sufficient space for downloaded audio files
 - **Write Permissions**: Download directory must be writable
+
+### Dependencies
+- **scrapetube**: Scrapes YouTube search results (no API key needed)
+- **yt-dlp**: Downloads and extracts audio from YouTube videos
+- **fake-useragent**: Provides random browser user agents
+- **clite**: Simple CLI framework for command parsing
 
 ### Legal and Ethical Considerations
 - **Respect Copyright**: Only download content you have rights to
@@ -232,24 +241,22 @@ fm-dlp/
 
 ### Common Issues and Solutions
 
-#### 1. "No videos found" or Empty Results
+#### 1. "No videos matching query after filtering"
 **Possible causes:**
-- Invalid API key
+- Search query doesn't appear in any video titles or channel names
 - Network connectivity issues
-- No videos match your query
-- API quota exceeded
+- YouTube may be blocking scrapetube requests
 
 **Solutions:**
-- Verify your API key in `key.env`
-- Check internet connection
-- Try a different search query
-- Wait for quota reset (24 hours) or get a new API key
+- Try a different search query (use fewer words or broader terms)
+- Check your internet connection
+- Wait a few minutes and try again (YouTube may temporarily block aggressive scraping)
 
 #### 2. Download Fails
 **Possible causes:**
 - FFmpeg not installed
 - Download path doesn't exist or isn't writable
-- Video is private or age-restricted
+- Video is private, age-restricted, or deleted
 - URL format is incorrect
 
 **Solutions:**
@@ -269,16 +276,16 @@ fm-dlp/
 - Check file permissions
 - Ensure config.json is valid JSON
 
-#### 4. API Key Errors (403 or 400)
+#### 4. Connection Errors
 **Possible causes:**
-- Invalid API key
-- YouTube Data API not enabled
-- Billing not set up (for some projects)
+- Network issues
+- YouTube blocking requests
+- Proxy/firewall restrictions
 
 **Solutions:**
-- Regenerate API key in Google Cloud Console
-- Enable YouTube Data API v3
-- Check if billing is required for your quota
+- Check internet connection
+- Try using a VPN
+- Wait and retry (rate limiting may be temporary)
 
 ## 🤝 Contributing
 
@@ -325,7 +332,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🙏 Acknowledgments
 
 - **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** - For the excellent, feature-rich downloading library
-- **[Google YouTube Data API](https://developers.google.com/youtube/v3)** - For providing search functionality
+- **[scrapetube](https://github.com/dermasmid/scrapetube)** - For YouTube search without API keys
 - **[clite](https://pypi.org/project/clite/)** - For the simple CLI framework
 - **[fake-useragent](https://github.com/hellysmile/fake-useragent)** - For User-Agent rotation
 - All contributors and users of this tool
@@ -334,7 +341,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **v1.0.0** (Current)
 - Initial release
-- YouTube search functionality
+- YouTube search with scrapetube (no API key!)
 - Audio download with yt-dlp
 - Configuration management
 - Color-coded terminal output
@@ -342,8 +349,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 **Planned Features**
 - Playlist download support
 - Search result pagination
-- Download progress bar
-- Multiple format options
+- Download progress improvements
+- Multiple audio format options
 - Batch download from file
 
 ## ⭐ Support the Project
@@ -353,7 +360,6 @@ If you find this tool useful, please consider:
 - **Forking** to contribute improvements
 - **Sharing** with others who might find it useful
 - **Reporting** issues you encounter
-- **Donating** to support development (if options available)
 
 ---
 

@@ -1,5 +1,4 @@
 ﻿fake-useragent
-python-dotenv
-requests
+scrapetube
 yt-dlp
 clite
