@@ -1,30 +1,19 @@
 """
-Entry point for the fm-dlp YouTube Music Downloader.
+Main entry point for the fm-dlp CLI application.
 
-This module initializes the CLI interface using the 'clite' library and
-defines the main commands: search, download, config, and help. It serves
-as the main entry point for the application and handles command-line
-argument parsing and dispatch.
-
-Architecture:
-    - Commands are defined as methods decorated with @fm_dlp.command()
-    - Each command delegates to its corresponding module function
-    - The CLI framework automatically generates --help for each command
-    - Type hints are used for automatic argument parsing and validation
-
-Dependencies:
-    - clite: CLI framework for command dispatch and argument parsing
-    - modules.searching: YouTube search functionality
-    - modules.downloader: Audio download functionality
-    - modules.configer: Configuration management
-    - modules.helper: Help menu generation
+This module initializes the command-line interface using the Clite library
+and defines all available commands: search, download, config, and help.
+The application allows users to search for music on YouTube/SoundCloud and
+download audio from YouTube videos.
 """
 
 from clite import Clite
-from modules.searching import searching
-from modules.downloader import download_audio
+import asyncio
+
+from modules.search import Search
+from modules.download import Download
 from modules.configer import configuring_path
-from modules.helper import message
+from modules.help import message
 
 
 # Initialize the CLI application with metadata
@@ -37,81 +26,99 @@ fm_dlp = Clite(
 
 
 @fm_dlp.command()
-def search(query: str, limit: int = 10):
+def search(
+    query: str,
+    limit: int = 10,
+    enable_filter: str = "false",
+    variable: str = "youtube",
+):
     """
-    Search for videos on YouTube and display results in a formatted list.
-
-    This command connects to YouTube (via scrapetube), performs a search with the
-    given query, filters results to ensure the query appears in the title or channel name,
-    and displays up to 'limit' results with titles, channels, dates, views, durations, and URLs.
+    Search for music on YouTube or SoundCloud.
 
     Args:
-        query (str): The search term(s) to look for on YouTube. This is a required parameter.
-        limit (int): Maximum number of raw results to fetch. Defaults to 10.
-                    Note that filtering may reduce the actual number of displayed results.
+        query: Search term to look for (e.g., artist name or song title)
+        limit: Maximum number of results to display (default: 10)
+        enable_filter: Filter out invalid results - accepts "true"/"false"/"1"/"yes"/"on" (default: "false")
+        variable: Platform to search on - "youtube" or "soundcloud" (default: "youtube")
 
     Returns:
-        None: Results are printed directly to the console with color formatting.
+        None: Search results are printed directly to the console, including:
+              - Thumbnail preview (if term_image is installed)
+              - Result number and title
+              - Channel/artist name
+              - Metadata (date, views/duration for YouTube; date, duration for SoundCloud)
+              - URL for playback or download
 
-    Example:
-        fm-dlp search "rick astley" --limit=5
+    Note:
+        - YouTube search uses scrapetube library (no API key required)
+        - SoundCloud search requires the soundcloud package
+        - Results are displayed with ANSI color codes for better readability
+        - The enable_filter parameter removes entries missing videoId or title
     """
-    # Iterate through the generator from searching() and print each video info
-    for video_info in searching(query, limit):
-        print(video_info)
+    # Convert string parameter to boolean for internal use
+    # Accepts various truthy string representations
+    filter_bool = enable_filter.lower() in ["true", "1", "yes", "on"]
+    program = Search(query, limit, filter_bool)
+
+    if variable == "youtube":
+        # Asynchronous YouTube search with 10-second timeout
+        async def get_video_info():
+            async for video_info in program.youtube():
+                print(video_info)
+
+        asyncio.run(get_video_info())
+
+    elif variable == "soundcloud":
+        # Asynchronous SoundCloud search with 30-second timeout
+        async def get_track_info():
+            async for track_info in program.soundcloud():
+                print(track_info)
+
+        asyncio.run(get_track_info())
 
 
 @fm_dlp.command()
-def download(url: str):
+def download(url: str, cookies: str = None):
     """
-    Download audio from a YouTube video as a high-quality M4A file.
-
-    This command extracts audio from the specified YouTube URL and saves it
-    as an M4A file (AAC codec, 256 kbps) in the configured download directory.
-    Requires FFmpeg to be installed on the system.
+    Download audio from a YouTube video.
 
     Args:
-        url (str): The full YouTube URL. Supported formats:
-                   - https://youtube.com/watch?v=VIDEO_ID
-                   - https://youtu.be/VIDEO_ID
-                   - https://www.youtube.com/watch?v=VIDEO_ID
+        url: YouTube video URL (e.g., https://youtu.be/... or https://www.youtube.com/watch?v=...)
+        cookies: Browser name for cookie extraction (optional - chrome, firefox, edge, etc.)
+                Required for age-restricted or private videos
 
     Returns:
-        None: Download progress and status are printed to the console.
-
-    Example:
-        fm-dlp download "https://youtube.com/watch?v=dQw4w9WgXcQ"
+        None: Download progress is displayed in the terminal. The audio file is saved
+              as M4A format (256 kbps AAC) to the configured download directory.
 
     Note:
-        The download path must be configured first using the 'config' command.
-        If FFmpeg is not installed, yt-dlp will fail with an error message.
+        - Requires FFmpeg to be installed on the system for audio extraction
+        - Download directory must be configured first using the 'config' command
+        - Uses yt-dlp for downloading with random user-agent rotation
+        - Cookies parameter helps bypass age restrictions and rate limiting
     """
-    print(download_audio(url))
+    program = Download(url)
+    print(program.normal(cookies))
 
 
 @fm_dlp.command()
 def config(path: str):
     """
-    Set or view the download directory path.
-
-    Acts as a setter when a valid path is provided, saving it to config.json.
-    Acts as a getter when called without arguments (or with a placeholder),
-    displaying the current configuration.
+    Set or display the download directory configuration.
 
     Args:
-        path (str): The directory path where audio files should be saved.
-                   If "world" (placeholder from clite), it triggers the getter mode.
+        path: Directory path where downloaded audio files will be saved.
+              If empty or omitted, displays the current configuration.
 
     Returns:
-        None: Configuration status is printed to the console.
-
-    Examples:
-        fm-dlp config "/home/user/Music"    # Set download directory
-        fm-dlp config                        # View current configuration
+        None: Configuration status is printed directly to the console.
+              Shows either confirmation of saved path or current settings.
 
     Note:
-        The configuration is stored in config.json in the application root directory.
-        The path must be an existing directory on the filesystem.
+        - Configuration is stored in config.json in the project root
+        - The path must exist on the filesystem (validated when retrieved)
+        - Run this command before downloading to set a valid download location
+        - Example: fm-dlp config ~/Music/Downloads
     """
     print(configuring_path(path))
 
