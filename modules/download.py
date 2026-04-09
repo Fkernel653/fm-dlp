@@ -67,7 +67,9 @@ class Download:
                     "key": "EmbedThumbnail",  # embed thumbnail into audio file
                 },
             ],
-            "cookiesfrombrowser": (cookies,) if cookies else None,  # use browser cookies for auth
+            "cookiesfrombrowser": (cookies,)
+            if cookies
+            else None,  # use browser cookies for auth
             "quiet": False,
             "no_warnings": False,
         }
