@@ -12,7 +12,6 @@ from soundcloud import SoundCloud
 
 from fake_useragent import UserAgent
 from itertools import islice
-import asyncio
 
 
 @dataclass
@@ -35,7 +34,6 @@ class Search:
 
             if not videos:
                 yield f"{RED}\nNo videos matching {RESET}'{self.query}'"
-                return
 
             for num, video in enumerate(videos, 1):
                 # Format view count with commas
@@ -63,59 +61,54 @@ class Search:
                 yield video_info
 
         except Exception as e:
-            yield f"{RED}Error: {e}{RESET}"
+            yield f"{RED}Youtube-Video error: {e}{RESET}"
         except KeyboardInterrupt:
             yield f"{GREEN}Goodbye!{RESET}"
 
     def yt_music(self):
         """Search YouTube Music for song tracks only."""
-        yt = YTMusic()
-        tracks = yt.search(query=self.query, limit=self.limit, filter="songs")  # song filter only
-
-        if not tracks:
-            yield f"{RED}\nNo tracks found for '{self.query}' on YouTube Music\n{RESET}"
-            return
-
-        for num, track in enumerate(tracks, 1):
-            video_id = track.get("videoId", "N/A")
-
-            # Extract first artist from artists list
-            artists_list = track.get("artists", [])
-            if artists_list and len(artists_list) > 0:
-                artist = artists_list[0].get("name", "Unknown Artist")
-            else:
-                artist = "Unknown Artist"
-
-            track_info = (
-                f"\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{track.get('title', 'Unknown Track')}{RESET}\n"
-                f"   {GRAY}├─ {RESET}{artist}\n"
-                f"   {GRAY}├─ {RESET}{track.get('duration', 'N/A')}\n"
-                f"   {GRAY}└─ {RESET}{RED}{f'https://music.youtube.com/watch?v={video_id}'}{RESET}\n"
-                f"   {GRAY}   {'─' * 50}{RESET}\n"
-            )
-            yield track_info
-
-    async def soundcloud(self):
-        """Search SoundCloud for tracks (async with timeout)."""
         try:
-            loop = asyncio.get_event_loop()
+            yt = YTMusic()
+            tracks = yt.search(
+                query=self.query, limit=self.limit, filter="songs"
+            )  # song filter only
 
-            def sync_search():
-                # Synchronous SoundCloud search wrapped for async execution
-                ua = UserAgent().random
-                sc = SoundCloud(user_agent=ua)
-                tracks = sc.search_tracks(self.query)
+            if not tracks:
+                yield f"{RED}\nNo tracks found for '{self.query}' on YouTube Music\n{RESET}"
 
-                return islice(tracks, self.limit)  # limit results
+            for num, track in enumerate(tracks, 1):
+                video_id = track.get("videoId", "N/A")
 
-            # Run blocking search in thread pool with 30s timeout
-            tracks = await asyncio.wait_for(
-                loop.run_in_executor(None, sync_search), timeout=30.0
-            )
+                # Extract first artist from artists list
+                artists_list = track.get("artists", [])
+                if artists_list and len(artists_list) > 0:
+                    artist = artists_list[0].get("name", "Unknown Artist")
+                else:
+                    artist = "Unknown Artist"
+
+                track_info = (
+                    f"\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{track.get('title', 'Unknown Track')}{RESET}\n"
+                    f"   {GRAY}├─ {RESET}{artist}\n"
+                    f"   {GRAY}├─ {RESET}{track.get('duration', 'N/A')}\n"
+                    f"   {GRAY}└─ {RESET}{RED}{f'https://music.youtube.com/watch?v={video_id}'}{RESET}\n"
+                    f"   {GRAY}   {'─' * 50}{RESET}\n"
+                )
+                yield track_info
+
+        except Exception as e:
+            yield f"{RED}Youtube-Music error: {e}{RESET}"
+        except KeyboardInterrupt:
+            yield f"{GREEN}Goodbye!{RESET}"
+
+    def soundcloud(self):
+        """Search SoundCloud for tracks."""
+        try:
+            ua = UserAgent().random
+            sc = SoundCloud(user_agent=ua)
+            tracks = islice(sc.search_tracks(self.query), self.limit)
 
             if not tracks:
                 yield f"{RED}\nNo tracks found for '{self.query}' on SoundCloud\n{RESET}"
-                return
 
             for num, track in enumerate(tracks, 1):
                 title = track.title if track.title else "Unknown Track"
@@ -145,7 +138,7 @@ class Search:
                 )
                 yield track_info
 
-        except asyncio.TimeoutError:
-            yield f"{RED}SoundCloud search timeout (30 seconds){RESET}"
         except Exception as e:
             yield f"{RED}SoundCloud error: {e}{RESET}"
+        except KeyboardInterrupt:
+            yield f"{GREEN}Goodbye!{RESET}"
