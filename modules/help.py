@@ -44,7 +44,7 @@ def message() -> str:
     {GRAY}Supports parallel downloads and automatic metadata embedding.{RESET}
     {GRAY}Options:{RESET}
         {CYAN}--ffmpeg=<bool>{RESET}     {GRAY}Enable FFmpeg processing (default: "True"){RESET}
-        {CYAN}--codec=<format>{RESET}    {GRAY}Output format: m4a, mp3, aac, opus, flac, wav (default: m4a){RESET}
+        {CYAN}--codec=<format>{RESET}    {GRAY}Output format: m4a, mp3, opus, flac (default: m4a){RESET}
         {CYAN}--kbps=<bitrate>{RESET}    {GRAY}Bitrate quality: 64-320 (default: 256){RESET}
         {CYAN}--cookies=<browser>{RESET} {GRAY}Browser for cookies: chrome, firefox, edge, safari (optional){RESET}
     {GRAY}Examples:{RESET}
@@ -63,7 +63,7 @@ def message() -> str:
     {GRAY}Display this detailed help message.{RESET}
 
 {BOLD}{GREEN}SUPPORTED FORMATS & METADATA:{RESET}
-    {GRAY}• {RESET}{BOLD}M4A/AAC{RESET} {GRAY}(iTunes-style metadata: title, artist, album){RESET}
+    {GRAY}• {RESET}{BOLD}M4A{RESET} {GRAY}(iTunes-style metadata: title, artist, album){RESET}
     {GRAY}• {RESET}{BOLD}MP3{RESET}       {GRAY}(ID3 tags: TIT2, TPE1, TALB){RESET}
     {GRAY}• {RESET}{BOLD}FLAC{RESET}      {GRAY}(Vorbis comments){RESET}
     {GRAY}• {RESET}{BOLD}Opus{RESET}      {GRAY}(Ogg container with metadata){RESET}

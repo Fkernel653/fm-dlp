@@ -167,7 +167,7 @@ python fm-dlp.py download "URL" --codec=opus --kbps=128
 
 **Parameters:**
 - `urls` (required) - Space-separated YouTube URLs (must be quoted)
-- `--codec` - Output format: `m4a`, `aac`, `mp3`, `flac`, `opus` (default: `m4a`)
+- `--codec` - Output format: `m4a`, `mp3`, `flac`, `opus` (default: `m4a`)
 - `--kbps` - Bitrate in kbps (default: 256)
 - `--cookies` - Browser for cookies: `chrome`, `firefox`, `edge`, `safari` (optional)
 - `--ffmpeg` - Reserved for future use (default: "True")
@@ -177,7 +177,6 @@ python fm-dlp.py download "URL" --codec=opus --kbps=128
 | Codec | Extension | Recommended Bitrate | Best For |
 |-------|-----------|---------------------|----------|
 | M4A (AAC) | .m4a | 256 kbps | General use, good quality/size |
-| AAC | .aac | 256 kbps | Apple ecosystem, streaming |
 | MP3 | .mp3 | 320 kbps | Maximum compatibility |
 | FLAC | .flac | lossless | Archiving, audiophiles |
 | Opus | .opus | 128 kbps | Best compression, modern players |
@@ -249,7 +248,7 @@ fm-dlp/
 
 | Format | Metadata Library | Tags Added |
 |--------|------------------|-------------|
-| M4A/AAC | mutagen.mp4 | `©nam` (title), `©ART` (artist), `©alb` (album) |
+| M4A | mutagen.mp4 | `©nam` (title), `©ART` (artist), `©alb` (album) |
 | MP3 | mutagen.id3 | TIT2 (title), TPE1 (artist), TALB (album) |
 | FLAC | mutagen.flac | title, artist, album (Vorbis comments) |
 | Opus | mutagen.oggopus | title, artist, album (Ogg container) |

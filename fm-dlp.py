@@ -62,7 +62,7 @@ def download(
     Args:
         urls: Space-separated YouTube URLs
         ffmpeg: Use FFmpeg (default: "True")
-        codec: Output format - m4a, mp3, aac, opus, flac, wav (default: "m4a")
+        codec: Output format - m4a, mp3, opus, flac (default: "m4a")
         kbps: Bitrate in kbps (default: 256)
         cookies: Browser for cookies - chrome, firefox, edge, etc. (optional)
     """
