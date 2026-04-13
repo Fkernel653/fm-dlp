@@ -10,7 +10,7 @@ import asyncio
 from yt_dlp import YoutubeDL
 
 from modules.add_metadata import add_metadata
-from modules.colors import GREEN, RED, RESET, YELLOW
+from modules.colors import RESET, BOLD, GREEN, RED, MAGENTA
 
 USER_AGENT = UserAgent().random
 
@@ -68,7 +68,7 @@ class Download:
             ],
             "cookiesfrombrowser": cookies if cookies else None,
             "quiet": False,
-            "no_warnings": False,
+            "no_warnings": True,
         }
 
         loop = asyncio.get_event_loop()
@@ -93,7 +93,7 @@ class Download:
                                 break
 
                         if not file_path or not file_path.exists():
-                            return f"{RED}\nFile not found: {url}{RESET}"
+                            return f"{RED}\nFile not found: {url}{RESET}\n"
 
                         title = info.get("title", "Unknown Title")
                         artist = info.get(
@@ -109,12 +109,12 @@ class Download:
                             album=album,
                         )
 
-                        return f"{GREEN}✓ Downloaded: {title}{RESET}"
+                        return f"{GREEN}\n✓ Downloaded: {title}{RESET}\n"
 
                 except Exception as e:
-                    return f"{RED}✗ Error ({url}): {e}{RESET}"
+                    return f"{RED}\n✗ Error ({url}): {e}{RESET}\n"
 
-            print(f"{YELLOW}Starting: {RESET}{url}")
+            print(f"{MAGENTA}\nStarting: {RESET}{BOLD}{url}{RESET}\n")
             result = await loop.run_in_executor(None, sync_download)
             return result
 

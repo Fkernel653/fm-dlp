@@ -21,7 +21,7 @@ fm_dlp = Clite(
 @fm_dlp.command()
 def search(
     query: str,
-    limit: Optional[int] = 10,
+    limit: int = 10,
     platform: Optional[str] = "yt-video",
 ):
     """

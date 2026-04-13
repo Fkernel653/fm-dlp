@@ -12,7 +12,7 @@ from modules.colors import RESET, BOLD, GREEN, CYAN, YELLOW, MAGENTA, GRAY
 
 def message() -> str:
     """Generate and return the complete help menu text.
-    
+
     Returns:
         str: Formatted help message with command descriptions, options,
              examples, and system requirements.
