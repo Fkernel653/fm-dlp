@@ -6,7 +6,7 @@ def add_metadata(file: Path, codec: str, title: str, artist: str, album: str):
     """Add metadata tags to audio file based on its codec/format."""
     match codec.lower():
         case "m4a":
-            # M4A/MP4 format - uses iTunes-style metadata keys
+            # M4A format - uses iTunes-style metadata keys
             from mutagen.mp4 import MP4
 
             audio = MP4(file)
