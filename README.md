@@ -1,4 +1,4 @@
-# fm-dlp — YouTube & SoundCloud Music Downloader
+# fm-dlp - YouTube & SoundCloud Music Downloader
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -125,7 +125,7 @@ python fm-dlp.py search "ambient" --platform=soundcloud --proxy=http://127.0.0.1
 | Issue | Solution |
 |-------|----------|
 | Config file not found | Run `config <path>` first |
-| FFmpeg error | Install FFmpeg: `ffmpeg -version` |
+| FFmpeg error | Install FFmpeg: `ffmpeg --version` |
 | Age-restricted video | Use `--cookies=chrome` |
 | Network blocked | Try `--proxy=http://proxy:port` |
 | Invalid path | Ensure directory exists |
