@@ -1,4 +1,4 @@
-# fm-dlp - YouTube & SoundCloud Music Downloader
+# fm-dlp — YouTube & SoundCloud Music Downloader
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
