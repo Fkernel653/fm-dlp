@@ -96,10 +96,10 @@ class Download:
                         if not file_path or not file_path.exists():
                             return f"{RED}\nFile not found after download: {url}{RESET}"
 
-                        title = info.get("title", "Unknown Title")
+                        title = info.get("title", "")
                         channel = info.get("channel", "")
-                        artist = info.get("uploader") or channel or "Unknown Artist"
-                        album = info.get("album") or channel or "YouTube"
+                        artist = info.get("uploader") or channel or ""
+                        album = info.get("album") or channel or ""
 
                         try:
                             add_metadata(
