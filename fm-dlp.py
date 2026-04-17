@@ -84,7 +84,7 @@ def config(path: str):
     """
     Set or display the download directory configuration.
 
-    Args:q
+    Args:
         path: Directory path. If empty, displays current config.
     """
     from modules.configer import configer
