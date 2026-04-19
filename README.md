@@ -47,8 +47,8 @@ python fm-dlp.py search <query> [--limit=10] [--platform={yt-video|yt-music}] [-
 ```
 | Platform | Description |
 |----------|-------------|
-| `yt-video` | YouTube videos (default) |
-| `yt-music` | YouTube Music songs only |
+| `yt-video` | YouTube videos |
+| `yt-music` | YouTube Music songs only (default) |
 
 ### `download` — Download audio
 ```bash
@@ -56,7 +56,7 @@ python fm-dlp.py download <urls> [--codec={m4a|mp3|flac|opus}] [--kbps=256] [--c
 ```
 | Option | Values | Default |
 |--------|--------|---------|
-| `--codec` | m4a, mp3, flac, opus | m4a |
+| `--codec` | m4a, mp3, flac, opus | opus |
 | `--kbps` | 64–320 | 256 |
 | `--cookies` | chrome, firefox, edge, etc. | — |
 | `--proxy` | http://, socks5:// | — |

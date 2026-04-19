@@ -22,7 +22,7 @@ helper = Help()
 def search(
     query: str,
     limit: int = 10,
-    platform: Optional[str] = "yt-video",
+    platform: Optional[str] = "yt-music",
     proxy: Optional[str] = None,
 ):
     """
@@ -31,7 +31,7 @@ def search(
     Args:
         query: Search term
         limit: Max results (default: 10)
-        platform: "yt-video" or "yt-music" (default: "yt-video")
+        platform: "yt-video" or "yt-music" (default: "yt-music")
         proxy: Proxy URL (e.g., http://proxy:port or socks5://proxy:port)
     """
     from modules.search import Search
@@ -47,10 +47,11 @@ def search(
             for track_info in program.yt_music():
                 print(track_info)
 
+
 @fm_dlp.command()
 def download(
     urls: str,
-    codec: Optional[str] = "m4a",
+    codec: Optional[str] = "opus",
     kbps: Optional[int] = 256,
     cookies: Optional[str] = None,
     proxy: Optional[str] = None,
@@ -60,7 +61,7 @@ def download(
 
     Args:
         urls: Space-separated YouTube URLs
-        codec: Output format - m4a, mp3, opus, flac (default: "m4a")
+        codec: Output format - m4a, mp3, opus, flac (default: "opus")
         kbps: Bitrate in kbps (default: 256)
         cookies: Browser for cookies - chrome, firefox, edge, etc. (optional)
         proxy: Proxy URL (e.g., http://proxy:port or socks5://proxy:port)

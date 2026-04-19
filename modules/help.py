@@ -32,7 +32,7 @@ class Help:
     {GRAY}Search for music across YouTube and YouTube Music{RESET}
     {GRAY}Options:{RESET}
         {CYAN}--limit=<n>{RESET}        {GRAY}Number of results to show (default: 10){RESET}
-        {CYAN}--platform=<platform>{RESET}  {GRAY}Platform: yt-video, yt-music (default: yt-video){RESET}
+        {CYAN}--platform=<platform>{RESET}  {GRAY}Platform: yt-video, yt-music (default: yt-music){RESET}
         {CYAN}--proxy=<url>{RESET}       {GRAY}Proxy URL (e.g., http://proxy:port or socks5://proxy:port){RESET}
     {GRAY}Examples:{RESET}
         {CYAN}fm-dlp search "Sewerslvt"{RESET}
@@ -43,8 +43,7 @@ class Help:
     {GRAY}Download audio from one or more YouTube URLs (space-separated).{RESET}
     {GRAY}Supports parallel downloads and automatic metadata embedding.{RESET}
     {GRAY}Options:{RESET}
-        {CYAN}--ffmpeg=<bool>{RESET}     {GRAY}Enable FFmpeg processing (default: "True"){RESET}
-        {CYAN}--codec=<format>{RESET}    {GRAY}Output format: m4a, mp3, opus, flac (default: m4a){RESET}
+        {CYAN}--codec=<format>{RESET}    {GRAY}Output format: m4a, mp3, opus, flac (default: opus){RESET}
         {CYAN}--kbps=<bitrate>{RESET}    {GRAY}Bitrate quality: 64-320 (default: 256){RESET}
         {CYAN}--cookies=<browser>{RESET} {GRAY}Browser for cookies: chrome, firefox, edge, safari, etc. (optional){RESET}
         {CYAN}--proxy=<url>{RESET}       {GRAY}Proxy URL (e.g., http://proxy:port or socks5://proxy:port){RESET}
