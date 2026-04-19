@@ -55,7 +55,6 @@ def search(
 @fm_dlp.command()
 def download(
     urls: str,
-    ffmpeg: Optional[str] = "True",
     codec: Optional[str] = "m4a",
     kbps: Optional[int] = 256,
     cookies: Optional[str] = None,
@@ -66,7 +65,6 @@ def download(
 
     Args:
         urls: Space-separated YouTube URLs
-        ffmpeg: Use FFmpeg (default: "True")
         codec: Output format - m4a, mp3, opus, flac (default: "m4a")
         kbps: Bitrate in kbps (default: 256)
         cookies: Browser for cookies - chrome, firefox, edge, etc. (optional)
@@ -77,7 +75,7 @@ def download(
     program = Download(urls)
 
     async def async_download_classic():
-        async for result in program.classic(ffmpeg, codec, kbps, cookies, proxy):
+        async for result in program.classic(codec, kbps, cookies, proxy):
             print(result)
 
     asyncio.run(async_download_classic())

@@ -40,7 +40,7 @@ class Help:
         {CYAN}fm-dlp search "tokyona" --platform=yt-video --limit=3 --proxy=socks5://127.0.0.1:9050{RESET}
         {CYAN}fm-dlp search "drum and bass" --platform=soundcloud --limit=5{RESET}
 
-{BOLD}{YELLOW}download <urls> [--ffmpeg=<bool>] [--codec=<format>] [--kbps=<bitrate>] [--cookies=<browser>] [--proxy=<url>]{RESET}
+{BOLD}{YELLOW}download <urls> [--codec=<format>] [--kbps=<bitrate>] [--cookies=<browser>] [--proxy=<url>]{RESET}
     {GRAY}Download audio from one or more YouTube URLs (space-separated).{RESET}
     {GRAY}Supports parallel downloads and automatic metadata embedding.{RESET}
     {GRAY}Options:{RESET}
@@ -126,7 +126,7 @@ class Help:
     def file_run(self) -> str:
         """Display compact colorful help when no command provided."""
         return f"""
-{BOLD}{CYAN}fm-dlp{RESET} {GRAY}— music download toolkit{RESET}
+{BOLD}{CYAN}fm-dlp{RESET} {GRAY}— YouTube & SoundCloud Music Downloader{RESET}
 
 {BOLD}{GREEN}Usage:{RESET} {BOLD}{WHITE}fm-dlp{RESET} {YELLOW}<command>{RESET} {GRAY}[arguments]{RESET} {CYAN}[options]{RESET}
 
@@ -147,4 +147,4 @@ class Help:
     {CYAN}fm-dlp download URL --proxy=socks5://127.0.0.1:9050{RESET}
 
 {BOLD}{GRAY}Run {WHITE}fm-dlp help{GRAY} for complete manual{RESET}
-    """
+"""

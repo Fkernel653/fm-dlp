@@ -5,6 +5,7 @@ YouTube audio downloader using yt-dlp with FFmpeg post-processing.
 from dataclasses import dataclass
 from pathlib import Path
 import asyncio
+from typing import AsyncGenerator
 from yt_dlp import YoutubeDL
 
 from modules.add_metadata import add_metadata
@@ -16,14 +17,27 @@ class Download:
     """Manages audio download operations from YouTube URLs."""
 
     urls: str
-    this_file_folder = Path(__file__).parent
-    config_file = Path(this_file_folder).parent / "config.json"
+    config_file = Path(__file__).parent.parent / "config.json"
+
+    def __post_init__(self):
+        """Validate requirements on initialization."""
+        self._validate_ffmpeg()
+        self._validate_config_file()
+
+    def _validate_ffmpeg(self) -> None:
+        """Check if FFmpeg is installed."""
+        import shutil
+
+        if shutil.which("ffmpeg") is None:
+            print(f"{RED}FFmpeg not found in PATH! Please install FFmpeg.{RESET}")
+            exit(1)
 
     def _validate_config_file(self) -> None:
         """Check if config file exists, exit if not found."""
         if not self.config_file.exists():
             print(
-                f"{RED}\nConfig file not found! Please set download path first using 'config <path>'.{RESET}\n"
+                f"{RED}\nConfig file not found!{RESET}\n"
+                f"{YELLOW}Run: fm-dlp config /path/to/downloads{RESET}\n"
             )
             exit(1)
 
@@ -44,9 +58,10 @@ class Download:
             print(f"{RED}\nConfig file is corrupted! Please reconfigure.{RESET}\n")
             exit(1)
 
-    async def classic(self, ffmpeg: str, codec: str, kbps: int, cookies: str, proxy: str):
+    async def classic(
+        self, codec: str, kbps: int, cookies: str, proxy: str
+    ) -> AsyncGenerator[str, None]:
         """Download audio using yt-dlp with FFmpeg processing (parallel)."""
-        self._validate_config_file()
 
         opts = {
             "proxy": proxy if proxy else None,
@@ -65,11 +80,10 @@ class Download:
             "quiet": False,
             "no_warnings": True,
         }
+        possible_extensions = list(set([codec, "m4a", "mp3", "flac", "opus"]))
 
         loop = asyncio.get_event_loop()
         urls_list = self.urls.split()
-
-        tasks = []
 
         async def download_single_url(url: str):
             def sync_download():
@@ -88,7 +102,7 @@ class Download:
                             file_path = Path(info["requested_downloads"][0]["filepath"])
                         else:
                             base = ydl.prepare_filename(info)
-                            for ext in [codec, "m4a", "mp3", "flac", "opus"]:
+                            for ext in possible_extensions:
                                 test = Path(base).with_suffix(f".{ext}")
                                 if test.exists():
                                     file_path = test
@@ -111,12 +125,12 @@ class Download:
                                 album=album,
                             )
                         except Exception as meta_err:
-                            return f"{YELLOW}\n⚠ Downloaded but metadata failed: {title} - {meta_err}{RESET}"
+                            return f"{YELLOW}\nDownloaded but metadata failed: {title} - {meta_err}{RESET}"
 
-                        return f"{GREEN}\n✓ Downloaded: {title}{RESET}"
+                        return f"{GREEN}\nDownloaded: {title}{RESET}"
 
                 except Exception as e:
-                    return f"{RED}\n✗ Error ({url}): {e}{RESET}"
+                    return f"{RED}\nError ({url}): {e}{RESET}"
 
             print(f"{MAGENTA}\nStarting: {RESET}{BOLD}{url}{RESET}")
             result = await loop.run_in_executor(None, sync_download)
@@ -132,6 +146,8 @@ class Download:
             for task in tasks:
                 if not task.done():
                     task.cancel()
-            yield f"{GREEN}\nDownload cancelled by user.{RESET}"
+            await asyncio.gather(*tasks, return_exceptions=True)
+            print(f"{GREEN}\nDownload cancelled by user.{RESET}")
+            return
         except Exception as e:
             yield f"{RED}\nUnexpected error: {e}{RESET}"
