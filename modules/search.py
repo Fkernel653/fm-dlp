@@ -22,11 +22,11 @@ class Search:
     limit: int
     proxy: str
 
-    def get_duration(self, target, withdrawn, x, y):
+    def get_duration(self, target, key, x, y):
         try:
-            raw_duration = target.get(withdrawn)
+            raw_duration = target.get(key)
         except AttributeError:
-            raw_duration = getattr(target, withdrawn)
+            raw_duration = getattr(target, key)
         if raw_duration:
             minutes = int(raw_duration // x)
             seconds = int(raw_duration % y)
@@ -140,7 +140,7 @@ class Search:
                 sc_kwargs["proxy"] = self.proxy
 
             sc = SoundCloud(**sc_kwargs)
-            tracks = islice(sc.search(query=self.query), self.limit)
+            tracks = list(islice(sc.search(query=self.query), self.limit))
 
             if not tracks:
                 yield f"{RED}\nNo tracks found for '{self.query}' on SoundCloud\n{RESET}"
