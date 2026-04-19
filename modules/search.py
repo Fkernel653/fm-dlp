@@ -1,5 +1,5 @@
 """
-YouTube and SoundCloud search handlers.
+YouTube search handlers.
 """
 
 from modules.colors import RESET, BOLD, RED, GREEN, CYAN, GRAY
@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 from yt_dlp import YoutubeDL
 from ytmusicapi import YTMusic
-from soundcloud import SoundCloud
 
 from itertools import islice
 
@@ -16,23 +15,33 @@ SEPARATE = f"{GRAY}|{RESET}"
 
 @dataclass
 class Search:
-    """Handles searching across YouTube and SoundCloud."""
+    """Handles searching across YouTube"""
 
     query: str
     limit: int
     proxy: str
 
-    def get_duration(self, target, key, x, y):
-        try:
+    def get_duration(self, target, key, divisor=60, remainder_mod=60):
+        if isinstance(target, dict):
             raw_duration = target.get(key)
-        except AttributeError:
-            raw_duration = getattr(target, key)
+        else:
+            raw_duration = getattr(target, key, None)
         if raw_duration:
-            minutes = int(raw_duration // x)
-            seconds = int(raw_duration % y)
+            minutes = int(raw_duration // divisor)
+            seconds = int(raw_duration % remainder_mod)
             return f"{minutes}:{seconds:02d}"
         else:
             return "N/A"
+
+    def get_info(self, num, title, artist, views, duration, url) -> str:
+        track_info = (
+            f"\n\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{title}{RESET}\n"
+            f"   {GRAY}├─ {RESET}{artist}\n"
+            f"   {GRAY}├─ {RESET}{views} {SEPARATE} {duration}\n"
+            f"   {GRAY}└─ {RESET}{RED}{url}{RESET}\n"
+            f"   {GRAY}   {'─' * 50}{RESET}\n"
+        )
+        return track_info
 
     def yt_video(self):
         """Search YouTube videos using yt-dlp."""
@@ -72,16 +81,17 @@ class Search:
                 else:
                     views = "N/A"
 
-                duration = self.get_duration(video, "duration", 60, 60)
+                duration = self.get_duration(video, "duration")
 
-                video_info = (
-                    f"\n\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{title}{RESET}\n"
-                    f"   {GRAY}├─ {RESET}{channel}\n"
-                    f"   {GRAY}├─ {RESET}{views} {SEPARATE} {duration}\n"
-                    f"   {GRAY}└─ {RESET}{RED}https://youtu.be/{video_id}{RESET}\n"
-                    f"   {GRAY}   {'─' * 50}{RESET}"
+                yield self.get_info(
+                    num=num,
+                    title=title,
+                    artist=channel,
+                    views=views,
+                    duration=duration,
+                    url=f"https://youtu.be/{video_id}"
                 )
-                yield video_info
+
         except KeyboardInterrupt:
             yield f"{GREEN}Goodbye!{RESET}"
         except Exception as e:
@@ -98,10 +108,9 @@ class Search:
 
             if not tracks:
                 yield f"{RED}\nNo tracks found for '{self.query}' on YouTube Music\n{RESET}"
+                return
 
-            if len(tracks) > self.limit:
-                tracks = islice(tracks, self.limit)
-
+            tracks = islice(tracks, self.limit)
             for num, track in enumerate(tracks, 1):
                 track_id = track.get("videoId")
                 if not track_id:
@@ -114,70 +123,19 @@ class Search:
                     if track.get("artists")
                     else "Unknown Artist"
                 )
-
+                views = track.get("views", "N/A")
                 duration = track.get("duration", "N/A")
 
-                track_info = (
-                    f"\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{title}{RESET}\n"
-                    f"   {GRAY}├─ {RESET}{artist}\n"
-                    f"   {GRAY}├─ {RESET}{duration}\n"
-                    f"   {GRAY}└─ {RESET}{RED}{f'https://music.youtube.com/watch?v={track_id}'}{RESET}\n"
-                    f"   {GRAY}   {'─' * 50}{RESET}\n"
+                yield self.get_info(
+                    num=num,
+                    title=title,
+                    artist=artist,
+                    views=views,
+                    duration=duration,
+                    url=f"https://music.youtube.com/watch?v={track_id}"
                 )
-                yield track_info
+
         except KeyboardInterrupt:
             yield f"{GREEN}Goodbye!{RESET}"
         except Exception as e:
             yield f"{RED}Youtube-Music error: {e}{RESET}"
-
-    def soundcloud(self):
-        """Search SoundCloud for tracks."""
-        try:
-            from fake_useragent import UserAgent
-
-            sc_kwargs = {"user_agent": UserAgent().random}
-            if self.proxy:
-                sc_kwargs["proxy"] = self.proxy
-
-            sc = SoundCloud(**sc_kwargs)
-            tracks = list(islice(sc.search(query=self.query), self.limit))
-
-            if not tracks:
-                yield f"{RED}\nNo tracks found for '{self.query}' on SoundCloud\n{RESET}"
-
-            for num, track in enumerate(tracks, 1):
-                if track.kind != "track":
-                    continue
-                title = track.title if track.title else "Unknown Track"
-                artist = (
-                    track.user.full_name if track.user.full_name else "Unknown Artist"
-                )
-
-                try:
-                    date = track.created_at.date() if track.created_at else "N/A"
-                except AttributeError:
-                    date = "N/A"
-
-                duration = self.get_duration(track, "duration", 60000, 60)
-
-                track_url = (
-                    track.permalink_url
-                    if track.permalink_url
-                    else track.uri
-                    if track.uri
-                    else "N/A"
-                )
-
-                track_info = (
-                    f"\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{title}{RESET}\n"
-                    f"   {GRAY}├─ {RESET}{artist}\n"
-                    f"   {GRAY}├─ {RESET}{date} {SEPARATE} {duration}\n"
-                    f"   {GRAY}└─ {RESET}{RED}{track_url}{RESET}\n"
-                    f"   {GRAY}   {'─' * 50}{RESET}\n"
-                )
-                yield track_info
-
-        except KeyboardInterrupt:
-            yield f"{GREEN}Goodbye!{RESET}"
-        except Exception as e:
-            yield f"{RED}SoundCloud error: {e}{RESET}"
