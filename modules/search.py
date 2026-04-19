@@ -11,6 +11,7 @@ from ytmusicapi import YTMusic
 
 SEPARATE = f"{GRAY}|{RESET}"
 
+
 @dataclass
 class Search:
     """Handles searching across YouTube"""
@@ -87,7 +88,7 @@ class Search:
                     artist=channel,
                     views=views,
                     duration=duration,
-                    url=f"https://youtu.be/{video_id}"
+                    url=f"https://youtu.be/{video_id}",
                 )
 
         except KeyboardInterrupt:
@@ -132,7 +133,7 @@ class Search:
                     artist=artist,
                     views=views,
                     duration=duration,
-                    url=f"https://music.youtube.com/watch?v={track_id}"
+                    url=f"https://music.youtube.com/watch?v={track_id}",
                 )
 
         except KeyboardInterrupt:
