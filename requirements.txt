@@ -1,5 +1,4 @@
-﻿fake-useragent
-ytmusicapi
+﻿ytmusicapi
 mutagen
 yt-dlp
 clite

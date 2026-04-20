@@ -94,7 +94,6 @@ fm-dlp/
 | `yt-dlp` | YouTube extraction & download |
 | `mutagen` | Audio metadata tagging |
 | `ytmusicapi` | YouTube Music API |
-| `fake-useragent` | User agent rotation |
 | `clite` | CLI framework |
 | **FFmpeg** | Audio conversion (system) |
 
