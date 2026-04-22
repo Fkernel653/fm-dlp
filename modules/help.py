@@ -28,22 +28,25 @@ class Help:
 
 {BOLD}{GREEN}COMMANDS:{RESET}
 
-{BOLD}{YELLOW}search <query> [--limit=<n>] [--platform=<platform>] [--proxy=<url>]{RESET}
+{BOLD}{YELLOW}search <query> [--limit=<n>] [--platform=<platform>] [--type=<type>] [--proxy=<url>]{RESET}
     {GRAY}Search for music across YouTube and YouTube Music{RESET}
     {GRAY}Options:{RESET}
         {CYAN}--limit=<n>{RESET}        {GRAY}Number of results to show (default: 10){RESET}
         {CYAN}--platform=<platform>{RESET}  {GRAY}Platform: yt-video, yt-music (default: yt-music){RESET}
+        {CYAN}--type=<type>{RESET}        {GRAY}Search type: track, album (default: track){RESET}
         {CYAN}--proxy=<url>{RESET}       {GRAY}Proxy URL (e.g., http://proxy:port or socks5://proxy:port){RESET}
     {GRAY}Examples:{RESET}
         {CYAN}fm-dlp search "Sewerslvt"{RESET}
         {CYAN}fm-dlp search "usedcvnt" --limit=10 --platform=yt-music{RESET}
         {CYAN}fm-dlp search "tokyona" --platform=yt-video --limit=3 --proxy=socks5://127.0.0.1:9050{RESET}
+        {CYAN}fm-dlp search "in the court of the crimson king" --type=album --limit=5{RESET}
+        {CYAN}fm-dlp search "daft punk" --type=album --platform=yt-music{RESET}
 
 {BOLD}{YELLOW}download <urls> [--codec=<format>] [--kbps=<bitrate>] [--cookies=<browser>] [--proxy=<url>]{RESET}
     {GRAY}Download audio from one or more YouTube URLs (space-separated).{RESET}
     {GRAY}Supports parallel downloads and automatic metadata embedding.{RESET}
     {GRAY}Options:{RESET}
-        {CYAN}--codec=<format>{RESET}    {GRAY}Output format: m4a, mp3, opus, flac (default: opus){RESET}
+        {CYAN}--codec=<format>{RESET}    {GRAY}Output format: m4a, mp3, opus, flac (default: m4a on macOS, opus otherwise){RESET}
         {CYAN}--kbps=<bitrate>{RESET}    {GRAY}Bitrate quality: 64-320 (default: 256){RESET}
         {CYAN}--cookies=<browser>{RESET} {GRAY}Browser for cookies: chrome, firefox, edge, safari, etc. (optional){RESET}
         {CYAN}--proxy=<url>{RESET}       {GRAY}Proxy URL (e.g., http://proxy:port or socks5://proxy:port){RESET}
@@ -112,6 +115,9 @@ class Help:
     {GRAY}6. Use Tor proxy for anonymous downloading:{RESET}
     {CYAN}fm-dlp download https://youtu.be/example --proxy=socks5://127.0.0.1:9050{RESET}
 
+    {GRAY}7. Search for albums on YouTube Music:{RESET}
+    {CYAN}fm-dlp search "pink floyd" --type=album --platform=yt-music --limit=10{RESET}
+
 {BOLD}{MAGENTA}For issues, bugs, or feature requests, please report on GitHub.{RESET}
 {BOLD}{MAGENTA}Repository: https://github.com/Fkernel653/fm-dlp{RESET}
 """
@@ -124,7 +130,7 @@ class Help:
 {BOLD}{GREEN}Usage:{RESET} {BOLD}{WHITE}fm-dlp{RESET} {YELLOW}<command>{RESET} {GRAY}[arguments]{RESET} {CYAN}[options]{RESET}
 
 {BOLD}{GREEN}Commands:{RESET}
-    {YELLOW}search    {RESET}{GRAY}Find tracks on YouTube and YT Music{RESET}
+    {YELLOW}search    {RESET}{GRAY}Find tracks and albums on YouTube and YT Music{RESET}
     {YELLOW}download  {RESET}{GRAY}Download audio from URLs with metadata{RESET}
     {YELLOW}config    {RESET}{GRAY}Set or view download directory{RESET}
     {YELLOW}help      {RESET}{GRAY}Show full documentation{RESET}
@@ -132,9 +138,11 @@ class Help:
 {BOLD}{GREEN}Common Options:{RESET}
     {CYAN}--proxy{RESET}     {GRAY}Use proxy for all requests (http://, socks5://){RESET}
     {CYAN}--cookies{RESET}   {GRAY}Browser cookies for authentication{RESET}
+    {CYAN}--type{RESET}      {GRAY}Search type: track or album (search only){RESET}
 
 {BOLD}{GREEN}Examples:{RESET}
     {CYAN}fm-dlp search "sewerslvt" --limit=5 --platform=yt-music{RESET}
+    {CYAN}fm-dlp search "daft punk" --type=album --platform=yt-music{RESET}
     {CYAN}fm-dlp download https://youtu.be/... --codec=mp3 --kbps=320{RESET}
     {CYAN}fm-dlp config ~/Music{RESET}
     {CYAN}fm-dlp download URL --proxy=socks5://127.0.0.1:9050{RESET}

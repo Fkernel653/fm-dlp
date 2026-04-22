@@ -10,6 +10,7 @@ A powerful CLI tool for searching and downloading high-quality audio from YouTub
 ## ✨ Features
 
 - **Multi-platform Search** — YouTube, YouTube Music
+- **Search by Type** — Tracks or albums
 - **Parallel Downloads** — Async support for multiple URLs
 - **Multiple Formats** — M4A, MP3, FLAC, Opus with configurable bitrate
 - **Metadata Embedding** — Title, artist, album tags + thumbnail
@@ -32,8 +33,11 @@ pip install -r requirements.txt
 # Set download directory (required first)
 python fm-dlp.py config ~/Music
 
-# Search
-python fm-dlp.py search "artist name" --platform=yt-music --limit=5
+# Search for tracks
+python fm-dlp.py search "artist name"  --limit=5 --platform=yt-music
+
+# Search for albums
+python fm-dlp.py search "album name" --platform=yt-music --type=album
 
 # Download
 python fm-dlp.py download "https://youtu.be/..." --codec=mp3 --kbps=320
@@ -43,12 +47,14 @@ python fm-dlp.py download "https://youtu.be/..." --codec=mp3 --kbps=320
 
 ### `search` — Find music
 ```bash
-python fm-dlp.py search <query> [--limit=10] [--platform={yt-video|yt-music}] [--proxy=URL]
+python fm-dlp.py search <query> [--limit=10] [--platform={yt-video|yt-music}] [--type={track|album}] [--proxy=URL]
 ```
-| Platform | Description |
-|----------|-------------|
-| `yt-video` | YouTube videos |
-| `yt-music` | YouTube Music songs only (default) |
+| Option | Values | Default | Description |
+|--------|--------|---------|-------------|
+| `--platform` | `yt-video`, `yt-music` | `yt-music` | Search platform |
+| `--type` | `track`, `album` | `track` | Content type to search |
+| `--limit` | 1–∞ | 10 | Number of results |
+| `--proxy` | URL | — | Proxy for requests |
 
 ### `download` — Download audio
 ```bash
@@ -56,7 +62,7 @@ python fm-dlp.py download <urls> [--codec={m4a|mp3|flac|opus}] [--kbps=256] [--c
 ```
 | Option | Values | Default |
 |--------|--------|---------|
-| `--codec` | m4a, mp3, flac, opus | opus |
+| `--codec` | m4a, mp3, flac, opus | m4a (macOS) / opus |
 | `--kbps` | 64–320 | 256 |
 | `--cookies` | chrome, firefox, edge, etc. | — |
 | `--proxy` | http://, socks5:// | — |
@@ -79,7 +85,7 @@ fm-dlp/
 ├── config.json         # Download path config
 ├── requirements.txt    # Dependencies
 └── modules/
-    ├── search.py       # Search implementations
+    ├── search.py       # Search implementations (tracks & albums)
     ├── download.py     # Audio download logic
     ├── add_metadata.py # Tagging handler
     ├── configer.py     # Config manager
@@ -99,9 +105,24 @@ fm-dlp/
 
 ## 📖 Examples
 
+### Search Examples
 ```bash
-# Basic search and download workflow
-python fm-dlp.py search "sewerslvt" --platform=yt-music
+# Search for tracks on YouTube Music
+python fm-dlp.py search "Sewerslvt" --limit=10 --platform=yt-music
+
+# Search for albums on YouTube Music
+python fm-dlp.py search "Usedcvnt" --platform=yt-music --type=album
+
+# Search for videos on YouTube
+python fm-dlp.py search "breakcore mix" --platform=yt-video --limit=5
+
+# Search with proxy
+python fm-dlp.py search "Tokyona" --proxy=socks5://127.0.0.1:9050
+```
+
+### Download Examples
+```bash
+# Basic download
 python fm-dlp.py download "https://youtu.be/..." --codec=flac
 
 # Multiple URLs with custom quality
@@ -114,6 +135,22 @@ python fm-dlp.py download "URL" --cookies=firefox
 python fm-dlp.py download "URL" --proxy=socks5://127.0.0.1:9050
 ```
 
+### Complete Workflow
+```bash
+# 1. Set download location
+python fm-dlp.py config ~/Music
+
+# 2. Search for an album
+python fm-dlp.py search "we had good times together, don't forget that" --limit=1 --type=album
+
+# 3. Download from search result URL
+python fm-dlp.py download "https://music.youtube.com/playlist?list=..."
+
+# 4. Or search and download tracks directly
+python fm-dlp.py search "de kini" --platform=yt-music
+python fm-dlp.py download "https://youtu.be/..." --codec=mp3 --kbps=320
+```
+
 ## 🐛 Troubleshooting
 
 | Issue | Solution |
@@ -123,6 +160,7 @@ python fm-dlp.py download "URL" --proxy=socks5://127.0.0.1:9050
 | Age-restricted video | Use `--cookies=chrome` |
 | Network blocked | Try `--proxy=http://proxy:port` |
 | Invalid path | Ensure directory exists |
+| Album search returns no results | Try different platform or search term |
 
 ## 📄 License
 

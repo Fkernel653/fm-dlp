@@ -23,6 +23,7 @@ def search(
     query: str,
     limit: int = 10,
     platform: Optional[str] = "yt-music",
+    type: Optional[str] = "track",
     proxy: Optional[str] = None,
 ):
     """
@@ -32,11 +33,12 @@ def search(
         query: Search term
         limit: Max results (default: 10)
         platform: "yt-video" or "yt-music" (default: "yt-music")
+        type: "track" or "album" (default: "track")
         proxy: Proxy URL (e.g., http://proxy:port or socks5://proxy:port)
     """
     from modules.search import Search
 
-    program = Search(query, limit, proxy)
+    program = Search(query, limit, type, proxy)
 
     match platform:
         case "yt-video":
@@ -51,7 +53,7 @@ def search(
 @fm_dlp.command()
 def download(
     urls: str,
-    codec: Optional[str] = "opus",
+    codec: Optional[str] = None,
     kbps: Optional[int] = 256,
     cookies: Optional[str] = None,
     proxy: Optional[str] = None,
@@ -61,11 +63,15 @@ def download(
 
     Args:
         urls: Space-separated YouTube URLs
-        codec: Output format - m4a, mp3, opus, flac (default: "opus")
+        codec: Output format - m4a, mp3, opus, flac.
+               Defaults to "m4a" on macOS, "opus" on other platforms.
         kbps: Bitrate in kbps (default: 256)
-        cookies: Browser for cookies - chrome, firefox, edge, etc. (optional)
+        cookies: Browser to extract cookies from - chrome, firefox, edge, etc. (optional)
         proxy: Proxy URL (e.g., http://proxy:port or socks5://proxy:port)
     """
+    if codec is None:
+        codec = "m4a" if sys.platform == "darwin" else "opus"
+        
     from modules.download import Download
 
     program = Download(urls)
