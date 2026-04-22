@@ -76,14 +76,41 @@ class Download:
                 },
                 {"key": "EmbedThumbnail"},
             ],
-            "cookiesfrombrowser": cookies if cookies else None,
+            "cookiesfrombrowser": cookies or None,
             "quiet": False,
             "no_warnings": True,
+            "extract_flat": False,
         }
         possible_extensions = list(set([codec, "m4a", "mp3", "flac", "opus"]))
 
         loop = asyncio.get_event_loop()
-        urls_list = self.urls.split()
+
+        # First, extract all URLs (handles playlists)
+        def extract_urls():
+            urls_to_download = []
+            for url in self.urls.split():
+                with YoutubeDL({"quiet": True, "extract_flat": True}) as ydl:
+                    try:
+                        info = ydl.extract_info(url, download=False)
+                        if "entries" in info:  # It's a playlist
+                            for entry in info["entries"]:
+                                if entry and "url" in entry:
+                                    urls_to_download.append(entry["url"])
+                                elif entry and "id" in entry:
+                                    urls_to_download.append(
+                                        f"https://youtube.com/watch?v={entry['id']}"
+                                    )
+                        else:  # Single video
+                            urls_to_download.append(url)
+                    except Exception as e:
+                        print(f"{RED}Error extracting {url}: {e}{RESET}")
+            return urls_to_download
+
+        urls_list = await loop.run_in_executor(None, extract_urls)
+
+        if not urls_list:
+            yield f"{RED}No valid URLs found to download{RESET}"
+            return
 
         async def download_single_url(url: str):
             def sync_download():
