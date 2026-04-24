@@ -64,6 +64,7 @@ python fm-dlp.py download <urls> [--codec={m4a|mp3|flac|opus}] [--kbps=256] [--c
 |--------|--------|---------|
 | `--codec` | m4a, mp3, flac, opus | m4a (macOS) / opus |
 | `--kbps` | 64–320 | 256 |
+| `--quiet` | True/False (flag) | False |
 | `--cookies` | chrome, firefox, edge, etc. | — |
 | `--proxy` | http://, socks5:// | — |
 
