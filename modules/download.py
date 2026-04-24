@@ -58,123 +58,116 @@ class Download:
             print(f"{RED}\nConfig file is corrupted! Please reconfigure.{RESET}\n")
             exit(1)
 
+    def _find_downloaded_file(self, title: str, download_path: str, possible_extensions: list) -> Path | None:
+        """Find the downloaded file by title after FFmpeg processing."""
+        safe_title = "".join(c for c in title if c.isalnum() or c in " ,.-_()[]")
+        
+        for ext in possible_extensions:
+            test_path = Path(download_path) / f"{safe_title}.{ext}"
+            if test_path.exists():
+                return test_path
+        return None
+
     async def classic(
-        self, codec: str, kbps: int, cookies: str, proxy: str
+        self, codec: str, kbps: int, quiet: bool, cookies: str, proxy: str
     ) -> AsyncGenerator[str, None]:
-        """Download audio using yt-dlp with FFmpeg processing (parallel)."""
+        """Download audio using yt-dlp with FFmpeg processing."""
 
-        opts = {
-            "proxy": proxy if proxy else None,
-            "format": "bestaudio/best",
-            "outtmpl": f"{self._withdrawal_of_the_path()}/%(title)s.%(ext)s",
-            "writethumbnail": True,
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": codec,
-                    "preferredquality": str(kbps),
-                },
-                {"key": "EmbedThumbnail"},
-            ],
-            "cookiesfrombrowser": cookies or None,
-            "quiet": False,
-            "no_warnings": True,
-            "extract_flat": False,
-        }
+        download_path = self._withdrawal_of_the_path()
         possible_extensions = list(set([codec, "m4a", "mp3", "flac", "opus"]))
-
+        
         loop = asyncio.get_event_loop()
 
-        # First, extract all URLs (handles playlists)
-        def extract_urls():
-            urls_to_download = []
-            for url in self.urls.split():
-                with YoutubeDL({"quiet": True, "extract_flat": True}) as ydl:
-                    try:
-                        info = ydl.extract_info(url, download=False)
-                        if "entries" in info:  # It's a playlist
-                            for entry in info["entries"]:
-                                if entry and "url" in entry:
-                                    urls_to_download.append(entry["url"])
-                                elif entry and "id" in entry:
-                                    urls_to_download.append(
-                                        f"https://youtube.com/watch?v={entry['id']}"
-                                    )
-                        else:  # Single video
-                            urls_to_download.append(url)
-                    except Exception as e:
-                        print(f"{RED}Error extracting {url}: {e}{RESET}")
-            return urls_to_download
-
-        urls_list = await loop.run_in_executor(None, extract_urls)
-
-        if not urls_list:
-            yield f"{RED}No valid URLs found to download{RESET}"
-            return
-
-        async def download_single_url(url: str):
+        async def download_single_url(url: str) -> str:
+            """Download single URL and add metadata."""
+            
             def sync_download():
+                info_opts = {
+                    "proxy": proxy or None,
+                    "cookiesfrombrowser": cookies or None,
+                    "quiet": quiet,
+                    "no_warnings": True,
+                }
+                
                 try:
-                    with YoutubeDL(opts) as ydl:
-                        info = ydl.extract_info(url, download=True)
-
-                        if not info:
-                            return f"{RED}\nFailed to extract info: {url}{RESET}"
-
-                        file_path = None
-                        if (
-                            "requested_downloads" in info
-                            and info["requested_downloads"]
-                        ):
-                            file_path = Path(info["requested_downloads"][0]["filepath"])
-                        else:
-                            base = ydl.prepare_filename(info)
-                            for ext in possible_extensions:
-                                test = Path(base).with_suffix(f".{ext}")
-                                if test.exists():
-                                    file_path = test
-                                    break
-
-                        if not file_path or not file_path.exists():
-                            return f"{RED}\nFile not found after download: {url}{RESET}"
-
-                        title = info.get("title", "")
-                        channel = info.get("channel", "")
-                        artist = info.get("uploader") or channel
-                        album = info.get("album") or channel
-
-                        try:
-                            add_metadata(
-                                file=file_path,
-                                codec=codec,
-                                title=title,
-                                artist=artist,
-                                album=album,
-                            )
-                        except Exception as meta_err:
-                            return f"{YELLOW}\nDownloaded but metadata failed: {title} - {meta_err}{RESET}"
-
-                        return f"{GREEN}\nDownloaded: {title}{RESET}"
-
+                    with YoutubeDL(info_opts) as ydl:
+                        info = ydl.extract_info(url, download=False)
                 except Exception as e:
-                    return f"{RED}\nError ({url}): {e}{RESET}"
+                    return f"{RED}\nFailed to extract info: {e}{RESET}"
+                
+                if not info:
+                    return f"{RED}\nFailed to get video info{RESET}"
+                
+                entries = info.get("entries", [info])
+                
+                results = []
+                for entry in entries:
+                    if not entry:
+                        continue
+                    
+                    video_url = entry.get("webpage_url") or entry.get("url") or url
+                    title = entry.get("title", "Unknown")
+                    
+                    opts = {
+                        "proxy": proxy or None,
+                        "format": "bestaudio/best",
+                        "outtmpl": f"{download_path}/%(title)s.%(ext)s",
+                        "writethumbnail": True,
+                        "postprocessors": [
+                            {
+                                "key": "FFmpegExtractAudio",
+                                "preferredcodec": codec,
+                                "preferredquality": str(kbps),
+                            },
+                            {"key": "EmbedThumbnail"},
+                        ],
+                        "cookiesfrombrowser": cookies or None,
+                        "quiet": quiet,
+                        "no_warnings": True,
+                    }
+                    
+                    try:
+                        with YoutubeDL(opts) as ydl:
+                            ydl.download([video_url])
+                        
+                        file_path = self._find_downloaded_file(title, download_path, possible_extensions)
+                        
+                        if file_path and file_path.exists():
+                            channel = entry.get("channel", "")
+                            artist = entry.get("uploader") or channel or "Unknown"
+                            album = entry.get("album") or channel or "Unknown"
+                            
+                            try:
+                                add_metadata(
+                                    file=file_path,
+                                    codec=codec,
+                                    title=title,
+                                    artist=artist,
+                                    album=album,
+                                )
+                                results.append(f"{GREEN}\n✓ {title}{RESET}")
+                            except Exception as meta_err:
+                                results.append(f"{YELLOW}\n⚠ {title} (metadata failed: {meta_err}){RESET}")
+                        else:
+                            results.append(f"{RED}\n✗ {title} (file not found){RESET}")
+                            
+                    except Exception as e:
+                        results.append(f"{RED}\n✗ {title} - Error: {e}{RESET}")
+                
+                return "\n".join(results) if results else f"{RED}\nNothing downloaded{RESET}"
 
-            print(f"{MAGENTA}\nStarting: {RESET}{BOLD}{url}{RESET}")
+            print(f"{YELLOW}\nDownloading: {RESET}{BOLD}{url}{RESET}")
             result = await loop.run_in_executor(None, sync_download)
             return result
 
+        urls_list = self.urls.split()
+        
+        if not urls_list:
+            yield f"{RED}\nNo URLs provided{RESET}"
+            return
+
         tasks = [asyncio.create_task(download_single_url(url)) for url in urls_list]
 
-        try:
-            for completed_task in asyncio.as_completed(tasks):
-                result = await completed_task
-                yield result
-        except KeyboardInterrupt:
-            for task in tasks:
-                if not task.done():
-                    task.cancel()
-            await asyncio.gather(*tasks, return_exceptions=True)
-            print(f"{GREEN}\nDownload cancelled by user.{RESET}")
-            return
-        except Exception as e:
-            yield f"{RED}\nUnexpected error: {e}{RESET}"
+        for completed_task in asyncio.as_completed(tasks):
+            result = await completed_task
+            yield result

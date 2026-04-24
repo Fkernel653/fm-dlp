@@ -55,6 +55,7 @@ def download(
     urls: str,
     codec: Optional[str] = None,
     kbps: Optional[int] = 256,
+    quiet: Optional[bool] = False,
     cookies: Optional[str] = None,
     proxy: Optional[str] = None,
 ):
@@ -66,6 +67,7 @@ def download(
         codec: Output format - m4a, mp3, opus, flac.
                Defaults to "m4a" on macOS, "opus" on other platforms.
         kbps: Bitrate in kbps (default: 256)
+        quiet: Suppress yt-dlp output, showing only download progress and results (default: False)
         cookies: Browser to extract cookies from - chrome, firefox, edge, etc. (optional)
         proxy: Proxy URL (e.g., http://proxy:port or socks5://proxy:port)
     """
@@ -77,10 +79,12 @@ def download(
     program = Download(urls)
 
     async def async_download_classic():
-        async for result in program.classic(codec, kbps, cookies, proxy):
+        async for result in program.classic(codec, kbps, quiet, cookies, proxy):
             print(result)
-
-    asyncio.run(async_download_classic())
+    try:
+        asyncio.run(async_download_classic())
+    except KeyboardInterrupt:
+        pass
 
 
 @fm_dlp.command()
