@@ -7,7 +7,9 @@ from typing import AsyncGenerator, AsyncIterator
 from yt_dlp import YoutubeDL
 from pathlib import Path
 import asyncio
+import concurrent.futures
 import threading
+import os
 
 from modules.colors import RESET, BOLD, RED, GREEN, YELLOW
 from modules.add_metadata import add_metadata
@@ -73,10 +75,16 @@ class Download:
     async def _run(self) -> AsyncGenerator[str, None]:
         download_path = self._get_download_path()
         loop = asyncio.get_event_loop()
-        thread_local = threading.local()
+
+        cpu_count = min(self.max_concurrent, os.cpu_count() or 4)
+        process_executor = concurrent.futures.ProcessPoolExecutor(max_workers=cpu_count)
+        thread_executor = concurrent.futures.ThreadPoolExecutor(
+            max_workers=self.max_concurrent * 2
+        )
 
         def _download_single(entry, url):
-            thread_local.downloaded_file = None
+            """Загрузка в отдельном потоке (I/O bound)"""
+            thread_local = threading.local()
 
             def hook(d):
                 if d["status"] == "finished":
@@ -98,6 +106,10 @@ class Download:
                         {"key": "EmbedThumbnail"},
                     ],
                     "postprocessor_hooks": [hook],
+                    "concurrent_fragment_downloads": 8,
+                    "extractor_retries": 3,
+                    "file_access_retries": 3,
+                    "fragment_retries": 3,
                 }
             )
 
@@ -108,19 +120,39 @@ class Download:
                 if not thread_local.downloaded_file:
                     return f"{RED}\n✗ {title} (file not found after download){RESET}"
 
-                artist = entry.get("uploader") or entry.get("channel") or ""
-                album = entry.get("album") or entry.get("channel") or ""
-                add_metadata(
-                    file=thread_local.downloaded_file,
-                    codec=self.codec,
-                    title=title,
-                    artist=artist,
-                    album=album,
-                )
-                return f"{GREEN}\n✓ {title}{RESET}"
+                return {
+                    "success": True,
+                    "title": title,
+                    "file": thread_local.downloaded_file,
+                    "artist": entry.get("uploader") or entry.get("channel") or "",
+                    "album": entry.get("album") or entry.get("channel") or "",
+                }
 
             except Exception as e:
-                return f"{RED}\n✗ {title} - {type(e).__name__}: {e}{RESET}"
+                return {
+                    "success": False,
+                    "title": title,
+                    "error": f"{type(e).__name__}: {e}",
+                }
+
+        async def process_metadata(result):
+            """Добавление метаданных в process pool (CPU intensive)"""
+            if not result.get("success"):
+                return f"{RED}\n✗ {result['title']} - {result['error']}{RESET}"
+
+            try:
+                await loop.run_in_executor(
+                    process_executor,
+                    add_metadata,
+                    result["file"],
+                    self.codec,
+                    result["title"],
+                    result["artist"],
+                    result["album"],
+                )
+                return f"{GREEN}\n✓ {result['title']}{RESET}"
+            except Exception as e:
+                return f"{YELLOW}\n⚠ {result['title']} - metadata failed: {e}{RESET}"
 
         def _cancel_tasks(tasks):
             for task in tasks:
@@ -130,21 +162,47 @@ class Download:
         async def process_tasks(tasks, url_prefix=""):
             results = []
             try:
-                for t in asyncio.as_completed(tasks):
+                download_tasks = [asyncio.create_task(t) for t in tasks]
+                results = await asyncio.gather(*download_tasks, return_exceptions=True)
+
+                metadata_tasks = []
+                for r in results:
+                    if isinstance(r, Exception):
+                        metadata_tasks.append(
+                            asyncio.create_task(
+                                asyncio.sleep(0, result=f"{RED}\n✗ Error: {r}{RESET}")
+                            )
+                        )
+                    elif isinstance(r, dict):
+                        metadata_tasks.append(asyncio.create_task(process_metadata(r)))
+                    else:
+                        metadata_tasks.append(
+                            asyncio.create_task(asyncio.sleep(0, result=r))
+                        )
+
+                output = []
+                for t in asyncio.as_completed(metadata_tasks):
                     result = await t
                     if result:
-                        results.append(result)
-                result_str = "\n".join(results) if results else f"{RED}\nNothing downloaded for {url_prefix}{RESET}"
-                return result_str
+                        output.append(result)
+
+                return (
+                    "\n".join(output)
+                    if output
+                    else f"{RED}\nNothing downloaded for {url_prefix}{RESET}"
+                )
+
             except asyncio.CancelledError:
-                _cancel_tasks(tasks)
-                await asyncio.gather(*tasks, return_exceptions=True)
+                _cancel_tasks(download_tasks)
+                _cancel_tasks(metadata_tasks)
                 return f"{YELLOW}\n⚠ Download cancelled for {url_prefix}{RESET}"
 
         async def download_url(url: str) -> str:
             def _get_entries():
                 try:
-                    with YoutubeDL(self._create_base_opts()) as ydl:
+                    opts = self._create_base_opts()
+                    opts["extractor_args"] = {"youtube": {"skip": ["hls", "dash"]}}
+                    with YoutubeDL(opts) as ydl:
                         info = ydl.extract_info(url, download=False)
                 except Exception as e:
                     return (
@@ -159,7 +217,9 @@ class Download:
 
             try:
                 print(f"{YELLOW}\nStarting: {RESET}{BOLD}{url}{RESET}")
-                entries, error = await loop.run_in_executor(None, _get_entries)
+                entries, error = await loop.run_in_executor(
+                    thread_executor, _get_entries
+                )
                 if error:
                     return error
                 if not entries:
@@ -170,11 +230,11 @@ class Download:
                 async def limited(entry):
                     async with sem:
                         return await loop.run_in_executor(
-                            None, _download_single, entry, url
+                            thread_executor, _download_single, entry, url
                         )
 
-                tasks = [asyncio.create_task(limited(e)) for e in entries]
-                return await process_tasks(tasks, url)
+                download_tasks = [limited(e) for e in entries]
+                return await process_tasks(download_tasks, url)
 
             except Exception as e:
                 return f"{RED}\n✗ URL processing failed for {url}: {type(e).__name__}: {e}{RESET}"
@@ -184,18 +244,21 @@ class Download:
             yield f"{RED}\nNo URLs provided{RESET}"
             return
 
-        tasks = [asyncio.create_task(download_url(u)) for u in urls]
         try:
-            for t in asyncio.as_completed(tasks):
+            url_tasks = [asyncio.create_task(download_url(u)) for u in urls]
+
+            for t in asyncio.as_completed(url_tasks):
                 try:
                     result = await t
                     yield result
                 except asyncio.CancelledError:
-                    _cancel_tasks(tasks)
-                    await asyncio.gather(*tasks, return_exceptions=True)
+                    _cancel_tasks(url_tasks)
                     break
                 except Exception as e:
                     yield f"{RED}\n✗ Critical error: {type(e).__name__}: {e}{RESET}"
+
         finally:
-            _cancel_tasks(tasks)
-            await asyncio.gather(*tasks, return_exceptions=True)
+            _cancel_tasks(url_tasks)
+            await asyncio.gather(*url_tasks, return_exceptions=True)
+            process_executor.shutdown(wait=False)
+            thread_executor.shutdown(wait=False)

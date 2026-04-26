@@ -14,8 +14,7 @@ def configer(path: str) -> None:
     - With path: saves to config.json
     - Without path: displays current config
     """
-    parent_folder = Path(__file__).parent
-    config_file = Path(parent_folder).parent / "config.json"
+    config_file = Path(__file__).parent.parent / "config.json"
 
     # Setter mode
     if path:
