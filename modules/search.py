@@ -2,17 +2,17 @@
 YouTube search handlers.
 """
 
-from modules.colors import RESET, BOLD, RED, GREEN, CYAN, GRAY
 from dataclasses import dataclass
-from typing import Generator, Literal
 from itertools import islice
+from typing import Generator, Literal
 
 from yt_dlp import YoutubeDL
 from ytmusicapi import YTMusic
 
+from modules.colors import BOLD, CYAN, GRAY, GREEN, RED, RESET
 
 SEPARATE = f"{GRAY}|{RESET}"
-DIVIDER = f"   {GRAY}   {'─' * 50}{RESET}\n"
+DIVIDER = f"       {GRAY}{'─' * 50}{RESET}\n"
 
 
 @dataclass
@@ -52,16 +52,16 @@ class Search:
 
     def _format_result(self, num, title, artist, url, **kwargs) -> str:
         lines = [
-            f"\n\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{title}{RESET}",
-            f"   {GRAY}├─ {RESET}{artist}",
+            f"\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{title}{RESET}",
+            f"    {GRAY}├─ {RESET}{artist}",
         ]
         if self.type == "track":
             lines.append(
-                f"   {GRAY}├─ {RESET}{kwargs.get('views', 'N/A')} {SEPARATE} {kwargs.get('duration', 'N/A')}"
+                f"    {GRAY}├─ {RESET}{kwargs.get('views', 'N/A')} {SEPARATE} {kwargs.get('duration', 'N/A')}"
             )
         else:
-            lines.append(f"   {GRAY}├─ {RESET}{kwargs.get('year', 'N/A')}")
-        lines.append(f"   {GRAY}└─ {RESET}{RED}{url}{RESET}\n{DIVIDER}")
+            lines.append(f"    {GRAY}├─ {RESET}{kwargs.get('year', 'N/A')}")
+        lines.append(f"    {GRAY}└─ {RESET}{RED}{url}{RESET}\n{DIVIDER}")
         return "\n".join(lines)
 
     def yt_video(self) -> Generator[str, None, None]:
