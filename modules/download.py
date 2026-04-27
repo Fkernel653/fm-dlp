@@ -35,7 +35,6 @@ class Download:
 
         self.kbps = int(self.kbps)
         self.max_concurrent = int(self.max_concurrent)
-        self.quiet = str(self.quiet).lower() in ("true", "1", "yes")
 
         if which("ffmpeg") is None:
             exit(f"{RED}FFmpeg not found in PATH! Please install FFmpeg.{RESET}")
