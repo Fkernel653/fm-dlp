@@ -33,9 +33,6 @@ class Download:
     def __post_init__(self):
         from shutil import which
 
-        self.kbps = int(self.kbps)
-        self.max_concurrent = int(self.max_concurrent)
-
         if which("ffmpeg") is None:
             exit(f"{RED}FFmpeg not found in PATH! Please install FFmpeg.{RESET}")
         if not self.config_file.exists():
@@ -236,7 +233,7 @@ class Download:
             if not entries:
                 return f"{RED}\nNo valid entries to download for {url}{RESET}"
 
-            sem = asyncio.Semaphore(self.max_concurrent)
+            sem = asyncio.Semaphore(int(self.max_concurrent))
 
             async def limited(entry):
                 async with sem:
