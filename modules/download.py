@@ -235,7 +235,6 @@ class Download:
             if not entries:
                 return f"{RED}\nNo valid entries to download for {url}{RESET}"
 
-            max_concurrent = int(self.max_concurrent)
             sem = asyncio.Semaphore(self.max_concurrent)
 
             async def limited(entry):

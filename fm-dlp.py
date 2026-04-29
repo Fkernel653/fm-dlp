@@ -1,6 +1,6 @@
 """
 CLI entry point for fm-dlp using Typer library.
-Commands: search, download, config, help
+Commands: search, download, config
 """
 
 import sys

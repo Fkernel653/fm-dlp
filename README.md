@@ -91,7 +91,6 @@ fm-dlp/
     ├── download.py     # Audio download logic
     ├── add_metadata.py # Tagging handler
     ├── configer.py     # Config manager
-    ├── help.py         # Help generator
     └── colors.py       # Terminal colors
 ```
 
