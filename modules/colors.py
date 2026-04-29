@@ -1,4 +1,3 @@
-# colors.py
 """
 ANSI color codes for terminal output formatting.
 Usage: from modules.colors import RED, GREEN, RESET

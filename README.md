@@ -102,7 +102,7 @@ fm-dlp/
 | `yt-dlp` | YouTube extraction & download |
 | `mutagen` | Audio metadata tagging |
 | `ytmusicapi` | YouTube Music API |
-| `clite` | CLI framework |
+| `typer` | CLI framework |
 | **FFmpeg** | Audio conversion (system) |
 
 ## 📖 Examples

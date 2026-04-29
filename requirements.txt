@@ -1,4 +1,4 @@
 ﻿ytmusicapi
 mutagen
 yt-dlp
-clite
+typer

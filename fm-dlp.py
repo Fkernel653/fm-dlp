@@ -3,17 +3,12 @@ CLI entry point for fm-dlp using Clite library.
 Commands: search, download, config, help
 """
 
-from clite import Clite
-from typing import Optional
-from modules.help import Help
 import sys
+from typing import Optional
 
-fm_dlp = Clite(
-    name="fm-dlp",
-    description="Search and download music from YouTube",
-)
+import typer
 
-helper = Help()
+fm_dlp = typer.Typer()
 
 
 @fm_dlp.command()
@@ -74,8 +69,9 @@ def download(
     if codec is None:
         codec = "m4a" if sys.platform == "darwin" else "opus"
 
-    from modules.download import Download
     import asyncio
+
+    from modules.download import Download
 
     program = Download(urls, codec, kbps, quiet, max_concurrent, cookies, proxy)
 
@@ -102,19 +98,9 @@ def config(path: str):
     print(configer(path))
 
 
-@fm_dlp.command()
-def help():
-    """Display the help menu."""
-    print(helper.command())
-
-
 def main():
-    """Main entry point with KeyboardInterrupt handling."""
     try:
-        if len(sys.argv) == 1:
-            print(helper.file_run())
-        else:
-            fm_dlp()
+        fm_dlp()
     except KeyboardInterrupt:
         print("\n\033[0;32mGoodbye!\033[0;0m")
         sys.exit(0)
