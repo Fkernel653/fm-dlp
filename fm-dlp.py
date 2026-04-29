@@ -1,5 +1,5 @@
 """
-CLI entry point for fm-dlp using Clite library.
+CLI entry point for fm-dlp using Typer library.
 Commands: search, download, config, help
 """
 
