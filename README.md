@@ -175,8 +175,8 @@ operating system:
 | **macOS / iOS** | `m4a` (AAC) | Apple's entire ecosystem — Finder, Music.app, QuickTime, GarageBand — treats M4A/AAC as the first-class audio format. Album artwork, tagging, and playback are seamless. |
 | **Linux / Windows** | `opus` | Opus offers superior perceptual quality at equivalent bitrates. It's the codec modern Android devices, desktop players (VLC, foobar2000, audacious), and browsers use natively. |
 
-You can always override the default with `--codec=mp3` (universal, legacy
-hardware), `--codec=flac` (lossless archival), or any other supported format.
+You can always override the default with `--codec mp3` (universal, legacy
+hardware), `--codec flac` (lossless archival), or any other supported format.
 
 ### Why write this in Python instead of something faster?
 
@@ -203,8 +203,8 @@ laws. Please support artists you enjoy.
 |-------|----------|
 | Config file not found | Run `config <path>` first |
 | FFmpeg error | Install FFmpeg: `ffmpeg --version` |
-| Age-restricted video | Use `--cookies=chrome` |
-| Network blocked | Try `--proxy=http://proxy:port` |
+| Age-restricted video | Use `--cookies chrome` |
+| Network blocked | Try `--proxy http://proxy:port` |
 | Invalid path | Ensure directory exists |
 | Album search returns no results | Try different platform or search term |
 
