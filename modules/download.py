@@ -203,7 +203,7 @@ class Download:
                         break
 
                 return (
-                    f"{YELLOW}Results:{RESET}\n" + "\n".join(output) + "\n"
+                    "\n".join(output) + "\n"
                     if output
                     else f"{RED}Nothing downloaded for {url_prefix}{RESET}\n"
                 )

@@ -34,20 +34,20 @@ pip install -r requirements.txt
 python fm-dlp.py config ~/Music
 
 # Search for tracks
-python fm-dlp.py search "artist name"  --limit=5 --platform=yt-music
+python fm-dlp.py search "artist name"  --limit 5 --platform yt-music
 
 # Search for albums
-python fm-dlp.py search "album name" --platform=yt-music --type=album
+python fm-dlp.py search "album name" --platform yt-music --type album
 
 # Download
-python fm-dlp.py download "https://youtu.be/..." --codec=mp3 --kbps=320
+python fm-dlp.py download "https://youtu.be/..." --codec mp3 --kbps 320
 ```
 
 ## 📋 Commands
 
 ### `search` — Find music
 ```bash
-python fm-dlp.py search <query> [--limit=10] [--platform={yt-video|yt-music}] [--type={track|album}] [--proxy=URL]
+python fm-dlp.py search <query> [--limit 10] [--platform {yt-video|yt-music}] [--type {track|album}] [--proxy URL]
 ```
 | Option | Values | Default | Description |
 |--------|--------|---------|-------------|
@@ -58,7 +58,7 @@ python fm-dlp.py search <query> [--limit=10] [--platform={yt-video|yt-music}] [-
 
 ### `download` — Download audio
 ```bash
-python fm-dlp.py download <urls> [--codec={m4a|mp3|flac|opus}] [--kbps=256] [--quiet=False] [--max-concurrent=5] [--cookies=browser] [--proxy=URL]
+python fm-dlp.py download <urls> [--codec {m4a|mp3|flac|opus}] [--kbps 256] [--quiet False] [--max-concurrent 5] [--cookies browser] [--proxy URL]
 ```
 | Option | Values | Default |
 |--------|--------|---------|
@@ -104,31 +104,31 @@ fm-dlp/
 ### Search Examples
 ```bash
 # Search for tracks on YouTube Music
-python fm-dlp.py search "Sewerslvt" --limit=10 --platform=yt-music
+python fm-dlp.py search "Sewerslvt" --limit 10 --platform yt-music
 
 # Search for albums on YouTube Music
-python fm-dlp.py search "Usedcvnt" --platform=yt-music --type=album
+python fm-dlp.py search "Usedcvnt" --platform yt-music --type album
 
 # Search for videos on YouTube
-python fm-dlp.py search "breakcore mix" --platform=yt-video --limit=5
+python fm-dlp.py search "breakcore mix" --platform yt-video --limit 5
 
 # Search with proxy
-python fm-dlp.py search "Tokyona" --proxy=socks5://127.0.0.1:9050
+python fm-dlp.py search "Tokyona" --proxy socks5://127.0.0.1:9050
 ```
 
 ### Download Examples
 ```bash
 # Basic download
-python fm-dlp.py download "https://youtu.be/..." --codec=flac
+python fm-dlp.py download "https://youtu.be/..." --codec flac
 
 # Multiple URLs with custom quality
-python fm-dlp.py download "URL1 URL2 URL3" --codec=mp3 --kbps=320
+python fm-dlp.py download "URL1 URL2 URL3" --codec mp3 --kbps 320
 
 # Age-restricted content with cookies
-python fm-dlp.py download "URL" --cookies=firefox
+python fm-dlp.py download "URL" --cookies firefox
 
 # Anonymous download via Tor
-python fm-dlp.py download "URL" --proxy=socks5://127.0.0.1:9050
+python fm-dlp.py download "URL" --proxy socks5://127.0.0.1:9050
 ```
 
 ### Complete Workflow
@@ -137,15 +137,65 @@ python fm-dlp.py download "URL" --proxy=socks5://127.0.0.1:9050
 python fm-dlp.py config ~/Music
 
 # 2. Search for an album
-python fm-dlp.py search "we had good times together, don't forget that" --limit=1 --type=album
+python fm-dlp.py search "we had good times together, don't forget that" --limit 1 --type album
 
 # 3. Download from search result URL
 python fm-dlp.py download "https://music.youtube.com/playlist?list=..."
 
 # 4. Or search and download tracks directly
-python fm-dlp.py search "de kini" --platform=yt-music
-python fm-dlp.py download "https://youtu.be/..." --codec=mp3 --kbps=320
+python fm-dlp.py search "de kini" --platform yt-music
+python fm-dlp.py download "https://youtu.be/..." --codec mp3 --kbps 320
 ```
+
+## ❓ FAQ
+### Why does fm-dlp exist when yt-dlp already downloads audio?
+
+Think of fm-dlp as a **purpose-built stereo system**, while yt-dlp is a universal
+multimedia Swiss Army knife. Yes, yt-dlp can extract audio and embed metadata,
+but it takes a long string of flags to get there:
+
+```bash
+yt-dlp -f bestaudio --extract-audio --audio-format mp3 --audio-quality 320k \
+  --embed-metadata --embed-thumbnail -o "~/Music/%(title)s.%(ext)s" "URL"
+```
+
+fm-dlp wraps all that into a clean, music-focused workflow:
+- **Search** with human-readable, formatted output — no scraping IDs from text dumps
+- **Download** with a single option — no memorising flag combinations
+- **Cleaner tags** — when used with `search` results, artist and title come from
+  structured music metadata rather than raw video descriptions with channel suffixes
+
+### Why does macOS default to M4A while other platforms default to Opus?
+
+The defaults are chosen to match the **native music player experience** on each
+operating system:
+
+| Platform | Default | Reasoning |
+|----------|---------|-----------|
+| **macOS / iOS** | `m4a` (AAC) | Apple's entire ecosystem — Finder, Music.app, QuickTime, GarageBand — treats M4A/AAC as the first-class audio format. Album artwork, tagging, and playback are seamless. |
+| **Linux / Windows** | `opus` | Opus offers superior perceptual quality at equivalent bitrates. It's the codec modern Android devices, desktop players (VLC, foobar2000, audacious), and browsers use natively. |
+
+You can always override the default with `--codec=mp3` (universal, legacy
+hardware), `--codec=flac` (lossless archival), or any other supported format.
+
+### Why write this in Python instead of something faster?
+
+The initial version was a personal script that solved a daily annoyance: finding
+and tagging high-quality music without fighting CLI flags. Python allowed rapid
+iteration and immediate real-world use.
+
+Most of the actual "work" is performed by highly optimised native code:
+`yt-dlp` for networking, `ffmpeg` (C/ASM) for transcoding. The Python layer
+orchestrates these tools and handles metadata logic in **milliseconds** — the
+network download and ffmpeg encoding dominate execution time regardless of the
+language.
+
+### Does this break YouTube's Terms of Service?
+
+fm-dlp is an educational tool that demonstrates how public APIs and
+open-source software can be combined. You are responsible for ensuring your
+usage complies with the platform's Terms of Service and your local copyright
+laws. Please support artists you enjoy.
 
 ## 🐛 Troubleshooting
 

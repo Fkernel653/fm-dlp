@@ -23,13 +23,17 @@ def search(
     Search for music on YouTube.
 
     Args:
-        query: Search term
+        query: Search for your query
         limit: Max results (default: 10)
         platform: "yt-video" or "yt-music" (default: "yt-music")
         type: "track" or "album" (default: "track")
         proxy: Proxy URL (e.g., http://proxy:port or socks5://proxy:port)
     """
-    from modules.search import Search
+    try:
+        from modules.search import Search
+    except KeyboardInterrupt:
+        print("\n\033[0;32mGoodbye!\033[0;0m")
+        sys.exit(0)
 
     program = Search(query, limit, type, proxy)
 
@@ -71,7 +75,11 @@ def download(
 
     import asyncio
 
-    from modules.download import Download
+    try:
+        from modules.download import Download
+    except KeyboardInterrupt:
+        print("\n\033[0;32mGoodbye!\033[0;0m")
+        sys.exit(0)
 
     program = Download(urls, codec, kbps, quiet, max_concurrent, cookies, proxy)
 
@@ -83,6 +91,7 @@ def download(
         asyncio.run(async_download_classic())
     except KeyboardInterrupt:
         print("\n\033[0;32mDownload interrupted. Goodbye!\033[0;0m")
+        sys.exit(0)
 
 
 @fm_dlp.command()
@@ -93,7 +102,11 @@ def config(path: str):
     Args:
         path: Directory path. If empty, displays current config.
     """
-    from modules.configer import configer
+    try:
+        from modules.configer import configer
+    except KeyboardInterrupt:
+        print("\n\033[0;32mGoodbye!\033[0;0m")
+        sys.exit(0)
 
     print(configer(path))
 

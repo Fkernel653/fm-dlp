@@ -1,14 +1,14 @@
-# configer.py
 """
 Persistent download path storage using JSON config file.
 """
 
-from modules.colors import RESET, RED, GREEN
+from json import JSONDecodeError, dump, load
 from pathlib import Path
-from json import dump, load, JSONDecodeError
+
+from modules.colors import GREEN, RED, RESET
 
 
-def configer(path: str) -> None:
+def configer(path: str) -> str:
     """
     Manage download directory storage.
     - With path: saves to config.json
@@ -36,17 +36,8 @@ def configer(path: str) -> None:
                             f"{GREEN}Configuration file: {RESET}{Path(config_file)}"
                         )
                     else:
-                        print(
-                            f"{RED}\nConfig file exists but the saved path is invalid or missing!\n{RESET}"
-                        )
-                        return exit(1)
+                        return f"{RED}\nConfig file exists but the saved path is invalid or missing!\n{RESET}"
                 except JSONDecodeError:
-                    print(
-                        f"{RED}\nConfig file is corrupted! Please reconfigure with 'config <path>'.\n{RESET}"
-                    )
-                    return exit(1)
+                    return f"{RED}\nConfig file is corrupted! Please reconfigure with 'config <path>'.\n{RESET}"
         else:
-            print(
-                f"{RED}\nConfig file not found! Please set a download path first with 'config <path>'.\n{RESET}"
-            )
-            return exit(1)
+            return f"{RED}\nConfig file not found! Please set a download path first with 'config <path>'.\n{RESET}"
