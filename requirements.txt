@@ -1,4 +1,4 @@
 ﻿ytmusicapi
+cyclopts
 mutagen
 yt-dlp
-typer

@@ -1,14 +1,14 @@
 """
-CLI entry point for fm-dlp using Typer library.
+CLI entry point for fm-dlp using cyclopts library.
 Commands: search, download, config
 """
 
 import sys
 from typing import Optional
 
-import typer
+from cyclopts import App
 
-fm_dlp = typer.Typer()
+fm_dlp = App(name="fm-dlp", version="1.5.0")
 
 
 @fm_dlp.command()
@@ -24,9 +24,9 @@ def search(
 
     Args:
         query: Search for your query
-        limit: Max results (default: 10)
-        platform: "yt-video" or "yt-music" (default: "yt-music")
-        type: "track" or "album" (default: "track")
+        limit: Max results
+        platform: "yt-video" or "yt-music"
+        type: "track" or "album"
         proxy: Proxy URL (e.g., http://proxy:port or socks5://proxy:port)
     """
     try:
@@ -64,9 +64,9 @@ def download(
         urls: Space-separated YouTube URLs
         codec: Output format - m4a, mp3, opus, flac.
             Defaults to "m4a" on macOS, "opus" on other platforms.
-        kbps: Bitrate in kbps (default: 256)
-        quiet: Suppress yt-dlp output, showing only download progress and results (default: False)
-        max_concurrent: Maximum simultaneous downloads (default: 5)
+        kbps: Bitrate in kbps
+        quiet: Suppress yt-dlp output, showing only download progress and results
+        max_concurrent: Maximum simultaneous downloads
         cookies: Browser to extract cookies from - chrome, firefox, edge, etc. (optional)
         proxy: Proxy URL (e.g., http://proxy:port or socks5://proxy:port)
     """

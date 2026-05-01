@@ -1,4 +1,4 @@
-# fm-dlp — YouTube Music Downloader
+# fm-dlp — search engine and installer of videos/tracks from YouTube
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -72,7 +72,6 @@ python fm-dlp.py download <urls> [--codec {m4a|mp3|flac|opus}] [--kbps 256] [--q
 ### `config` — Set download path
 ```bash
 python fm-dlp.py config <path>   # Set directory
-python fm-dlp.py config          # Show current
 ```
 
 ## 📁 Project Structure
@@ -96,7 +95,7 @@ fm-dlp/
 | `yt-dlp` | YouTube extraction & download |
 | `mutagen` | Audio metadata tagging |
 | `ytmusicapi` | YouTube Music API |
-| `typer` | CLI framework |
+| `cyclopts` | CLI framework |
 | **FFmpeg** | Audio conversion (system) |
 
 ## 📖 Examples
@@ -107,13 +106,13 @@ fm-dlp/
 python fm-dlp.py search "Sewerslvt" --limit 10 --platform yt-music
 
 # Search for albums on YouTube Music
-python fm-dlp.py search "Usedcvnt" --platform yt-music --type album
+python fm-dlp.py search "usedcvnt" --platform yt-music --type album
 
 # Search for videos on YouTube
 python fm-dlp.py search "breakcore mix" --platform yt-video --limit 5
 
 # Search with proxy
-python fm-dlp.py search "Tokyona" --proxy socks5://127.0.0.1:9050
+python fm-dlp.py search "tokyona" --proxy socks5://127.0.0.1:9050
 ```
 
 ### Download Examples
@@ -140,10 +139,10 @@ python fm-dlp.py config ~/Music
 python fm-dlp.py search "we had good times together, don't forget that" --limit 1 --type album
 
 # 3. Download from search result URL
-python fm-dlp.py download "https://music.youtube.com/playlist?list=..."
+python fm-dlp.py download "https://music.youtube.com/playlist?list=OLAK5uy_muvgxae_oLSvDyo0q_zp0JrkBS73nkLMM"
 
 # 4. Or search and download tracks directly
-python fm-dlp.py search "de kini" --platform yt-music
+python fm-dlp.py search "goreshit" --platform yt-video
 python fm-dlp.py download "https://youtu.be/..." --codec mp3 --kbps 320
 ```
 
