@@ -1,11 +1,12 @@
 [project]
 name = "fm-dlp"
-version = "1.7.0"
+version = "1.7.2"
 description = "fm-dlp — search engine and installer of videos/tracks from YouTube"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = "<=3.14"
 dependencies = [
     "ytmusicapi",
     "cyclopts",
+    "mutagen",
     "yt-dlp",
 ]

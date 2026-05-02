@@ -117,6 +117,7 @@ fm-dlp/
 | Dependency | Purpose |
 |------------|---------|
 | `yt-dlp` | YouTube extraction & download |
+| `mutagen` | Audio metadata tagging |
 | `ytmusicapi` | YouTube Music API |
 | `cyclopts` | CLI framework |
 | **FFmpeg** | Audio conversion (system) |
@@ -238,6 +239,7 @@ MIT License — see [LICENSE](LICENSE) file.
 
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) — YouTube extraction & download engine
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi) — YouTube Music API wrapper
+- [mutagen](https://github.com/quodlibet/mutagen) — Audio metadata tagging
 - [cyclopts](https://github.com/BrianPugh/cyclopts) — Modern CLI framework
 
 ## ⚠️ Disclaimer
