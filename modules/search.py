@@ -3,11 +3,7 @@ YouTube search handlers.
 """
 
 from dataclasses import dataclass
-from itertools import islice
 from typing import Generator, Literal
-
-from yt_dlp import YoutubeDL
-from ytmusicapi import YTMusic
 
 from modules.colors import BOLD, CYAN, GRAY, GREEN, RED, RESET
 
@@ -67,6 +63,8 @@ class Search:
     def yt_video(self) -> Generator[str, None, None]:
         """Search YouTube videos using yt-dlp."""
         try:
+            from yt_dlp import YoutubeDL
+
             search_type = "playlist" if self.type == "album" else "video"
             opts = {
                 "proxy": self.proxy or None,
@@ -120,6 +118,10 @@ class Search:
     def yt_music(self) -> Generator[str, None, None]:
         """Search YouTube Music for song tracks only."""
         try:
+            from itertools import islice
+
+            from ytmusicapi import YTMusic
+
             search_type = "albums" if self.type == "album" else "songs"
             kwargs = (
                 {"proxies": {"http": self.proxy, "https": self.proxy}}
