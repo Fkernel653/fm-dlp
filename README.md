@@ -24,31 +24,35 @@ A powerful CLI tool for searching and downloading high-quality audio from YouTub
 
 ### Installation
 
-**uv** (recommended)
+#### 1. Clone Repository
+
 ```bash
 git clone https://github.com/Fkernel653/fm-dlp.git && cd fm-dlp
+```
+
+#### 2. Install Dependencies
+
+**uv** (recommended)
+```bash
 uv sync
 ```
 
 **pip**
 ```bash
-git clone https://github.com/Fkernel653/fm-dlp.git && cd fm-dlp
 pip install .
 ```
 
 **Poetry**
 ```bash
-git clone https://github.com/Fkernel653/fm-dlp.git && cd fm-dlp
 poetry install
 ```
 
 **PDM**
 ```bash
-git clone https://github.com/Fkernel653/fm-dlp.git && cd fm-dlp
 pdm install
 ```
 
-### Basic Usage
+### Usage
 ```bash
 # Set download directory (required first)
 python fm-dlp.py config ~/Music
