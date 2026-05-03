@@ -13,7 +13,7 @@ def main():
 
     from cyclopts import App
 
-    fm_dlp = App(name="fm-dlp", version="1.7.0")
+    fm_dlp = App(name="fm-dlp", version="1.7.4")
 
     @fm_dlp.command()
     def search(
