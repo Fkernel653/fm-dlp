@@ -1,6 +1,12 @@
 *.json
 config.json
 
-__pycache__
+.venv/
+.venv/*
+
+.python-version
+
 __pycache__/
 __pycache__/*
+
+*.pyc
