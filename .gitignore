@@ -1,12 +1,13 @@
-*.json
-config.json
-
-.venv/
-.venv/*
-
-.python-version
-
+# Python-generated files
 __pycache__/
-__pycache__/*
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
 
-*.pyc
+# Virtual environments
+.venv/
+
+# Configuration Files
+config.json

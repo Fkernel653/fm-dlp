@@ -3,7 +3,8 @@ Async YouTube audio downloader using yt-dlp.
 """
 
 import asyncio
-from dataclasses import dataclass
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass, field
 
 from modules.colors import GREEN, RED, RESET, YELLOW
 
@@ -17,6 +18,8 @@ class Download:
     max_concurrent: int
     cookies: str
     proxy: str
+
+    _executor: ThreadPoolExecutor = field(init=False, repr=False)
 
     def __post_init__(self):
         from json import loads
@@ -34,6 +37,8 @@ class Download:
         self.download_path = data.get("path")
         if not self.download_path or not Path(self.download_path).exists():
             exit(f"{RED}Download path does not exist.{RESET}")
+
+        self._executor = ThreadPoolExecutor(max_workers=self.max_concurrent)
 
     def _get_opts(self) -> dict:
         opts = {
@@ -84,10 +89,7 @@ class Download:
         print(f"{YELLOW}Starting: {url}{RESET}")
 
         try:
-            from concurrent.futures import ThreadPoolExecutor
-
-            with ThreadPoolExecutor() as pool:
-                await loop.run_in_executor(pool, self._sync_download, url)
+            await loop.run_in_executor(self._executor, self._sync_download, url)
             return f"{GREEN}✅ Done: {url}{RESET}"
         except Exception as e:
             return f"{RED}❌ Failed: {url} — {e}{RESET}"
@@ -98,6 +100,10 @@ class Download:
         opts = self._get_opts()
         with YoutubeDL(opts) as ydl:
             ydl.download([url])
+
+    def __del__(self):
+        if hasattr(self, "_executor"):
+            self._executor.shutdown(wait=False, cancel_futures=True)ы
 
     async def __aiter__(self):
         urls = [u.strip() for u in self.urls.replace(",", " ").split() if u.strip()]
