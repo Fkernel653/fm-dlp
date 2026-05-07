@@ -337,7 +337,7 @@ MIT License — see [LICENSE](LICENSE) file.
 - [mutagen](https://github.com/quodlibet/mutagen) — Audio metadata tagging
 - [cyclopts](https://github.com/BrianPugh/cyclopts) — Modern CLI framework
 - [tqdm](https://github.com/tqdm/tqdm) — Fast, extensible progress bars
-- 
+
 ## ⚠️ Disclaimer
 
 For educational purposes only. Users are responsible for complying with platform Terms of Service and applicable copyright laws.
