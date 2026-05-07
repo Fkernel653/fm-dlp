@@ -5,15 +5,16 @@
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey)]()
 [![Ruff](https://img.shields.io/badge/code%20style-ruff-261230?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
 
-A powerful CLI tool for searching and downloading high-quality audio from YouTube and YouTube Music with automatic metadata embedding.
+A powerful CLI tool for searching and downloading high-quality audio and video from YouTube and YouTube Music with automatic metadata embedding.
 
 ## ✨ Features
 
 - **Multi-platform Search** — YouTube, YouTube Music
 - **Search by Type** — Tracks or albums
 - **Parallel Downloads** — Async support for multiple URLs
-- **Multiple Formats** — M4A, MP3, FLAC, Opus with configurable bitrate
-- **Metadata Embedding** — Title, artist, album tags + thumbnail
+- **Audio Formats** — MP3, AAC, FLAC, M4A, Opus, Vorbis, WAV with configurable bitrate
+- **Video Formats** — MP4, MKV, WebM, MOV, AVI, FLV with automatic audio codec selection
+- **Metadata Embedding** — Title, artist, album tags + thumbnail (audio only)
 - **Proxy Support** — HTTP, HTTPS, SOCKS5 for all requests
 - **Cookie Support** — Browser cookies for restricted content
 - **Self-updating** — Built-in update mechanism via Git
@@ -59,13 +60,16 @@ pdm install
 python fm-dlp.py config ~/Music
 
 # Search for tracks
-python fm-dlp.py search "artist name"  --limit 5 --platform yt-music
+python fm-dlp.py search "artist name" --limit 5 --platform yt-music
 
 # Search for albums
 python fm-dlp.py search "album name" --platform yt-music --type album
 
-# Download
+# Download audio
 python fm-dlp.py download "https://youtu.be/..." --codec mp3 --kbps 320
+
+# Download video
+python fm-dlp.py download "https://youtu.be/..." --codec mp4
 ```
 
 ## 📋 Commands
@@ -81,18 +85,29 @@ python fm-dlp.py search <query> [--limit 10] [--platform {yt-video|yt-music}] [-
 | `--limit` | 1–∞ | 10 | Number of results |
 | `--proxy` | URL | — | Proxy for requests |
 
-### `download` — Download audio
+### `download` — Download audio or video
 ```bash
-python fm-dlp.py download <urls> [--codec {m4a|mp3|flac|opus}] [--kbps 256] [--quiet False] [--max-concurrent 5] [--cookies browser] [--proxy URL]
+python fm-dlp.py download <urls> [--codec CODEC] [--kbps 256] [--quiet False] [--max-concurrent 5] [--cookies browser] [--proxy URL]
 ```
 | Option | Values | Default |
 |--------|--------|---------|
-| `--codec` | m4a, mp3, flac, opus | m4a (macOS) / opus |
-| `--kbps` | 64–320 | 256 |
+| `--codec` | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`<br>**Video:** `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` | `m4a` (macOS) / `opus` |
+| `--kbps` | 64–320 (audio only) | 256 |
 | `--quiet` | True/False (flag) | False |
 | `--max-concurrent` | 1–∞ | 5 |
 | `--cookies` | chrome, firefox, edge, etc. | — |
 | `--proxy` | http://, socks5:// | — |
+
+**Video container audio codec mapping:**
+
+| Video Container | Audio Codec | Typical Use |
+|-----------------|-------------|-------------|
+| `mp4` | `m4a` (AAC) | Universal compatibility |
+| `mkv` | `opus` | High quality, modern |
+| `webm` | `opus` | Web, streaming |
+| `mov` | `m4a` (AAC) | Apple ecosystem |
+| `avi` | `mp3` | Legacy hardware |
+| `flv` | `aac` | Legacy web |
 
 ### `config` — Set or view download path
 ```bash
@@ -115,7 +130,7 @@ fm-dlp/
 ├── README.md           # Project documentation
 └── modules/
     ├── search.py       # Search implementations (tracks & albums)
-    ├── download.py     # Audio download logic
+    ├── download.py     # Audio & video download logic
     ├── configer.py     # Config manager
     ├── update.py       # Self-update via Git
     └── colors.py       # Terminal colors
@@ -129,7 +144,8 @@ fm-dlp/
 | `mutagen` | Audio metadata tagging |
 | `ytmusicapi` | YouTube Music API |
 | `cyclopts` | CLI framework |
-| **FFmpeg** | Audio conversion (system) |
+| `tqdm` | Progress bars for downloads |
+| **FFmpeg** | Audio/video conversion (system) |
 | **Git** | Self-update mechanism (system) |
 
 ## 📖 Examples
@@ -150,18 +166,41 @@ python fm-dlp.py search "tokyona" --proxy socks5://127.0.0.1:9050
 ```
 
 ### Download Examples
+
+**Audio:**
 ```bash
-# Basic download
+# Basic audio download
 python fm-dlp.py download "https://youtu.be/..." --codec flac
 
 # Multiple URLs with custom quality
 python fm-dlp.py download "URL1 URL2 URL3" --codec mp3 --kbps 320
 
+# Lossless download
+python fm-dlp.py download "URL" --codec wav
+```
+
+**Video:**
+```bash
+# Download as MP4
+python fm-dlp.py download "https://youtu.be/..." --codec mp4
+
+# Download as MKV with Opus audio
+python fm-dlp.py download "https://youtu.be/..." --codec mkv
+
+# Download as MOV for Apple devices
+python fm-dlp.py download "https://youtu.be/..." --codec mov
+```
+
+**Advanced:**
+```bash
 # Age-restricted content with cookies
 python fm-dlp.py download "URL" --cookies firefox
 
 # Anonymous download via Tor
 python fm-dlp.py download "URL" --proxy socks5://127.0.0.1:9050
+
+# Quiet mode with increased parallelism
+python fm-dlp.py download "URL1 URL2 URL3 URL4 URL5" --quiet --max-concurrent 10
 ```
 
 ### Maintenance
@@ -181,31 +220,38 @@ python fm-dlp.py config ~/Music
 # 2. Search for an album
 python fm-dlp.py search "we had good times together, don't forget that" --limit 1 --type album
 
-# 3. Download from search result URL
-python fm-dlp.py download "https://music.youtube.com/playlist?list=OLAK5uy_muvgxae_oLSvDyo0q_zp0JrkBS73nkLMM"
+# 3. Download audio from album
+python fm-dlp.py download "https://music.youtube.com/playlist?list=OLAK5uy_muvgxae_oLSvDyo0q_zp0JrkBS73nkLMM" --codec flac
 
-# 4. Or search and download tracks directly
+# 4. Search and download a video
 python fm-dlp.py search "goreshit" --platform yt-video
-python fm-dlp.py download "https://youtu.be/gnubBJ6dP4g" --codec mp3 --kbps 320
+python fm-dlp.py download "https://youtu.be/gnubBJ6dP4g" --codec mkv
 ```
 
 ## ❓ FAQ
-### Why does fm-dlp exist when yt-dlp already downloads audio?
+
+### Why does fm-dlp exist when yt-dlp already downloads audio and video?
 
 Think of fm-dlp as a **purpose-built stereo system**, while yt-dlp is a universal
-multimedia Swiss Army knife. Yes, yt-dlp can extract audio and embed metadata,
-but it takes a long string of flags to get there:
+multimedia Swiss Army knife. Yes, yt-dlp can extract audio, embed metadata,
+and download video, but it takes a long string of flags to get there:
 
 ```bash
+# Audio with yt-dlp
 yt-dlp -f bestaudio --extract-audio --audio-format mp3 --audio-quality 320k \
   --embed-metadata --embed-thumbnail -o "~/Music/%(title)s.%(ext)s" "URL"
+
+# Video with yt-dlp
+yt-dlp -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best" --merge-output-format mp4 \
+  -o "~/Videos/%(title)s.%(ext)s" "URL"
 ```
 
 fm-dlp wraps all that into a clean, music-focused workflow:
 - **Search** with human-readable, formatted output — no scraping IDs from text dumps
-- **Download** with a single option — no memorising flag combinations
+- **Download audio or video** with a single option — no memorising flag combinations
 - **Cleaner tags** — when used with `search` results, artist and title come from
   structured music metadata rather than raw video descriptions with channel suffixes
+- **Automatic format selection** — video containers automatically pick the best compatible audio codec
 
 ### Why does macOS default to M4A while other platforms default to Opus?
 
@@ -219,6 +265,24 @@ operating system:
 
 You can always override the default with `--codec mp3` (universal, legacy
 hardware), `--codec flac` (lossless archival), or any other supported format.
+
+### What video formats are supported and how do they work?
+
+fm-dlp supports six video containers: `mp4`, `mkv`, `webm`, `mov`, `avi`, and `flv`.
+When you choose a video format, fm-dlp automatically:
+1. Downloads the best available video stream
+2. Selects the optimal audio codec for that container (see mapping table above)
+3. Merges them together using FFmpeg
+
+For example, `--codec mkv` downloads VP9 video + Opus audio and packs them into an MKV container,
+while `--codec mp4` prefers H.264 video + AAC audio for maximum device compatibility.
+
+### Why is metadata embedding only available for audio?
+
+Metadata embedding (title, artist, album, thumbnail) works only with audio codecs
+(`mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`) using the `mutagen` library.
+Video containers don't get automatic metadata tagging — this keeps the download
+fast and avoids potential issues with video metadata standards.
 
 ### How does the update command work?
 
@@ -259,6 +323,8 @@ laws. Please support artists you enjoy.
 | Network blocked | Try `--proxy http://proxy:port` |
 | Invalid path | Ensure directory exists |
 | Album search returns no results | Try different platform or search term |
+| Video format not supported | Use one of: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
+| Audio codec error in video | Video containers auto-select compatible audio; check mapping table |
 
 ## 📄 License
 
@@ -270,12 +336,13 @@ MIT License — see [LICENSE](LICENSE) file.
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi) — YouTube Music API wrapper
 - [mutagen](https://github.com/quodlibet/mutagen) — Audio metadata tagging
 - [cyclopts](https://github.com/BrianPugh/cyclopts) — Modern CLI framework
-
+- [tqdm](https://github.com/tqdm/tqdm) — Fast, extensible progress bars
+- 
 ## ⚠️ Disclaimer
 
 For educational purposes only. Users are responsible for complying with platform Terms of Service and applicable copyright laws.
 
 ---
 
-**Author:** [Fkernel653](https://github.com/Fkernel653)  
+**Author:** [Fkernel653](https://github.com/Fkernel653)
 **Repository:** [github.com/Fkernel653/fm-dlp](https://github.com/Fkernel653/fm-dlp)

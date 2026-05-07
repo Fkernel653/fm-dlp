@@ -5,12 +5,13 @@ Commands: search, download, config
 
 import sys
 
+
 def main():
     from typing import Optional
 
     from cyclopts import App
 
-    fm_dlp = App(name="fm-dlp", version="1.7.4")
+    fm_dlp = App(name="fm-dlp", version="2.0.0")
 
     @fm_dlp.command()
     def search(
@@ -20,7 +21,15 @@ def main():
         type: Optional[str] = "track",
         proxy: Optional[str] = None,
     ):
-        """Search for music on YouTube."""
+        """Search for music on YouTube.
+
+        Args:
+            query: Search query string.
+            limit: Number of results to return.
+            platform: Search platform - 'yt-video' or 'yt-music'.
+            type: Content type - 'track' or 'album'.
+            proxy: Proxy URL for requests (e.g., 'socks5://127.0.0.1:9050').
+        """
         from modules.search import Search
 
         program = Search(query, limit, type, proxy)
@@ -40,23 +49,46 @@ def main():
         kbps: Optional[int] = 256,
         quiet: Optional[bool] = False,
         max_concurrent: Optional[int] = 5,
+        metadata: Optional[bool] = True,
         cookies: Optional[str] = None,
         proxy: Optional[str] = None,
     ):
-        """Download audio from YouTube URLs."""
+        """Download audio or video from YouTube URLs.
+
+        Args:
+            urls: YouTube URL(s) - space or comma separated.
+            codec: Audio codec (mp3, aac, flac, m4a, opus, vorbis, wav)
+                or video container (mp4, mkv, webm, mov, avi, flv).
+                Default: 'm4a' on macOS, 'opus' otherwise.
+            kbps: Audio bitrate in kbps (64-320). Ignored for video downloads.
+            quiet: Suppress yt-dlp output.
+            max_concurrent: Maximum parallel downloads.
+            metadata: Embed title, artist, album and thumbnail. Audio only.
+            cookies: Browser to extract cookies from (chrome, firefox, edge, etc.).
+            proxy: Proxy URL for requests (e.g., 'socks5://127.0.0.1:9050').
+        """
         if codec is None:
             codec = "m4a" if sys.platform == "darwin" else "opus"
+
+        if codec == "wav":
+            metadata = False
 
         from asyncio import run
 
         from modules.download import Download
 
-        program = Download(urls, codec, kbps, quiet, max_concurrent, cookies, proxy)
+        program = Download(
+            urls, codec, kbps, quiet, max_concurrent, metadata, cookies, proxy
+        )
         run(program.download_all())
 
     @fm_dlp.command()
     def config(path: str):
-        """Set or display the download directory configuration."""
+        """Set or display the download directory configuration.
+
+        Args:
+            path: Directory path for downloads. If empty, shows current setting.
+        """
         from modules.configer import configer
 
         print(configer(path))
