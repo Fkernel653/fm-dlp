@@ -1,6 +1,6 @@
 [project]
 name = "fm-dlp"
-version = "1.7.4"
+version = "2.0.0"
 description = "fm-dlp — search engine and installer of videos/tracks from YouTube"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -9,4 +9,5 @@ dependencies = [
     "cyclopts",
     "mutagen",
     "yt-dlp",
+    "tqdm"
 ]
