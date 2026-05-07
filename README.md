@@ -207,9 +207,6 @@ python fm-dlp.py download "URL1 URL2 URL3 URL4 URL5" --quiet --max-concurrent 10
 ```bash
 # Update to latest version
 python fm-dlp.py update
-
-# Check current config
-python fm-dlp.py config
 ```
 
 ### Complete Workflow
