@@ -8,6 +8,17 @@ from dataclasses import dataclass, field
 
 from modules.colors import GREEN, RED, RESET, YELLOW
 
+AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"}
+
+VIDEO_CONTAINER_AUDIO_MAP = {
+    "mp4": "m4a",  # H.264 + AAC
+    "mov": "m4a",  # H.264 + AAC
+    "mkv": "opus",  # VP9 + Opus
+    "webm": "opus",  # VP9 + Opus
+    "avi": "mp3",  # AVI
+    "flv": "aac",  # FLV
+}
+
 
 @dataclass
 class Download:
@@ -16,6 +27,7 @@ class Download:
     kbps: int
     quiet: bool
     max_concurrent: int
+    metadata: bool
     cookies: str
     proxy: str
 
@@ -41,30 +53,56 @@ class Download:
         self._executor = ThreadPoolExecutor(max_workers=self.max_concurrent)
 
     def _get_opts(self) -> dict:
-        opts = {
-            "quiet": self.quiet,
-            "no_warnings": True,
-            "format": "bestaudio/best",
-            "outtmpl": f"{self.download_path}/%(title)s.%(ext)s",
-            "concurrent_fragment_downloads": self.max_concurrent,
-            "embedmetadata": True,
-            "writethumbnail": True,
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": self.codec,
-                    "preferredquality": str(self.kbps),
-                },
-                {"key": "FFmpegMetadata"},
-                {"key": "EmbedThumbnail"},
-            ],
-        }
-        if self.proxy:
-            opts["proxy"] = self.proxy
-        if self.cookies:
-            opts["cookiesfrombrowser"] = self.cookies
+        if self.codec in AUDIO_CODECS:
+            base_opts = {
+                "quiet": self.quiet,
+                "no_warnings": True,
+                "format": "bestaudio/best",
+                "outtmpl": f"{self.download_path}/%(title)s.%(ext)s",
+                "concurrent_fragment_downloads": self.max_concurrent,
+                "postprocessors": [
+                    {
+                        "key": "FFmpegExtractAudio",
+                        "preferredcodec": self.codec,
+                        "preferredquality": str(self.kbps),
+                    },
+                ],
+            }
+        else:
+            audio_ext = VIDEO_CONTAINER_AUDIO_MAP.get(self.codec, "m4a")
 
-        return opts
+            if self.codec == "mp4":
+                format_str = f"bestvideo[ext=mp4]+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
+            else:
+                format_str = (
+                    f"bestvideo+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
+                )
+
+            base_opts = {
+                "quiet": self.quiet,
+                "no_warnings": True,
+                "format": format_str,
+                "outtmpl": f"{self.download_path}/%(title)s.%(ext)s",
+                "concurrent_fragment_downloads": self.max_concurrent,
+                "merge_output_format": self.codec,
+            }
+
+        if self.metadata and self.codec in AUDIO_CODECS:
+            base_opts["postprocessors"].extend(
+                [
+                    {"key": "FFmpegMetadata"},
+                    {"key": "EmbedThumbnail"},
+                ]
+            )
+            base_opts["embedmetadata"] = True
+            base_opts["writethumbnail"] = True
+
+        if self.proxy:
+            base_opts["proxy"] = self.proxy
+        if self.cookies:
+            base_opts["cookiesfrombrowser"] = self.cookies
+
+        return base_opts
 
     async def download_all(self):
         urls = [u.strip() for u in self.urls.replace(",", " ").split() if u.strip()]
