@@ -34,21 +34,14 @@ class Download:
     _executor: ThreadPoolExecutor = field(init=False, repr=False)
 
     def __post_init__(self):
-        from json import loads
-        from pathlib import Path
         from shutil import which
+
+        from modules.configer import get_path
 
         if which("ffmpeg") is None:
             exit(f"{RED}FFmpeg not found in PATH!{RESET}")
 
-        config_file = Path(__file__).parent.parent / "config.json"
-        if not config_file.exists():
-            exit(f"{RED}Config file not found! Run: fm-dlp config /path{RESET}")
-
-        data = loads(config_file.read_text(encoding="utf-8"))
-        self.download_path = data.get("path")
-        if not self.download_path or not Path(self.download_path).exists():
-            exit(f"{RED}Download path does not exist.{RESET}")
+        self.download_path = get_path()
 
         self._executor = ThreadPoolExecutor(max_workers=self.max_concurrent)
 
