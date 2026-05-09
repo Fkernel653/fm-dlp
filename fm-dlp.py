@@ -11,7 +11,7 @@ def main():
 
     from cyclopts import App
 
-    fm_dlp = App(name="fm-dlp", version="2.0.0")
+    fm_dlp = App(name="fm-dlp", version="2.1.0")
 
     @fm_dlp.command()
     def search(
@@ -89,9 +89,9 @@ def main():
         Args:
             path: Directory path for downloads. If empty, shows current setting.
         """
-        from modules.configer import configer
+        from modules.configer import set_path
 
-        print(configer(path))
+        print(set_path(path))
 
     @fm_dlp.command()
     def update():
