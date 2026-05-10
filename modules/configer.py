@@ -2,10 +2,10 @@
 Persistent download path storage using JSON config file.
 """
 
-from json import dump, loads
+import json
 from pathlib import Path
 
-from modules.colors import BLUE, GREEN, RED, RESET, YELLOW
+from modules.colors import BLUE, GRAY, GREEN, RED, RESET, YELLOW
 
 _CONFIG_FILE = Path(__file__).parent.parent / "config.json"
 KEY_NAME = "path"
@@ -25,7 +25,7 @@ def set_path(path: str) -> str:
         path_str = str(input_path)
 
         with open(_CONFIG_FILE, "w", encoding="utf-8") as f:
-            dump({KEY_NAME: path_str}, f, ensure_ascii=False, indent=4)
+            json.dump({KEY_NAME: path_str}, f, ensure_ascii=False, indent=4)
 
         return f"{GREEN}Configuration saved successfully!{RESET}\n{YELLOW}Path: {RESET}{path_str}\n{BLUE}Config file: {RESET}{_CONFIG_FILE}"
     except Exception as e:
@@ -33,10 +33,22 @@ def set_path(path: str) -> str:
 
 
 def get_path() -> str:
+    home_path = str(Path.home())
     if not _CONFIG_FILE.exists():
-        return f"{RED}Config file not found! Run: fm-dlp config /path{RESET}"
+        print(
+            f"{RED}Config file not found!{RESET}\n{GRAY}Run: fm-dlp config /path or continue in the home directory{RESET}\n"
+        )
+        user_input = str(
+            input(f"{BLUE}Do you want to continue in the home directory? (Y/n): ")
+        )
+        if user_input.lower() == "y":
+            return home_path
+        else:
+            import sys
 
-    data = loads(_CONFIG_FILE.read_text(encoding="utf-8"))
+            sys.exit(1)
+
+    data = json.loads(_CONFIG_FILE.read_text(encoding="utf-8"))
     download_path = data.get(KEY_NAME)
     if not download_path or not Path(download_path).exists():
         return f"{RED}Download path does not exist.{RESET}"

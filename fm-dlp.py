@@ -11,7 +11,7 @@ def main():
 
     from cyclopts import App
 
-    fm_dlp = App(name="fm-dlp", version="2.1.0")
+    fm_dlp = App(name="fm_dlp", version="2.1.1")
 
     @fm_dlp.command()
     def search(
@@ -73,14 +73,14 @@ def main():
         if codec == "wav":
             metadata = False
 
-        from asyncio import run
+        import asyncio
 
         from modules.download import Download
 
         program = Download(
             urls, codec, kbps, quiet, max_concurrent, metadata, cookies, proxy
         )
-        run(program.download_all())
+        asyncio.run(program.download_all())
 
     @fm_dlp.command()
     def config(path: str):

@@ -34,11 +34,11 @@ class Download:
     _executor: ThreadPoolExecutor = field(init=False, repr=False)
 
     def __post_init__(self):
-        from shutil import which
+        import shutil
 
         from modules.configer import get_path
 
-        if which("ffmpeg") is None:
+        if shutil.which("ffmpeg") is None:
             exit(f"{RED}FFmpeg not found in PATH!{RESET}")
 
         self.download_path = get_path()

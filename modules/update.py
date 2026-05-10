@@ -1,6 +1,6 @@
+import shutil
 import subprocess
 from pathlib import Path
-from shutil import which
 
 from tqdm import tqdm
 
@@ -8,7 +8,7 @@ from modules.colors import GREEN, RED, RESET
 
 
 def update_project():
-    if which("git") is None:
+    if shutil.which("git") is None:
         return f"{RED}Git is not installed!{RESET}"
 
     project_dir = Path(__file__).parent.parent
