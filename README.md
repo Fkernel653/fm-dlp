@@ -1,21 +1,22 @@
-# fm-dlp — search engine and installer of videos/tracks from YouTube
+# fm-dlp is a CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey)]()
 [![Ruff](https://img.shields.io/badge/code%20style-ruff-261230?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
 
-A powerful CLI tool for searching and downloading high-quality audio and video from YouTube and YouTube Music with automatic metadata embedding.
+Download and tag high-quality music and video from YouTube, YouTube Music, and 1000+ sites — all from your terminal.
 
 ## ✨ Features
 
 - **Multi-platform Search** — YouTube, YouTube Music
 - **Search by Type** — Tracks or albums
 - **Parallel Downloads** — Async support for multiple URLs
+- **1000+ Supported Sites** — Any site yt-dlp supports (YouTube, SoundCloud, Bandcamp, etc.)
 - **Audio Formats** — MP3, AAC, FLAC, M4A, Opus, Vorbis, WAV with configurable bitrate
 - **Video Formats** — MP4, MKV, WebM, MOV, AVI, FLV with automatic audio codec selection
 - **Metadata Embedding** — Title, artist, album tags + thumbnail (audio only)
-- **Proxy Support** — HTTP, HTTPS, SOCKS5 for all requests
+- **Proxy Support** — HTTP, HTTPS, SOCKS4, SOCKS5, SOCKS5h for all requests (download supports all protocols; search via yt-music requires HTTP/HTTPS)
 - **Cookie Support** — Browser cookies for restricted content
 - **Self-updating** — Built-in update mechanism via Git
 
@@ -97,6 +98,35 @@ python fm-dlp.py download <urls> [--codec CODEC] [--kbps 256] [--quiet False] [-
 | `--max-concurrent` | 1–∞ | 5 |
 | `--cookies` | chrome, firefox, edge, etc. | — |
 | `--proxy` | http://, socks5:// | — |
+
+### Supported Proxies
+
+fm-dlp supports the following proxy protocols:
+
+| Protocol | Download | Search (yt-video) | Search (yt-music) |
+|----------|:--------:|:-----------------:|:-----------------:|
+| `http://` | ✅ | ✅ | ✅ |
+| `https://` | ✅ | ✅ | ✅ |
+| `socks4://` | ✅ | ✅ | ❌ |
+| `socks5://` | ✅ | ✅ | ❌ |
+| `socks5h://` | ✅ | ✅ | ❌ |
+
+> **Note:** `socks5h://` performs DNS resolution through the proxy (remote DNS), while `socks5://` resolves DNS locally. Use `socks5h://` for better privacy with Tor.
+
+**Examples:**
+```bash
+# HTTP proxy
+python fm-dlp.py download "URL" --proxy http://user:pass@proxy.example.com:8080
+
+# SOCKS5 (Tor)
+python fm-dlp.py download "URL" --proxy socks5://127.0.0.1:9050
+
+# SOCKS5h with remote DNS (recommended for Tor)
+python fm-dlp.py download "URL" --proxy socks5h://127.0.0.1:9050
+
+# SOCKS5 for video search
+python fm-dlp.py search "query" --platform yt-video --proxy socks5://127.0.0.1:9050
+```
 
 **Video container audio codec mapping:**
 

@@ -4,14 +4,70 @@ Commands: search, download, config
 """
 
 import sys
+from typing import Optional, Tuple
+
+from modules.colors import GREEN, RED, RESET
+
+PROTOCOLS: Tuple[str, ...] = (
+    "http://",
+    "https://",
+    "socks4://",
+    "socks5://",
+    "socks5h://",
+)
+HTTP_PROTOCOLS: Tuple[str, ...] = ("http://", "https://")
+
+CODECS: Tuple[str, ...] = ("mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav")
+CONTAINERS: Tuple[str, ...] = ("mp4", "mov", "mkv", "webm", "avi", "flv")
+
+
+def print_and_exit(text: str, error: bool = True) -> None:
+    """Print colored message and exit."""
+    if error:
+        print(f"\n{RED}❌ {text}{RESET}")
+        sys.exit(1)
+    else:
+        print(f"\n{GREEN}{text}{RESET}")
+        sys.exit(0)
+
+
+def validate_input(
+    url: Optional[str] = None,
+    codec: Optional[str] = None,
+    proxy: Optional[str] = None,
+    proxy_only_http: bool = False,
+) -> None:
+    """
+    Validate URL, codec/container, and proxy.
+
+    Args:
+        url: YouTube URL (HTTP/HTTPS only).
+        codec: Audio codec or video container.
+        proxy: Proxy URL.
+        proxy_only_http: If True, allow only HTTP/HTTPS for proxy.
+    """
+    allowed_proxy = HTTP_PROTOCOLS if proxy_only_http else PROTOCOLS
+
+    if url is not None and not url.startswith(HTTP_PROTOCOLS):
+        print_and_exit(f"Invalid URL: {url}")
+
+    if codec is not None and codec not in CODECS and codec not in CONTAINERS:
+        print_and_exit(
+            f"Invalid codec/container: {codec}\n"
+            f"   Audio codecs: {', '.join(CODECS)}\n"
+            f"   Video containers: {', '.join(CONTAINERS)}"
+        )
+
+    if proxy is not None and not proxy.startswith(allowed_proxy):
+        print_and_exit(
+            f"Invalid proxy: {proxy}\n   Allowed: {', '.join(allowed_proxy)}"
+        )
 
 
 def main():
-    from typing import Optional
-
     from cyclopts import App
 
-    fm_dlp = App(name="fm_dlp", version="2.1.1")
+    fm_dlp = App(name="fm_dlp", version="2.1.3")
 
     @fm_dlp.command()
     def search(
@@ -28,7 +84,10 @@ def main():
             limit: Number of results to return.
             platform: Search platform - 'yt-video' or 'yt-music'.
             type: Content type - 'track' or 'album'.
-            proxy: Proxy URL for requests (e.g., 'socks5://127.0.0.1:9050').
+            proxy: Proxy URL for requests.
+                yt-video supports: http://, https://, socks4://, socks5://, socks5h://
+                yt-music supports: http://, https://
+                Example: 'socks5://127.0.0.1:9050'
         """
         from modules.search import Search
 
@@ -36,11 +95,17 @@ def main():
 
         match platform:
             case "yt-video":
+                validate_input(proxy=proxy)
+
                 for video_info in program.yt_video():
                     print(video_info)
             case "yt-music":
+                validate_input(proxy=proxy, proxy_only_http=True)
+
                 for track_info in program.yt_music():
                     print(track_info)
+            case _:
+                print_and_exit("Invalid platform")
 
     @fm_dlp.command()
     def download(
@@ -53,10 +118,10 @@ def main():
         cookies: Optional[str] = None,
         proxy: Optional[str] = None,
     ):
-        """Download audio or video from YouTube URLs.
+        """Download audio or video from URLs.
 
         Args:
-            urls: YouTube URL(s) - space or comma separated.
+            urls: URL(s) - space or comma separated.
             codec: Audio codec (mp3, aac, flac, m4a, opus, vorbis, wav)
                 or video container (mp4, mkv, webm, mov, avi, flv).
                 Default: 'm4a' on macOS, 'opus' otherwise.
@@ -65,10 +130,14 @@ def main():
             max_concurrent: Maximum parallel downloads.
             metadata: Embed title, artist, album and thumbnail. Audio only.
             cookies: Browser to extract cookies from (chrome, firefox, edge, etc.).
-            proxy: Proxy URL for requests (e.g., 'socks5://127.0.0.1:9050').
+            proxy: Proxy URL for requests.
+                Supports: http://, https://, socks4://, socks5://, socks5h://
+                Example: 'socks5://127.0.0.1:9050'
         """
         if codec is None:
             codec = "m4a" if sys.platform == "darwin" else "opus"
+
+        validate_input(url=urls, codec=codec, proxy=proxy)
 
         if codec == "wav":
             metadata = False
@@ -111,7 +180,4 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        from modules.colors import GREEN, RESET
-
-        print(f"\n{GREEN}Goodbye!{RESET}")
-        sys.exit(0)
+        print_and_exit("Goodbye!", False)

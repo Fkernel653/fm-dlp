@@ -1,7 +1,7 @@
 [project]
 name = "fm-dlp"
-version = "2.1.1"
-description = "fm-dlp — search engine and installer of videos/tracks from YouTube"
+version = "2.1.3"
+description = "fm-dlp is a CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
