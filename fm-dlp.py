@@ -16,19 +16,15 @@ PROTOCOLS: Tuple[str, ...] = (
     "socks5h://",
 )
 HTTP_PROTOCOLS: Tuple[str, ...] = ("http://", "https://")
-
 CODECS: Tuple[str, ...] = ("mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav")
 CONTAINERS: Tuple[str, ...] = ("mp4", "mov", "mkv", "webm", "avi", "flv")
 
 
 def print_and_exit(text: str, error: bool = True) -> None:
     """Print colored message and exit."""
-    if error:
-        print(f"\n{RED}❌ {text}{RESET}")
-        sys.exit(1)
-    else:
-        print(f"\n{GREEN}{text}{RESET}")
-        sys.exit(0)
+    color = RED if error else GREEN
+    print(f"\n{color}{'❌' if error else ''} {text}{RESET}")
+    sys.exit(1 if error else 0)
 
 
 def validate_input(
@@ -96,12 +92,10 @@ def main():
         match platform:
             case "yt-video":
                 validate_input(proxy=proxy)
-
                 for video_info in program.yt_video():
                     print(video_info)
             case "yt-music":
                 validate_input(proxy=proxy, proxy_only_http=True)
-
                 for track_info in program.yt_music():
                     print(track_info)
             case _:
@@ -146,10 +140,11 @@ def main():
 
         from modules.download import Download
 
-        program = Download(
-            urls, codec, kbps, quiet, max_concurrent, metadata, cookies, proxy
+        asyncio.run(
+            Download(
+                urls, codec, kbps, quiet, max_concurrent, metadata, cookies, proxy
+            ).download_all()
         )
-        asyncio.run(program.download_all())
 
     @fm_dlp.command()
     def config(path: str):
