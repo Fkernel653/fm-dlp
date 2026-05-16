@@ -159,7 +159,7 @@ def main():
         """Update fm-dlp to the latest version via Git."""
         try:
             validate_with_shutil("git", "Git")
-            from modules.update import update_project
+            from modules.utils.update import update_project
 
             print(update_project())
         except Exception as e:

@@ -164,13 +164,13 @@ fm-dlp/
     │   ├── __init__.py
     │   ├── search.py       # YouTube & YT Music search (tracks & albums)
     │   └── download.py     # Async audio/video download engine (yt-dlp)
-    ├── utils/
-    │   ├── __init__.py
-    │   ├── configer.py     # JSON config manager (read/write)
-    │   ├── validator.py    # Input validation (URLs, codecs, proxies, bitrate)
-    │   │                   # + system dependency checks (ffmpeg, git, yt-dlp)
-    │   └── colors.py       # Terminal ANSI color constants
-    └── update.py           # Self-update via Git (fetch + hard reset)
+    └── utils/
+        ├── __init__.py
+        ├── configer.py     # JSON config manager (read/write)
+        ├── validator.py    # Input validation (URLs, codecs, proxies, bitrate)
+        │                   # + system dependency checks (ffmpeg, git, yt-dlp)
+        ├── update.py       # Self-update via Git (fetch + hard reset)
+        └── colors.py       # Terminal ANSI color constants
 ```
 
 ## 🔧 Requirements
