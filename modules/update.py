@@ -1,18 +1,37 @@
-import shutil
 import subprocess
+import sys
 from pathlib import Path
 
-from tqdm import tqdm
+from modules.utils.colors import GREEN, RED, RESET
 
-from modules.colors import GREEN, RED, RESET
+
+def _progress_bar(
+    current: int, total: int, description: str = "", width: int = 30
+) -> str:
+    """Create a simple progress bar string.
+
+    Args:
+        current: Current progress value.
+        total: Total value for completion.
+        description: Text to show before the bar.
+        width: Width of the progress bar in characters.
+
+    Returns:
+        Progress bar string like: "Fetching... [##########    ] 75%"
+    """
+    filled = int(width * current / total)
+    bar = "#" * filled + " " * (width - filled)
+    percent = int(100 * current / total)
+
+    desc_str = f"{description} " if description else ""
+    return f"\r{desc_str}[{bar}] {percent}%"
 
 
 def update_project():
-    if shutil.which("git") is None:
-        return f"{RED}Git is not installed!{RESET}"
-
+    """Update the project via Git with a simple progress indicator."""
     project_dir = Path(__file__).parent.parent
 
+    # Check if it's a git repository
     try:
         subprocess.run(
             ["git", "-C", str(project_dir), "rev-parse", "--git-dir"],
@@ -23,6 +42,7 @@ def update_project():
     except subprocess.CalledProcessError:
         return f"{RED}Not a git repository!{RESET}"
 
+    # Get current branch
     try:
         branch_result = subprocess.run(
             ["git", "-C", str(project_dir), "rev-parse", "--abbrev-ref", "HEAD"],
@@ -34,38 +54,46 @@ def update_project():
     except subprocess.CalledProcessError:
         return f"{RED}Failed to determine current branch!{RESET}"
 
+    # Update with progress
     try:
-        with tqdm(total=2, desc="Updating project") as pbar:
-            pbar.set_description("Fetching latest changes")
-            subprocess.run(
-                ["git", "-C", str(project_dir), "fetch", "origin"],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            pbar.update(1)
+        # Step 1: Fetch
+        print(_progress_bar(0, 2, "Fetching latest changes"), end="")
+        sys.stdout.flush()
 
-            pbar.set_description(f"Resetting to origin/{current_branch}")
-            reset_result = subprocess.run(
-                [
-                    "git",
-                    "-C",
-                    str(project_dir),
-                    "reset",
-                    "--hard",
-                    f"origin/{current_branch}",
-                ],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            pbar.update(1)
+        subprocess.run(
+            ["git", "-C", str(project_dir), "fetch", "origin"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
-            if reset_result.stdout:
-                output = reset_result.stdout.strip()
-                return f"{GREEN}Project updated successfully!\n{output}{RESET}"
-            return f"{GREEN}Project updated successfully!{RESET}"
+        print(_progress_bar(1, 2, "Fetching latest changes"), end="")
+        sys.stdout.flush()
+
+        # Step 2: Reset
+        print()  # New line
+        print(_progress_bar(0, 1, f"Resetting to origin/{current_branch}"), end="")
+        sys.stdout.flush()
+
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(project_dir),
+                "reset",
+                "--hard",
+                f"origin/{current_branch}",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        print(_progress_bar(1, 1, f"Resetting to origin/{current_branch}"))
+
+        return f"{GREEN}✓ Project updated successfully!{RESET}"
 
     except subprocess.CalledProcessError as e:
+        print()  # New line after progress bar
         error_msg = e.stderr.strip() if e.stderr else str(e)
         return f"{RED}Update failed: {error_msg}{RESET}"
