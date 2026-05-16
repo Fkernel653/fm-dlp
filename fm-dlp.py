@@ -5,7 +5,7 @@ Commands: search, download, config
 
 import sys
 
-from modules.colors import GREEN, RED, RESET
+from modules.utils.colors import GREEN, RED, RESET
 
 
 def main():
