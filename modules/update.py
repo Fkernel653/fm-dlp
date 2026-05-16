@@ -29,7 +29,7 @@ def _progress_bar(
 
 def update_project():
     """Update the project via Git with a simple progress indicator."""
-    project_dir = Path(__file__).parent.parent
+    project_dir = Path(__file__).parent.parent.parent  # modules/utils/ -> root
 
     # Check if it's a git repository
     try:
@@ -67,11 +67,10 @@ def update_project():
             text=True,
         )
 
-        print(_progress_bar(1, 2, "Fetching latest changes"), end="")
+        print(_progress_bar(2, 2, "Fetching latest changes"))  # 100%, с новой строкой
         sys.stdout.flush()
 
-        # Step 2: Reset
-        print()  # New line
+        # Step 2: Reset (перезаписывает ту же строку)
         print(_progress_bar(0, 1, f"Resetting to origin/{current_branch}"), end="")
         sys.stdout.flush()
 
@@ -90,6 +89,7 @@ def update_project():
         )
 
         print(_progress_bar(1, 1, f"Resetting to origin/{current_branch}"))
+        sys.stdout.flush()
 
         return f"{GREEN}✓ Project updated successfully!{RESET}"
 
