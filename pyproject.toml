@@ -1,6 +1,6 @@
 [project]
 name = "fm-dlp"
-version = "2.1.3"
+version = "2.1.4"
 description = "fm-dlp is a CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -8,6 +8,5 @@ dependencies = [
     "ytmusicapi",
     "cyclopts",
     "mutagen",
-    "yt-dlp",
-    "tqdm"
+    "yt-dlp"
 ]

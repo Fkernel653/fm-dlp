@@ -154,16 +154,23 @@ Requires Git to be installed and the project to be a clone of the repository.
 ## 📁 Project Structure
 ```
 fm-dlp/
-├── fm-dlp.py           # CLI entry point
-├── config.json         # Download path config
-├── pyproject.toml      # Project metadata and dependencies
-├── README.md           # Project documentation
+├── fm-dlp.py               # CLI entry point (cyclopts App)
+├── config.json             # Persistent download path storage
+├── pyproject.toml          # Project metadata & dependencies
+├── README.md               # Project documentation
 └── modules/
-    ├── search.py       # Search implementations (tracks & albums)
-    ├── download.py     # Audio & video download logic
-    ├── configer.py     # Config manager
-    ├── update.py       # Self-update via Git
-    └── colors.py       # Terminal colors
+    ├── __init__.py          # Package initializer
+    ├── commands/
+    │   ├── __init__.py
+    │   ├── search.py       # YouTube & YT Music search (tracks & albums)
+    │   └── download.py     # Async audio/video download engine (yt-dlp)
+    ├── utils/
+    │   ├── __init__.py
+    │   ├── configer.py     # JSON config manager (read/write)
+    │   ├── validator.py    # Input validation (URLs, codecs, proxies, bitrate)
+    │   │                   # + system dependency checks (ffmpeg, git, yt-dlp)
+    │   └── colors.py       # Terminal ANSI color constants
+    └── update.py           # Self-update via Git (fetch + hard reset)
 ```
 
 ## 🔧 Requirements
@@ -174,7 +181,6 @@ fm-dlp/
 | `mutagen` | Audio metadata tagging |
 | `ytmusicapi` | YouTube Music API |
 | `cyclopts` | CLI framework |
-| `tqdm` | Progress bars for downloads |
 | **FFmpeg** | Audio/video conversion (system) |
 | **Git** | Self-update mechanism (system) |
 
@@ -340,18 +346,62 @@ laws. Please support artists you enjoy.
 
 ## 🐛 Troubleshooting
 
+### Configuration
 | Issue | Solution |
 |-------|----------|
-| Config file not found | Run `config <path>` first |
-| FFmpeg error | Install FFmpeg: `ffmpeg --version` |
-| Git not found | Install Git: `git --version` |
-| Update fails | Ensure project is a Git clone, not a ZIP download |
-| Age-restricted video | Use `--cookies chrome` |
-| Network blocked | Try `--proxy http://proxy:port` |
-| Invalid path | Ensure directory exists |
-| Album search returns no results | Try different platform or search term |
-| Video format not supported | Use one of: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
-| Audio codec error in video | Video containers auto-select compatible audio; check mapping table |
+| **Config file not found** | Run `fm-dlp config /your/download/path` first |
+| **"Invalid path" error** | Ensure the directory exists and is writable |
+| **Config reset after update** | `config.json` is preserved across updates — no action needed |
+
+### Dependencies
+| Issue | Solution |
+|-------|----------|
+| **"FFmpeg is not installed"** | Install FFmpeg and verify: `ffmpeg -version`<br>• macOS: `brew install ffmpeg`<br>• Linux: `sudo apt install ffmpeg`<br>• Windows: `winget install ffmpeg` |
+| **"Git is not installed"** | Required only for `update` command: `git --version` |
+| **"yt-dlp is not installed"** | Should be auto-installed. If not: `pip install yt-dlp` |
+
+### Search Issues
+| Issue | Solution |
+|-------|----------|
+| **Album search returns no results** | Try different `--platform` (`yt-video` vs `yt-music`) or `--type` (`album` vs `track`) |
+| **Too few results** | Increase limit: `--limit 20` |
+| **Wrong content type** | Music search defaults to `track`. Use `--type album` for albums |
+
+### Download Issues
+| Issue | Solution |
+|-------|----------|
+| **Age-restricted video** | Use browser cookies: `--cookies chrome` (or `firefox`, `edge`, `brave`) |
+| **Network blocked / 403 error** | Use a proxy: `--proxy socks5://127.0.0.1:9050` |
+| **Slow downloads** | Increase concurrent downloads: `--max-concurrent 10` |
+| **Audio codec error in video** | Video containers auto-select compatible audio. Use `mp4` or `mkv` for best compatibility |
+| **Video format not supported** | Supported containers: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
+| **WAV has no metadata** | WAV doesn't support embedded tags. Use `flac` or `m4a` instead |
+| **Codec not available** | yt-dlp selects best available. Try `opus` (best quality) or `mp3` (compatibility) |
+
+### Update Issues
+| Issue | Solution |
+|-------|----------|
+| **"Not a git repository"** | `update` only works if installed via `git clone`. ZIP downloads must be updated manually |
+| **Update fails** | Check internet connection. Force update: `git -C /path/to/fm-dlp fetch origin && git -C /path/to/fm-dlp reset --hard origin/main` |
+
+### Proxy
+| Issue | Solution |
+|-------|----------|
+| **"Invalid proxy URL"** | Format: `protocol://host:port`<br>• HTTP: `http://127.0.0.1:8080`<br>• SOCKS5: `socks5://127.0.0.1:9050` |
+| **Proxy not working with yt-music** | yt-music only supports `http://` and `https://` proxies |
+
+---
+
+### Still stuck?
+Run with verbose output to see detailed errors:
+```bash
+fm-dlp download "URL" --no-quiet
+```
+
+Check yt-dlp version compatibility:
+```bash
+yt-dlp --version
+```
 
 ## 📄 License
 
@@ -363,7 +413,6 @@ MIT License — see [LICENSE](LICENSE) file.
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi) — YouTube Music API wrapper
 - [mutagen](https://github.com/quodlibet/mutagen) — Audio metadata tagging
 - [cyclopts](https://github.com/BrianPugh/cyclopts) — Modern CLI framework
-- [tqdm](https://github.com/tqdm/tqdm) — Fast, extensible progress bars
 
 ## ⚠️ Disclaimer
 
