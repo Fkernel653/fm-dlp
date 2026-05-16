@@ -67,10 +67,10 @@ def update_project():
             text=True,
         )
 
-        print(_progress_bar(2, 2, "Fetching latest changes"))  # 100%, с новой строкой
+        print(_progress_bar(2, 2, "Fetching latest changes"))  # 100%
         sys.stdout.flush()
 
-        # Step 2: Reset (перезаписывает ту же строку)
+        # Step 2: Reset
         print(_progress_bar(0, 1, f"Resetting to origin/{current_branch}"), end="")
         sys.stdout.flush()
 
