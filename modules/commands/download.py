@@ -6,7 +6,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
-from modules.colors import GREEN, RED, RESET, YELLOW
+from modules.utils.colors import GREEN, RED, RESET, YELLOW
 
 AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"}
 
@@ -34,12 +34,7 @@ class Download:
     _executor: ThreadPoolExecutor = field(init=False, repr=False)
 
     def __post_init__(self):
-        import shutil
-
-        from modules.configer import get_path
-
-        if shutil.which("ffmpeg") is None:
-            exit(f"{RED}FFmpeg not found in PATH!{RESET}")
+        from modules.utils.configer import get_path
 
         self.download_path = get_path()
 

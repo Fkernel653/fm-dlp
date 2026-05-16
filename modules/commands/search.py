@@ -5,7 +5,7 @@ YouTube search handlers.
 from dataclasses import dataclass
 from typing import Generator, Literal
 
-from modules.colors import BOLD, CYAN, GRAY, GREEN, RED, RESET
+from modules.utils.colors import BOLD, CYAN, GRAY, GREEN, RED, RESET
 
 SEPARATE = f"{GRAY}|{RESET}"
 DIVIDER = f"       {GRAY}{'─' * 50}{RESET}\n"
@@ -19,12 +19,6 @@ class Search:
     limit: int
     type: Literal["track", "album"]
     proxy: str
-
-    def __post_init__(self):
-        if self.limit <= 0:
-            raise ValueError("Limit must be positive")
-        if self.type not in ("track", "album"):
-            raise ValueError(f"Invalid type: {self.type}")
 
     @staticmethod
     def _format_views(v) -> str:
