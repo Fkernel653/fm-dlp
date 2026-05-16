@@ -46,6 +46,28 @@ class DependencyError(ValidationError):
     """Required system dependency (ffmpeg, git) not found in PATH."""
 
 
+def validate_python_package(
+    package_name: str, import_name: str, display_name: str
+) -> None:
+    """Validate a Python package is installed.
+
+    Args:
+        package_name: pip install name (e.g., 'yt-dlp').
+        import_name: Python import name (e.g., 'yt_dlp').
+        display_name: Human-readable name for errors.
+
+    Raises:
+        DependencyError: If package is not installed.
+    """
+    from importlib.util import find_spec
+
+    if find_spec(import_name) is None:
+        raise DependencyError(
+            f"{RED}{display_name} Python package is not installed!{RESET}\n"
+            f"Install with: {GREEN}pip install {package_name}{RESET}"
+        )
+
+
 def validate_with_shutil(target: str, text: str) -> None:
     """Verify a system dependency is installed and accessible.
 

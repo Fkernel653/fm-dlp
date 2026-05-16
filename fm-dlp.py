@@ -13,7 +13,12 @@ def main():
 
     from cyclopts import App
 
-    from modules.utils.validator import CODECS, validate_input, validate_with_shutil
+    from modules.utils.validator import (
+        CODECS,
+        validate_input,
+        validate_python_package,
+        validate_with_shutil,
+    )
 
     fm_dlp = App(
         name="fm-dlp",
@@ -22,7 +27,7 @@ def main():
     )
 
     # Check critical dependency at startup
-    validate_with_shutil("yt-dlp", "yt-dlp")
+    validate_python_package("yt-dlp", "yt_dlp", "yt-dlp")
 
     @fm_dlp.command()
     def search(
