@@ -5,7 +5,7 @@ Persistent download path storage using JSON config file.
 import json
 from pathlib import Path
 
-from modules.colors import BLUE, GRAY, GREEN, RED, RESET, YELLOW
+from modules.utils.colors import BLUE, GRAY, GREEN, RED, RESET, YELLOW
 
 _CONFIG_FILE = Path(__file__).parent.parent / "config.json"
 KEY_NAME = "path"
