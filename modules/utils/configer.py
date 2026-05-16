@@ -7,7 +7,7 @@ from pathlib import Path
 
 from modules.utils.colors import BLUE, GRAY, GREEN, RED, RESET, YELLOW
 
-_CONFIG_FILE = Path(__file__).parent.parent / "config.json"
+_CONFIG_FILE = Path(__file__).parent.parent.parent / "config.json"
 KEY_NAME = "path"
 
 
