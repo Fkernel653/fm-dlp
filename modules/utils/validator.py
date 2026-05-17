@@ -3,7 +3,7 @@
 import sys
 from typing import Optional, Tuple
 
-from modules.utils.colors import GREEN, RED, RESET
+from modules.utils.colors import RED, RESET
 
 # Constants
 PROTOCOLS: Tuple[str, ...] = (
@@ -16,8 +16,8 @@ PROTOCOLS: Tuple[str, ...] = (
 HTTP_PROTOCOLS: Tuple[str, ...] = ("http://", "https://")
 TYPE_SEARCHING: Tuple[str, ...] = ("track", "album")
 PLATFORMS: Tuple[str, ...] = ("yt-video", "yt-music")
-CODECS: Tuple[str, ...] = ("mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav")
-CONTAINERS: Tuple[str, ...] = ("mp4", "mov", "mkv", "webm", "avi", "flv")
+AUDIO_CODECS: Tuple[str, ...] = ("mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav")
+VIDEO_CONTAINERS: Tuple[str, ...] = ("mp4", "mov", "mkv", "webm", "avi", "flv")
 DEFAULT_CODEC = "m4a" if sys.platform == "darwin" else "opus"
 
 
@@ -46,28 +46,6 @@ class DependencyError(ValidationError):
     """Required system dependency (ffmpeg, git) not found in PATH."""
 
 
-def validate_python_package(
-    package_name: str, import_name: str, display_name: str
-) -> None:
-    """Validate a Python package is installed.
-
-    Args:
-        package_name: pip install name (e.g., 'yt-dlp').
-        import_name: Python import name (e.g., 'yt_dlp').
-        display_name: Human-readable name for errors.
-
-    Raises:
-        DependencyError: If package is not installed.
-    """
-    from importlib.util import find_spec
-
-    if find_spec(import_name) is None:
-        raise DependencyError(
-            f"{RED}{display_name} Python package is not installed!{RESET}\n"
-            f"Install with: {GREEN}pip install {package_name}{RESET}"
-        )
-
-
 def validate_with_shutil(target: str, text: str) -> None:
     """Verify a system dependency is installed and accessible.
 
@@ -88,79 +66,6 @@ def validate_with_shutil(target: str, text: str) -> None:
         )
 
 
-def _validate_url(url: str) -> None:
-    """Validate YouTube URL format and scheme."""
-    if not url.startswith(HTTP_PROTOCOLS):
-        raise URLValidationError(
-            f"Invalid URL: '{url}'\n"
-            f"   URL must start with {RED}http://{RESET} or {RED}https://{RESET}\n"
-            f"   Example: {GREEN}https://www.youtube.com/watch?v=dQw4w9WgXcQ{RESET}"
-        )
-    if len(url) < 10 or "." not in url:
-        raise URLValidationError(
-            f"URL appears malformed: '{url}'\n   Please provide a complete YouTube URL"
-        )
-
-
-def _validate_codec(codec: str) -> None:
-    """Validate codec/container against supported formats."""
-    if codec not in CODECS and codec not in CONTAINERS:
-        raise CodecValidationError(
-            f"Invalid codec/container: {RED}'{codec}'{RESET}\n"
-            f"   {GREEN}Audio codecs{RESET}: {', '.join(CODECS)}\n"
-            f"   {GREEN}Video containers{RESET}: {', '.join(CONTAINERS)}\n"
-            f"   Tip: Use '{DEFAULT_CODEC}' for best quality audio"
-        )
-
-
-def _validate_numeric(
-    value: int, min_val: int, max_val: int, label: str, unit: str = ""
-) -> None:
-    """Generic numeric range validator.
-
-    Args:
-        value: Value to validate.
-        min_val: Minimum allowed value.
-        max_val: Maximum allowed value.
-        label: Human-readable parameter name.
-        unit: Unit of measurement (e.g., 'kbps').
-    """
-    unit_str = f" {unit}" if unit else ""
-    if value < min_val or value > max_val:
-        raise ValidationError(
-            f"Invalid {label}: {RED}{value}{unit_str}{RESET}\n"
-            f"   {label.capitalize()} must be between {min_val} and {max_val}{unit_str}"
-        )
-
-
-def _validate_proxy(proxy: str, allowed_protocols: Tuple[str, ...]) -> None:
-    """Validate proxy URL format and allowed protocols."""
-    if not proxy.startswith(allowed_protocols):
-        raise ProxyValidationError(
-            f"Invalid proxy URL: {RED}'{proxy}'{RESET}\n"
-            f"   Allowed protocols: {', '.join(allowed_protocols)}\n"
-            f"   Examples:\n"
-            f"     • {GREEN}http://127.0.0.1:8080{RESET}\n"
-            f"     • {GREEN}socks5://127.0.0.1:9050{RESET}\n"
-            f"   Format: protocol://host:port"
-        )
-    # Validate proxy structure (protocol://host:port)
-    try:
-        host_port = proxy.split("://", 1)[1]
-        if ":" not in host_port:
-            raise ProxyValidationError(
-                f"Proxy missing port number: {RED}'{proxy}'{RESET}\n"
-                f"   Format: protocol://host:port\n"
-                f"   Example: {GREEN}socks5://127.0.0.1:9050{RESET}"
-            )
-    except IndexError:
-        raise ProxyValidationError(
-            f"Malformed proxy URL: {RED}'{proxy}'{RESET}\n"
-            f"   Format: protocol://host:port\n"
-            f"   Example: {GREEN}http://127.0.0.1:8080{RESET}"
-        )
-
-
 def validate_input(
     url: Optional[str] = None,
     codec: Optional[str] = None,
@@ -172,59 +77,55 @@ def validate_input(
     proxy: Optional[str] = None,
     proxy_only_http: bool = False,
 ) -> None:
-    """Validate all CLI input parameters.
+    """Validate all CLI input parameters."""
 
-    Args:
-        url: YouTube URL to validate.
-        codec: Audio codec or video container.
-        kbps: Audio bitrate in kbps (64-320).
-        max_concurrent: Maximum parallel downloads (≥1).
-        limit: Search result limit (≥0).
-        platform: Search platform ('yt-video' or 'yt-music').
-        type: Content type ('track' or 'album').
-        proxy: Proxy URL.
-        proxy_only_http: Restrict proxy to HTTP/HTTPS only.
-
-    Raises:
-        URLValidationError: Invalid URL.
-        CodecValidationError: Invalid codec/container.
-        ValidationError: Invalid numeric parameter.
-        PlatformError: Invalid platform.
-        ProxyValidationError: Invalid proxy.
-    """
-    # Validate URL
     if url is not None:
-        _validate_url(url)
+        if not url.startswith(HTTP_PROTOCOLS) or len(url) < 10 or "." not in url:
+            raise URLValidationError(
+                f"Invalid URL: '{url}'\n"
+                f"   URL must start with http:// or https://\n"
+                f"   Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            )
 
-    # Validate codec/container
-    if codec is not None:
-        _validate_codec(codec)
+    if (
+        codec is not None
+        and codec not in AUDIO_CODECS
+        and codec not in VIDEO_CONTAINERS
+    ):
+        raise CodecValidationError(
+            f"Invalid codec/container: '{codec}'\n"
+            f"   Audio codecs: {', '.join(AUDIO_CODECS)}\n"
+            f"   Video containers: {', '.join(VIDEO_CONTAINERS)}"
+        )
 
-    # Validate numeric parameters
-    if kbps is not None:
-        _validate_numeric(kbps, 64, 320, "bitrate", "kbps")
-    if max_concurrent is not None:
-        _validate_numeric(max_concurrent, 1, float("inf"), "concurrent downloads")
-    if limit is not None:
-        _validate_numeric(limit, 0, float("inf"), "limit")
+    if kbps is not None and not (64 <= kbps <= 320):
+        raise ValidationError(
+            f"Invalid bitrate: {kbps} kbps\n   Bitrate must be between 64 and 320 kbps"
+        )
 
-    # Validate content type
+    if max_concurrent is not None and max_concurrent < 1:
+        raise ValidationError(
+            f"Invalid concurrent downloads: {max_concurrent}\n   Must be at least 1"
+        )
+
+    if limit is not None and limit < 0:
+        raise ValidationError(f"Invalid limit: {limit}\n   Limit must be non-negative")
+
     if type is not None and type not in TYPE_SEARCHING:
         raise ValidationError(
-            f"Invalid type: {RED}'{type}'{RESET}\n"
-            f"   Available types: {', '.join(TYPE_SEARCHING)}"
+            f"Invalid type: '{type}'\n   Available types: {', '.join(TYPE_SEARCHING)}"
         )
 
-    # Validate platform
     if platform is not None and platform not in PLATFORMS:
         raise PlatformError(
-            f"Invalid platform: {RED}'{platform}'{RESET}\n"
-            f"   Available platforms:\n"
-            f"     • {GREEN}yt-video{RESET}  - Search YouTube videos\n"
-            f"     • {GREEN}yt-music{RESET}  - Search YouTube Music"
+            f"Invalid platform: '{platform}'\n"
+            f"   Available platforms: yt-video, yt-music"
         )
 
-    # Validate proxy
     if proxy is not None:
         allowed_protocols = HTTP_PROTOCOLS if proxy_only_http else PROTOCOLS
-        _validate_proxy(proxy, allowed_protocols)
+        if not proxy.startswith(allowed_protocols):
+            raise ProxyValidationError(
+                f"Invalid proxy URL: '{proxy}'\n"
+                f"   Allowed protocols: {', '.join(allowed_protocols)}"
+            )
