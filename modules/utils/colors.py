@@ -1,6 +1,6 @@
 """
 ANSI color codes for terminal output formatting.
-Usage: from modules.colors import RED, GREEN, RESET
+Usage: from modules.utils.colors import RED, GREEN, RESET
 """
 
 RESET = "\033[01;0m"
