@@ -27,29 +27,32 @@ def set_path(path: str) -> str:
         with open(_CONFIG_FILE, "w", encoding="utf-8") as f:
             json.dump({KEY_NAME: path_str}, f, ensure_ascii=False, indent=4)
 
-        return f"{GREEN}Configuration saved successfully!{RESET}\n{YELLOW}Path: {RESET}{path_str}\n{BLUE}Config file: {RESET}{_CONFIG_FILE}"
+        return f"{GREEN}\nConfiguration saved successfully!{RESET}\n{YELLOW}Path: {RESET}{path_str}\n{BLUE}Config file: {RESET}{_CONFIG_FILE}"
     except Exception as e:
-        return f"{RED}Error saving configuration: {e}{RESET}"
+        return f"{RED}\nError saving configuration: {e}{RESET}"
 
 
-def get_path() -> str:
+def get_path() -> str | None:
+    import sys
+
     home_path = str(Path.home())
     if not _CONFIG_FILE.exists():
         print(
-            f"{RED}Config file not found!{RESET}\n{GRAY}Run: fm-dlp config /path or continue in the home directory{RESET}\n"
+            f"{RED}\nConfig file not found!{RESET}\n{GRAY}Run: fm-dlp config /path or continue in the home directory{RESET}\n"
         )
         user_input = str(
-            input(f"{BLUE}Do you want to continue in the home directory? (Y/n): ")
+            input(
+                f"{BLUE}Do you want to continue in the home directory? (Y/n): {RESET}"
+            )
         )
         if user_input.lower() == "y":
             return home_path
         else:
-            import sys
-
             sys.exit(1)
 
     data = json.loads(_CONFIG_FILE.read_text(encoding="utf-8"))
     download_path = data.get(KEY_NAME)
-    if not download_path or not Path(download_path).exists():
-        return f"{RED}Download path does not exist.{RESET}"
+    if not download_path or not Path(download_path).is_dir():
+        print(f"{RED}\nDownload path does not exist.{RESET}")
+        sys.exit(1)
     return download_path
