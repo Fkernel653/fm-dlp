@@ -3,17 +3,18 @@ YouTube search handlers.
 """
 
 from dataclasses import dataclass
+from itertools import islice
 from typing import Generator, Literal
 
 from modules.utils.colors import BOLD, CYAN, GRAY, GREEN, RED, RESET
 
-SEPARATE = f"{GRAY}|{RESET}"
+SEPARATOR = f"{GRAY}|{RESET}"
 DIVIDER = f"       {GRAY}{'─' * 50}{RESET}\n"
 
 
 @dataclass
 class Search:
-    """Handles searching across YouTube"""
+    """Handles searching across YouTube and YouTube Music."""
 
     query: str
     limit: int
@@ -21,11 +22,13 @@ class Search:
     proxy: str
 
     @staticmethod
-    def _format_views(v) -> str:
+    def _fmt_views(v) -> str:
+        """Format view count with thousands separator."""
         return f"{int(v):,}" if v else "N/A"
 
     @staticmethod
-    def _format_duration(d) -> str:
+    def _fmt_duration(d) -> str:
+        """Convert seconds to HH:MM:SS or MM:SS string."""
         if not d:
             return "N/A"
         s = int(d)
@@ -34,25 +37,44 @@ class Search:
         return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
 
     @staticmethod
-    def _extract_artist(item) -> str:
+    def _extract_artist(item: dict) -> str:
+        """Extract artist name from ytmusicapi track dict."""
         artists = item.get("artists")
         if artists and artists[0]:
             return artists[0].get("name", "Unknown Artist")
         return "Unknown Artist"
 
-    def _format_result(self, num, title, artist, url, **kwargs) -> str:
+    def _format_result(
+        self, num: int, title: str, artist: str, url: str, **kwargs
+    ) -> str:
+        """Build formatted output string for a single search result."""
         lines = [
             f"\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{title}{RESET}",
             f"    {GRAY}├─ {RESET}{artist}",
         ]
         if self.type == "track":
             lines.append(
-                f"    {GRAY}├─ {RESET}{kwargs.get('views', 'N/A')} {SEPARATE} {kwargs.get('duration', 'N/A')}"
+                f"    {GRAY}├─ {RESET}{kwargs.get('views', 'N/A')} {SEPARATOR} {kwargs.get('duration', 'N/A')}"
             )
         else:
             lines.append(f"    {GRAY}├─ {RESET}{kwargs.get('year', 'N/A')}")
         lines.append(f"    {GRAY}└─ {RESET}{RED}{url}{RESET}\n{DIVIDER}")
         return "\n".join(lines)
+
+    def _ytdl_opts(self) -> dict:
+        """Return base yt-dlp options for video search."""
+        return {
+            "proxy": self.proxy or None,
+            "quiet": True,
+            "extract_flat": True,
+            "cachedir": False,
+            "extractor_args": {
+                "youtube": {
+                    "player_client": ["web"],
+                    "player_skip": ["configs", "js", "webpage", "authcheck"],
+                }
+            },
+        }
 
     def yt_video(self) -> Generator[str, None, None]:
         """Search YouTube videos using yt-dlp."""
@@ -60,19 +82,7 @@ class Search:
             from yt_dlp import YoutubeDL
 
             search_type = "playlist" if self.type == "album" else "video"
-            opts = {
-                "proxy": self.proxy or None,
-                "quiet": True,
-                "extract_flat": True,
-                "cachedir": False,
-                "extractor_args": {
-                    "youtube": {
-                        "player_client": ["web"],
-                        "player_skip": ["configs", "js", "webpage", "authcheck"],
-                    }
-                },
-            }
-            with YoutubeDL(opts) as ydl:
+            with YoutubeDL(self._ytdl_opts()) as ydl:
                 videos = ydl.extract_info(
                     f"ytsearch{self.limit}:{search_type}:{self.query}", download=False
                 )["entries"]
@@ -89,8 +99,8 @@ class Search:
                             v.get("title", "N/A"),
                             v.get("channel", "N/A"),
                             f"https://youtu.be/{vid_id}",
-                            self._format_views(v.get("view_count")),
-                            self._format_duration(v.get("duration")),
+                            self._fmt_views(v.get("view_count")),
+                            self._fmt_duration(v.get("duration")),
                         )
                     )
 
@@ -99,9 +109,9 @@ class Search:
                     num,
                     title=title,
                     artist=channel,
+                    url=url,
                     views=views,
                     duration=duration,
-                    url=url,
                 )
 
         except KeyboardInterrupt:
@@ -110,10 +120,8 @@ class Search:
             yield f"{RED}Youtube-Video error: {e}{RESET}"
 
     def yt_music(self) -> Generator[str, None, None]:
-        """Search YouTube Music for song tracks only."""
+        """Search YouTube Music for tracks or albums."""
         try:
-            from itertools import islice
-
             from ytmusicapi import YTMusic
 
             search_type = "albums" if self.type == "album" else "songs"
