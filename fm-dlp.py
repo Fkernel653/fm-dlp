@@ -14,20 +14,16 @@ def main():
     from cyclopts import App
 
     from modules.utils.validator import (
-        CODECS,
+        AUDIO_CODECS,
         validate_input,
-        validate_python_package,
         validate_with_shutil,
     )
 
     fm_dlp = App(
         name="fm-dlp",
-        version="2.2.0",
+        version="2.3.0",
         help="fm-dlp is a CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
     )
-
-    # Check critical dependency at startup
-    validate_python_package("yt-dlp", "yt_dlp", "yt-dlp")
 
     @fm_dlp.command()
     def search(
@@ -115,7 +111,7 @@ def main():
             )
 
             # Check ffmpeg only for audio codecs
-            if codec in CODECS:
+            if codec in AUDIO_CODECS:
                 validate_with_shutil("ffmpeg", "FFmpeg")
 
             # WAV doesn't support metadata
@@ -129,14 +125,16 @@ def main():
 
             from modules.commands.download import Download
 
-            asyncio.run(
-                Download(
+            async def run_download():
+                async with Download(
                     urls, codec, kbps, quiet, max_concurrent, metadata, cookies, proxy
-                ).download_all()
-            )
+                ) as downloader:
+                    await downloader.download_all()
+
+            asyncio.run(run_download())
 
         except Exception as e:
-            print(f"\n{RED}Download Error:{RESET} {e}", file=sys.stderr)
+            print(f"\n{RED}Download Error:{RESET} {e}")
             sys.exit(1)
 
     @fm_dlp.command()
@@ -151,7 +149,7 @@ def main():
 
             print(set_path(path))
         except Exception as e:
-            print(f"\n{RED}Configuration Error:{RESET} {e}", file=sys.stderr)
+            print(f"\n{RED}Configuration Error:{RESET} {e}")
             sys.exit(1)
 
     @fm_dlp.command()
@@ -163,7 +161,7 @@ def main():
 
             print(update_project())
         except Exception as e:
-            print(f"\n{RED}Update Error:{RESET} {e}", file=sys.stderr)
+            print(f"\n{RED}Update Error:{RESET} {e}")
             sys.exit(1)
 
     fm_dlp()
@@ -176,6 +174,5 @@ if __name__ == "__main__":
         print(f"\n{GREEN}Goodbye!{RESET}")
         sys.exit(0)
     except Exception as e:
-        print(f"\n{RED}Unexpected Error:{RESET} {e}", file=sys.stderr)
-        print(f"{RED}Please report this issue if it persists.{RESET}", file=sys.stderr)
+        print(f"\n{RED}Unexpected Error:{RESET} {e}")
         sys.exit(1)
