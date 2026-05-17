@@ -67,7 +67,7 @@ def main():
                         print(track_info)
 
         except Exception as e:
-            print(f"\n{RED}Search Error:{RESET} {e}", file=sys.stderr)
+            print(f"\n{RED}Search Error:{RESET} {e}")
             sys.exit(1)
 
     @fm_dlp.command()
