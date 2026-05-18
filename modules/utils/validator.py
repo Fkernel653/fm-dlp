@@ -50,7 +50,7 @@ def validate_with_shutil(target: str, text: str) -> None:
     """Verify a system dependency is installed and accessible.
 
     Args:
-        target: Executable name to check (e.g., 'ffmpeg', 'git').
+        target: Executable name to check (e.g., 'ffmpeg').
         text: Human-readable name for error messages (e.g., 'FFmpeg').
 
     Raises:

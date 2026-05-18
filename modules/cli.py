@@ -23,12 +23,6 @@ def main():
 
     from cyclopts import App
 
-    from modules.utils.validator import (
-        AUDIO_CODECS,
-        validate_input,
-        validate_with_shutil,
-    )
-
     app = App(
         name="fm-dlp",
         version=get_version(),
@@ -56,6 +50,7 @@ def main():
                 Example: 'socks5://127.0.0.1:9050'
         """
         from modules.commands.search import Search
+        from modules.utils.validator import validate_input
 
         try:
             validate_input(
@@ -107,9 +102,16 @@ def main():
             proxy: Proxy URL (http, https, socks4, socks5, socks5h).
         """
         try:
+            from modules.utils.validator import (
+                AUDIO_CODECS,
+                DEFAULT_CODEC,
+                validate_input,
+                validate_with_shutil,
+            )
+
             # Set default codec
             if codec is None:
-                codec = "m4a" if sys.platform == "darwin" else "opus"
+                codec = DEFAULT_CODEC
 
             # Validate inputs
             validate_input(
@@ -160,18 +162,6 @@ def main():
             print(set_path(path))
         except Exception as e:
             print(f"\n{RED}Configuration Error:{RESET} {e}")
-            sys.exit(1)
-
-    @app.command()
-    def update():
-        """Update fm-dlp to the latest version via Git."""
-        try:
-            validate_with_shutil("git", "Git")
-            from modules.utils.update import update_project
-
-            print(update_project())
-        except Exception as e:
-            print(f"\n{RED}Update Error:{RESET} {e}")
             sys.exit(1)
 
     app()
