@@ -6,7 +6,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
-from modules.utils.colors import GREEN, RED, RESET, YELLOW
+from modules.utils.colors import BOLD, GREEN, RED, RESET, YELLOW
 
 AUDIO_CODECS = frozenset({"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"})
 
@@ -126,7 +126,7 @@ class Download:
 
     async def _download_url(self, url: str) -> str:
         """Download a single URL with status formatting."""
-        print(f"{YELLOW}Starting: {url}{RESET}")
+        print(f"{YELLOW}Starting: {RESET}{BOLD}{url}{RESET}")
         try:
             await asyncio.to_thread(self._sync_download, url)
             return f"{GREEN}✅ Done: {url}{RESET}"
