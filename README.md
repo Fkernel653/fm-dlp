@@ -179,15 +179,15 @@ fm-dlp/
 ├── modules/
 │   ├── __init__.py          # Package initializer
 │   ├── cli.py               # CLI entry point (cyclopts App)
-│   └── commands/
-│       ├── __init__.py
-│       ├── search.py        # YouTube & YT Music search (tracks & albums)
-│       └── download.py      # Async audio/video download engine (yt-dlp)
+│   ├── commands/
+│   │   ├── __init__.py
+│   │   ├── search.py        # YouTube & YT Music search (tracks & albums)
+│   │   └── download.py      # Async audio/video download engine (yt-dlp)
 │   └── utils/
 │       ├── __init__.py
 │       ├── configer.py      # JSON config manager (read/write)
 │       ├── validator.py     # Input validation (URLs, codecs, proxies, bitrate)
-│       │                    # + system dependency checks (ffmpeg, git, yt-dlp)
+│       │                    # + system dependency checks (ffmpeg, git)
 │       ├── update.py        # Self-update via Git (fetch + hard reset)
 │       └── colors.py        # Terminal ANSI color constants
 ├── pyproject.toml           # Project metadata & dependencies
