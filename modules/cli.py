@@ -8,6 +8,16 @@ import sys
 from modules.utils.colors import GREEN, RED, RESET
 
 
+def get_version() -> str:
+    """Get version from installed package metadata."""
+    try:
+        from importlib.metadata import version
+
+        return version("fm-dlp")
+    except Exception:
+        return "unknown"
+
+
 def main():
     from typing import Optional
 
@@ -19,13 +29,13 @@ def main():
         validate_with_shutil,
     )
 
-    fm_dlp = App(
+    app = App(
         name="fm-dlp",
-        version="2.3.3",
+        version=get_version(),
         help="fm-dlp is a CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
     )
 
-    @fm_dlp.command()
+    @app.command()
     def search(
         query: str,
         limit: int = 10,
@@ -70,7 +80,7 @@ def main():
             print(f"\n{RED}Search Error:{RESET} {e}")
             sys.exit(1)
 
-    @fm_dlp.command()
+    @app.command()
     def download(
         urls: str,
         codec: Optional[str] = None,
@@ -137,7 +147,7 @@ def main():
             print(f"\n{RED}Download Error:{RESET} {e}")
             sys.exit(1)
 
-    @fm_dlp.command()
+    @app.command()
     def config(path: str):
         """Set or display the download directory.
 
@@ -152,7 +162,7 @@ def main():
             print(f"\n{RED}Configuration Error:{RESET} {e}")
             sys.exit(1)
 
-    @fm_dlp.command()
+    @app.command()
     def update():
         """Update fm-dlp to the latest version via Git."""
         try:
@@ -164,7 +174,7 @@ def main():
             print(f"\n{RED}Update Error:{RESET} {e}")
             sys.exit(1)
 
-    fm_dlp()
+    app()
 
 
 if __name__ == "__main__":
