@@ -1,6 +1,7 @@
 # fm-dlp is a CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
+[![PyPI](https://img.shields.io/pypi/v/fm-dlp.svg)](https://pypi.org/project/fm-dlp/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey)]()
 [![Ruff](https://img.shields.io/badge/code%20style-ruff-261230?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
@@ -19,21 +20,35 @@ Download and tag high-quality music and video from YouTube, YouTube Music, and 1
 - **Proxy Support** — HTTP, HTTPS, SOCKS4, SOCKS5, SOCKS5h for all requests (download supports all protocols; search via yt-music requires HTTP/HTTPS)
 - **Cookie Support** — Browser cookies for restricted content
 - **Self-updating** — Built-in update mechanism via Git
+- **Cross-platform Config** — Stores config in standard app config directory (XDG, AppData, Application Support)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.10+ & FFmpeg & Git
+- Python 3.10+ & FFmpeg & Git (Git only required for `update` command)
 
 ### Installation
 
-#### 1. Clone Repository
+#### Via pip (recommended)
+```bash
+pip install fm-dlp
+```
+
+#### Via uv
+```bash
+uv pip install fm-dlp
+```
+
+#### Via pipx (isolated environment)
+```bash
+pipx install fm-dlp
+```
+
+#### From source (development)
 
 ```bash
 git clone https://github.com/Fkernel653/fm-dlp.git && cd fm-dlp
 ```
-
-#### 2. Install Dependencies
 
 **uv** (recommended)
 ```bash
@@ -58,26 +73,28 @@ pdm install
 ### Usage
 ```bash
 # Set download directory (required first)
-python fm-dlp.py config ~/Music
+fm-dlp config ~/Music
 
 # Search for tracks
-python fm-dlp.py search "artist name" --limit 5 --platform yt-music
+fm-dlp search "artist name" --limit 5 --platform yt-music
 
 # Search for albums
-python fm-dlp.py search "album name" --platform yt-music --type album
+fm-dlp search "album name" --platform yt-music --type album
 
 # Download audio
-python fm-dlp.py download "https://youtu.be/..." --codec mp3 --kbps 320
+fm-dlp download "https://youtu.be/..." --codec mp3 --kbps 320
 
 # Download video
-python fm-dlp.py download "https://youtu.be/..." --codec mp4
+fm-dlp download "https://youtu.be/..." --codec mp4
 ```
+
+> **Note:** If installed from source, replace `fm-dlp` with `python modules/cli.py` in all examples.
 
 ## 📋 Commands
 
 ### `search` — Find music
 ```bash
-python fm-dlp.py search <query> [--limit 10] [--platform {yt-video|yt-music}] [--type {track|album}] [--proxy URL]
+fm-dlp search <query> [--limit 10] [--platform {yt-video|yt-music}] [--type {track|album}] [--proxy URL]
 ```
 | Option | Values | Default | Description |
 |--------|--------|---------|-------------|
@@ -88,7 +105,7 @@ python fm-dlp.py search <query> [--limit 10] [--platform {yt-video|yt-music}] [-
 
 ### `download` — Download audio or video
 ```bash
-python fm-dlp.py download <urls> [--codec CODEC] [--kbps 256] [--quiet False] [--max-concurrent 5] [--cookies browser] [--proxy URL]
+fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--quiet False] [--max-concurrent 5] [--cookies browser] [--proxy URL]
 ```
 | Option | Values | Default |
 |--------|--------|---------|
@@ -116,16 +133,16 @@ fm-dlp supports the following proxy protocols:
 **Examples:**
 ```bash
 # HTTP proxy
-python fm-dlp.py download "URL" --proxy http://user:pass@proxy.example.com:8080
+fm-dlp download "URL" --proxy http://user:pass@proxy.example.com:8080
 
 # SOCKS5 (Tor)
-python fm-dlp.py download "URL" --proxy socks5://127.0.0.1:9050
+fm-dlp download "URL" --proxy socks5://127.0.0.1:9050
 
 # SOCKS5h with remote DNS (recommended for Tor)
-python fm-dlp.py download "URL" --proxy socks5h://127.0.0.1:9050
+fm-dlp download "URL" --proxy socks5h://127.0.0.1:9050
 
 # SOCKS5 for video search
-python fm-dlp.py search "query" --platform yt-video --proxy socks5://127.0.0.1:9050
+fm-dlp search "query" --platform yt-video --proxy socks5://127.0.0.1:9050
 ```
 
 **Video container audio codec mapping:**
@@ -141,37 +158,44 @@ python fm-dlp.py search "query" --platform yt-video --proxy socks5://127.0.0.1:9
 
 ### `config` — Set or view download path
 ```bash
-python fm-dlp.py config <path>   # Set directory
-python fm-dlp.py config          # View current setting
+fm-dlp config <path>   # Set directory
+fm-dlp config          # View current setting
 ```
+
+Configuration is stored in the standard application config directory:
+- **Linux:** `~/.config/fm-dlp/config.json`
+- **macOS:** `~/Library/Application Support/fm-dlp/config.json`
+- **Windows:** `%APPDATA%\fm-dlp\config.json`
 
 ### `update` — Update the tool
 ```bash
-python fm-dlp.py update          # Pull latest version via Git
+fm-dlp update          # Pull latest version via Git
 ```
-Requires Git to be installed and the project to be a clone of the repository.
+Requires Git to be installed and the project to be a clone of the repository. Not available when installed via pip — use `pip install --upgrade fm-dlp` instead.
 
 ## 📁 Project Structure
 ```
 fm-dlp/
-├── fm-dlp.py               # CLI entry point (cyclopts App)
-├── config.json             # Persistent download path storage
-├── pyproject.toml          # Project metadata & dependencies
-├── README.md               # Project documentation
-└── modules/
-    ├── __init__.py          # Package initializer
-    ├── commands/
-    │   ├── __init__.py
-    │   ├── search.py       # YouTube & YT Music search (tracks & albums)
-    │   └── download.py     # Async audio/video download engine (yt-dlp)
-    └── utils/
-        ├── __init__.py
-        ├── configer.py     # JSON config manager (read/write)
-        ├── validator.py    # Input validation (URLs, codecs, proxies, bitrate)
-        │                   # + system dependency checks (ffmpeg, git, yt-dlp)
-        ├── update.py       # Self-update via Git (fetch + hard reset)
-        └── colors.py       # Terminal ANSI color constants
+├── modules/
+│   ├── __init__.py          # Package initializer
+│   ├── cli.py               # CLI entry point (cyclopts App)
+│   └── commands/
+│       ├── __init__.py
+│       ├── search.py        # YouTube & YT Music search (tracks & albums)
+│       └── download.py      # Async audio/video download engine (yt-dlp)
+│   └── utils/
+│       ├── __init__.py
+│       ├── configer.py      # JSON config manager (read/write)
+│       ├── validator.py     # Input validation (URLs, codecs, proxies, bitrate)
+│       │                    # + system dependency checks (ffmpeg, git, yt-dlp)
+│       ├── update.py        # Self-update via Git (fetch + hard reset)
+│       └── colors.py        # Terminal ANSI color constants
+├── pyproject.toml           # Project metadata & dependencies
+├── README.md                # Project documentation
+└── LICENSE                  # MIT License
 ```
+
+> **Config file location:** `config.json` is automatically created in your system's standard application config directory on first run. See the `config` command section for OS-specific paths.
 
 ## 🔧 Requirements
 
@@ -181,24 +205,25 @@ fm-dlp/
 | `mutagen` | Audio metadata tagging |
 | `ytmusicapi` | YouTube Music API |
 | `cyclopts` | CLI framework |
+| `platformdirs` | Cross-platform config paths |
 | **FFmpeg** | Audio/video conversion (system) |
-| **Git** | Self-update mechanism (system) |
+| **Git** | Self-update mechanism (system, optional) |
 
 ## 📖 Examples
 
 ### Search Examples
 ```bash
 # Search for tracks on YouTube Music
-python fm-dlp.py search "Sewerslvt" --limit 10 --platform yt-music
+fm-dlp search "Sewerslvt" --limit 10 --platform yt-music
 
 # Search for albums on YouTube Music
-python fm-dlp.py search "usedcvnt" --platform yt-music --type album
+fm-dlp search "usedcvnt" --platform yt-music --type album
 
 # Search for videos on YouTube
-python fm-dlp.py search "breakcore mix" --platform yt-video --limit 5
+fm-dlp search "breakcore mix" --platform yt-video --limit 5
 
 # Search with proxy
-python fm-dlp.py search "tokyona" --proxy socks5://127.0.0.1:9050
+fm-dlp search "tokyona" --proxy socks5://127.0.0.1:9050
 ```
 
 ### Download Examples
@@ -206,59 +231,62 @@ python fm-dlp.py search "tokyona" --proxy socks5://127.0.0.1:9050
 **Audio:**
 ```bash
 # Basic audio download
-python fm-dlp.py download "https://youtu.be/..." --codec flac
+fm-dlp download "https://youtu.be/..." --codec flac
 
 # Multiple URLs with custom quality
-python fm-dlp.py download "URL1 URL2 URL3" --codec mp3 --kbps 320
+fm-dlp download "URL1 URL2 URL3" --codec mp3 --kbps 320
 
 # Lossless download
-python fm-dlp.py download "URL" --codec wav
+fm-dlp download "URL" --codec wav
 ```
 
 **Video:**
 ```bash
 # Download as MP4
-python fm-dlp.py download "https://youtu.be/..." --codec mp4
+fm-dlp download "https://youtu.be/..." --codec mp4
 
 # Download as MKV with Opus audio
-python fm-dlp.py download "https://youtu.be/..." --codec mkv
+fm-dlp download "https://youtu.be/..." --codec mkv
 
 # Download as MOV for Apple devices
-python fm-dlp.py download "https://youtu.be/..." --codec mov
+fm-dlp download "https://youtu.be/..." --codec mov
 ```
 
 **Advanced:**
 ```bash
 # Age-restricted content with cookies
-python fm-dlp.py download "URL" --cookies firefox
+fm-dlp download "URL" --cookies firefox
 
 # Anonymous download via Tor
-python fm-dlp.py download "URL" --proxy socks5://127.0.0.1:9050
+fm-dlp download "URL" --proxy socks5://127.0.0.1:9050
 
 # Quiet mode with increased parallelism
-python fm-dlp.py download "URL1 URL2 URL3 URL4 URL5" --quiet --max-concurrent 10
+fm-dlp download "URL1 URL2 URL3 URL4 URL5" --quiet --max-concurrent 10
 ```
 
 ### Maintenance
 ```bash
-# Update to latest version
-python fm-dlp.py update
+# Update to latest version (pip installation)
+pip install --upgrade fm-dlp
+
+# Update to latest version (git clone)
+fm-dlp update
 ```
 
 ### Complete Workflow
 ```bash
 # 1. Set download location
-python fm-dlp.py config ~/Music
+fm-dlp config ~/Music
 
 # 2. Search for an album
-python fm-dlp.py search "we had good times together, don't forget that" --limit 1 --type album
+fm-dlp search "we had good times together, don't forget that" --limit 1 --type album
 
 # 3. Download audio from album
-python fm-dlp.py download "https://music.youtube.com/playlist?list=OLAK5uy_muvgxae_oLSvDyo0q_zp0JrkBS73nkLMM" --codec flac
+fm-dlp download "https://music.youtube.com/playlist?list=OLAK5uy_muvgxae_oLSvDyo0q_zp0JrkBS73nkLMM" --codec flac
 
 # 4. Search and download a video
-python fm-dlp.py search "goreshit" --platform yt-video
-python fm-dlp.py download "https://youtu.be/gnubBJ6dP4g" --codec mkv
+fm-dlp search "goreshit" --platform yt-video
+fm-dlp download "https://youtu.be/gnubBJ6dP4g" --codec mkv
 ```
 
 ## ❓ FAQ
@@ -319,7 +347,9 @@ fast and avoids potential issues with video metadata standards.
 
 ### How does the update command work?
 
-`fm-dlp update` runs `git pull` inside the project directory. This means:
+When installed via pip, use `pip install --upgrade fm-dlp` to update.
+
+When installed from a Git clone, `fm-dlp update` runs `git pull` inside the project directory. This means:
 - You must have **Git installed** and accessible from the terminal
 - The project must be a **Git clone** (not a downloaded ZIP)
 - It pulls the latest commits from the remote repository
@@ -380,7 +410,7 @@ laws. Please support artists you enjoy.
 ### Update Issues
 | Issue | Solution |
 |-------|----------|
-| **"Not a git repository"** | `update` only works if installed via `git clone`. ZIP downloads must be updated manually |
+| **"Not a git repository"** | `update` only works if installed via `git clone`. Use `pip install --upgrade fm-dlp` for pip installations |
 | **Update fails** | Check internet connection. Force update: `git -C /path/to/fm-dlp fetch origin && git -C /path/to/fm-dlp reset --hard origin/main` |
 
 ### Proxy
@@ -412,6 +442,7 @@ MIT License — see [LICENSE](LICENSE) file.
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi) — YouTube Music API wrapper
 - [mutagen](https://github.com/quodlibet/mutagen) — Audio metadata tagging
 - [cyclopts](https://github.com/BrianPugh/cyclopts) — Modern CLI framework
+- [platformdirs](https://github.com/platformdirs/platformdirs) — Cross-platform config directory detection
 
 ## ⚠️ Disclaimer
 
@@ -421,3 +452,4 @@ For educational purposes only. Users are responsible for complying with platform
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 **Repository:** [github.com/Fkernel653/fm-dlp](https://github.com/Fkernel653/fm-dlp)
+**PyPI:** [pypi.org/project/fm-dlp](https://pypi.org/project/fm-dlp/)
