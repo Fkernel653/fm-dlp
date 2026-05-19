@@ -104,14 +104,15 @@ fm-dlp search <query> [--limit 10] [--platform {yt-video|yt-music}] [--type {tra
 
 ### `download` — Download audio or video
 ```bash
-fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--quiet False] [--max-concurrent 5] [--cookies browser] [--proxy URL]
+fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--quiet] [--max-concurrent 5] [--cookies browser] [--proxy URL]
 ```
 | Option | Values | Default |
 |--------|--------|---------|
 | `--codec` | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`<br>**Video:** `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` | `m4a` (macOS) / `opus` |
 | `--kbps` | 64–320 (audio only) | 256 |
-| `--quiet` | True/False (flag) | False |
+| `--quiet` | Flag | False |
 | `--max-concurrent` | 1–∞ | 5 |
+| `--no-metadata` | Flag | False (metadata on) |
 | `--cookies` | chrome, firefox, edge, etc. | — |
 | `--proxy` | http://, socks5:// | — |
 
@@ -171,7 +172,9 @@ Configuration is stored in the standard application config directory:
 fm-dlp/
 ├── modules/
 │   ├── __init__.py          # Package initializer
-│   ├── cli.py               # CLI entry point (cyclopts App)
+│   ├── cli.py               # CLI entry point (argparse)
+│   ├── parser.py            # Argument parser configuration
+│   ├── handlers.py          # Command handlers
 │   ├── commands/
 │   │   ├── __init__.py
 │   │   ├── search.py        # YouTube & YT Music search (tracks & albums)
@@ -179,9 +182,8 @@ fm-dlp/
 │   └── utils/
 │       ├── __init__.py
 │       ├── configer.py      # JSON config manager (read/write)
-│       ├── validator.py     # Input validation (URLs, codecs, proxies, bitrate)
-│       │                    # + system dependency checks (ffmpeg)
-│       └── colors.py        # Terminal ANSI color constants
+│       └── validator.py     # Input validation (URLs, codecs, proxies, bitrate)
+│                            # + system dependency checks (ffmpeg)
 ├── pyproject.toml           # Project metadata & dependencies
 ├── README.md                # Project documentation
 └── LICENSE                  # MIT License
@@ -196,8 +198,8 @@ fm-dlp/
 | `yt-dlp` | YouTube extraction & download |
 | `mutagen` | Audio metadata tagging |
 | `ytmusicapi` | YouTube Music API |
-| `cyclopts` | CLI framework |
 | `platformdirs` | Cross-platform config paths |
+| `color-kiss` | KISS-library for colors |
 | **FFmpeg** | Audio/video conversion (system) |
 
 ## 📖 Examples
@@ -253,6 +255,9 @@ fm-dlp download "URL" --proxy socks5://127.0.0.1:9050
 
 # Quiet mode with increased parallelism
 fm-dlp download "URL1 URL2 URL3 URL4 URL5" --quiet --max-concurrent 10
+
+# Download without metadata
+fm-dlp download "URL" --no-metadata
 ```
 
 ### Maintenance
@@ -345,6 +350,17 @@ orchestrates these tools and handles metadata logic in **milliseconds** — the
 network download and ffmpeg encoding dominate execution time regardless of the
 language.
 
+### How does the CLI argument parsing work?
+
+fm-dlp uses Python's standard library `argparse` for command-line argument parsing. This provides:
+- Subcommand support (`search`, `download`, `config`)
+- Short and long option forms (e.g., `-l` and `--limit`)
+- Automatic help generation (`fm-dlp --help`, `fm-dlp search --help`)
+- Type validation for numeric arguments
+- Choice constraints for enumerated options (platforms, codecs, etc.)
+
+This keeps the dependency footprint minimal while providing a robust and familiar CLI interface.
+
 ### Does this break YouTube's Terms of Service?
 
 fm-dlp is an educational tool that demonstrates how public APIs and
@@ -412,8 +428,8 @@ MIT License — see [LICENSE](LICENSE) file.
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) — YouTube extraction & download engine
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi) — YouTube Music API wrapper
 - [mutagen](https://github.com/quodlibet/mutagen) — Audio metadata tagging
-- [cyclopts](https://github.com/BrianPugh/cyclopts) — Modern CLI framework
 - [platformdirs](https://github.com/platformdirs/platformdirs) — Cross-platform config directory detection
+- [color-kiss](https://github.com/Fkernel653/color-kiss) — KISS-library for colors
 
 ## ⚠️ Disclaimer
 
