@@ -8,9 +8,8 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from color_kiss import BLUE, GRAY, GREEN, RED, RESET, YELLOW
 from platformdirs import user_config_dir
-
-from modules.utils.colors import BLUE, GRAY, GREEN, RED, RESET, YELLOW
 
 # Cross-platform paths:
 # Windows: %APPDATA%/fm-dlp/

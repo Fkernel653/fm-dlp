@@ -3,7 +3,7 @@
 import sys
 from typing import Optional, Tuple
 
-from modules.utils.colors import RED, RESET
+from color_kiss import RED, RESET
 
 # Constants
 PROTOCOLS: Tuple[str, ...] = (

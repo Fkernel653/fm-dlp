@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from itertools import islice
 from typing import Generator, Literal
 
-from modules.utils.colors import BOLD, CYAN, GRAY, GREEN, RED, RESET
+from color_kiss import BOLD, CYAN, GRAY, GREEN, RED, RESET
 
 SEPARATOR = f"{GRAY}|{RESET}"
 DIVIDER = f"       {GRAY}{'─' * 50}{RESET}\n"

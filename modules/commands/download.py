@@ -6,7 +6,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
-from modules.utils.colors import BOLD, GREEN, RED, RESET, YELLOW
+from color_kiss import BOLD, GREEN, RED, RESET, YELLOW
 
 AUDIO_CODECS = frozenset({"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"})
 
