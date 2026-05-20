@@ -6,8 +6,6 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 
-from color_kiss import BOLD, GREEN, RED, RESET, YELLOW
-
 AUDIO_CODECS = frozenset({"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"})
 
 VIDEO_CONTAINER_AUDIO_MAP = {
@@ -126,12 +124,14 @@ class Download:
 
     async def _download_url(self, url: str) -> str:
         """Download a single URL with status formatting."""
+        from color_kiss import BOLD, GREEN, RED, RESET, YELLOW
+
         print(f"{YELLOW}Starting: {RESET}{BOLD}{url}{RESET}")
         try:
             await asyncio.to_thread(self._sync_download, url)
             return f"{GREEN}✅ Done: {url}{RESET}"
         except Exception as e:
-            return f"{RED}❌ Failed: {url} — {e}{RESET}"
+            return f"{RED}❌ Failed: {url} — {e}{RESET}")
 
     def _sync_download(self, url: str):
         """Synchronous yt-dlp download callable from a thread."""

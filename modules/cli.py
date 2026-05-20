@@ -1,6 +1,7 @@
 import sys
 
 from color_kiss import GREEN, RED, RESET
+from color_kiss.utils import error, info, styled
 
 
 def get_version() -> str:
@@ -68,8 +69,7 @@ def main():
                         print(track_info)
 
         except Exception as e:
-            print(f"\n{RED}Search Error:{RESET} {e}")
-            sys.exit(1)
+            sys.exit(error(str(e)))
 
     @app.command()
     def download(
@@ -131,9 +131,7 @@ def main():
 
             if codec == "wav" and metadata:
                 metadata = False
-                print(
-                    f"{GREEN}Note:{RESET} WAV format doesn't support metadata embedding"
-                )
+                info("WAV format doesn't support metadata embedding")
 
             import asyncio
 
@@ -148,8 +146,7 @@ def main():
             asyncio.run(run_download())
 
         except Exception as e:
-            print(f"\n{RED}Download Error:{RESET} {e}")
-            sys.exit(1)
+            sys.exit(error(str(e)))
 
     @app.command()
     def config(path: str):
@@ -169,8 +166,7 @@ def main():
 
             print(set_path(path))
         except Exception as e:
-            print(f"\n{RED}Configuration Error:{RESET} {e}")
-            sys.exit(1)
+            sys.exit(error(str(e)))
 
     app.run()
 
@@ -179,8 +175,7 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print(f"\n{GREEN}Goodbye!{RESET}")
+        styled("\nGoodbye!", GREEN)
         sys.exit(0)
     except Exception as e:
-        print(f"\n{RED}Unexpected Error:{RESET} {e}")
-        sys.exit(1)
+        sys.exit(f"{RED}\nUnexpected Error: {RESET}{e}")
