@@ -131,7 +131,7 @@ class Download:
             await asyncio.to_thread(self._sync_download, url)
             return f"{GREEN}✅ Done: {url}{RESET}"
         except Exception as e:
-            return f"{RED}❌ Failed: {url} — {e}{RESET}")
+            return f"{RED}❌ Failed: {url} — {e}{RESET}"
 
     def _sync_download(self, url: str):
         """Synchronous yt-dlp download callable from a thread."""
