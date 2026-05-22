@@ -136,7 +136,7 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "3.4.5"
+version = "3.5.1"
 source = { editable = "." }
 dependencies = [
     { name = "cliss" },

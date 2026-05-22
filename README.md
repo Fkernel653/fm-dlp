@@ -98,7 +98,7 @@ fm-dlp download "URL1 URL2 URL3 URL4 URL5" --quiet --max-concurrent 10
 ## 📁 Project Structure
 ```
 fm-dlp/
-├── modules/
+├── fm_dlp/
 │   ├── __init__.py          # Package initializer
 │   ├── cli.py               # CLI entry point (cliss)
 │   ├── commands/
