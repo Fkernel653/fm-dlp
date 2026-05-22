@@ -19,7 +19,7 @@ def main():
 
     app = CLI(
         name="fm-dlp",
-        description="fm-dlp is a CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
+        description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
         version=get_version(),
     )
 

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,27 +8,24 @@ version = "3.5.2"
 description = "CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Fkernel653"}
 ]
 keywords = [
-    "youtube",
-    "ytmusic",
-    "downloader",
+    "cli",
     "audio",
     "video",
-    "yt-dlp",
-    "cli",
+    "youtube",
+    "ytmusic",
     "youtube-music",
-    "mp3",
+    "yt-dlp",
+    "downloader"
 ]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Intended Audience :: End Users/Desktop",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -63,7 +60,7 @@ Documentation = "https://github.com/Fkernel653/fm-dlp#readme"
 fm-dlp = "fm_dlp.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["modules*"]
+include = ["fm_dlp*"]
 
 [tool.setuptools.package-data]
 modules = ["*.json"]
