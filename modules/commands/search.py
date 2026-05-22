@@ -4,12 +4,9 @@ YouTube search handlers.
 
 from dataclasses import dataclass
 from itertools import islice
-from typing import Generator, Literal
+from typing import Any, Generator, cast
 
 from color_kiss import BOLD, CYAN, GRAY, GREEN, RED, RESET
-
-SEPARATOR = f"{GRAY}|{RESET}"
-DIVIDER = f"       {GRAY}{'─' * 50}{RESET}\n"
 
 
 @dataclass
@@ -18,8 +15,8 @@ class Search:
 
     query: str
     limit: int
-    type: Literal["track", "album"]
-    proxy: str
+    type: str
+    proxy: str | None = None
 
     @staticmethod
     def _fmt_views(v) -> str:
@@ -48,22 +45,31 @@ class Search:
         self, num: int, title: str, artist: str, url: str, **kwargs
     ) -> str:
         """Build formatted output string for a single search result."""
+
+        tree = f"    {GRAY}├─{RESET}"
+        corner = f"    {GRAY}└─{RESET}"
+        sep = f" {GRAY}│{RESET} "
+        div = f"       {GRAY}{'─' * 50}{RESET}\n"
+
         lines = [
             f"\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{title}{RESET}",
-            f"    {GRAY}├─ {RESET}{artist}",
+            f"{tree} {artist}",
         ]
+
         if self.type == "track":
-            lines.append(
-                f"    {GRAY}├─ {RESET}{kwargs.get('views', 'N/A')} {SEPARATOR} {kwargs.get('duration', 'N/A')}"
-            )
+            views = kwargs.get("views", "N/A")
+            duration = kwargs.get("duration", "N/A")
+            lines.append(f"{tree} {views}{sep}{duration}")
         else:
-            lines.append(f"    {GRAY}├─ {RESET}{kwargs.get('year', 'N/A')}")
-        lines.append(f"    {GRAY}└─ {RESET}{RED}{url}{RESET}\n{DIVIDER}")
+            lines.append(f"{tree} {kwargs.get('year', 'N/A')}")
+
+        lines.append(f"{corner} {RED}{url}{RESET}\n{div}")
+
         return "\n".join(lines)
 
-    def _ytdl_opts(self) -> dict:
+    def _ytdl_opts(self) -> dict[str, Any]:
         """Return base yt-dlp options for video search."""
-        return {
+        opts: dict[str, Any] = {
             "proxy": self.proxy or None,
             "quiet": True,
             "extract_flat": True,
@@ -75,6 +81,7 @@ class Search:
                 }
             },
         }
+        return opts
 
     def yt_video(self) -> Generator[str, None, None]:
         """Search YouTube videos using yt-dlp."""
@@ -82,17 +89,21 @@ class Search:
             from yt_dlp import YoutubeDL
 
             search_type = "playlist" if self.type == "album" else "video"
-            with YoutubeDL(self._ytdl_opts()) as ydl:
-                videos = ydl.extract_info(
+            opts: Any = self._ytdl_opts()
+            with YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(
                     f"ytsearch{self.limit}:{search_type}:{self.query}", download=False
-                )["entries"]
+                )
+                videos = info.get("entries") or []
 
             if not videos:
                 yield f"{RED}\nNo videos matching {RESET}'{self.query}'"
                 return
 
             results = []
-            for v in videos[: self.limit]:
+            videos_list: Any = videos
+            for v in islice(videos_list, self.limit):
+                v = cast(dict, v)
                 if vid_id := v.get("id"):
                     results.append(
                         (
@@ -125,12 +136,12 @@ class Search:
             from ytmusicapi import YTMusic
 
             search_type = "albums" if self.type == "album" else "songs"
-            kwargs = (
-                {"proxies": {"http": self.proxy, "https": self.proxy}}
+
+            yt = YTMusic(
+                proxies={"http": self.proxy, "https": self.proxy}
                 if self.proxy
-                else {}
+                else None
             )
-            yt = YTMusic(**kwargs)
             tracks = yt.search(query=self.query, limit=self.limit, filter=search_type)
 
             if not tracks:
@@ -139,6 +150,7 @@ class Search:
 
             results = []
             for t in islice(tracks, self.limit):
+                t = cast(dict, t)
                 if self.type == "track":
                     if vid_id := t.get("videoId"):
                         results.append(

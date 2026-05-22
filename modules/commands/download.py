@@ -5,6 +5,7 @@ Async YouTube audio downloader using yt-dlp.
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
+from typing import Any, Optional, cast
 
 AUDIO_CODECS = frozenset({"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"})
 
@@ -28,13 +29,15 @@ class Download:
     urls: str
     codec: str
     kbps: int
-    quiet: bool
     max_concurrent: int
+    quiet: bool
     metadata: bool
-    cookies: str
-    proxy: str
+    cookies: str | None = None
+    proxy: str | None = None
 
-    _executor: ThreadPoolExecutor = field(init=False, repr=False, default=None)
+    _executor: Optional[ThreadPoolExecutor] = field(
+        init=False, repr=False, default=None
+    )
 
     def __post_init__(self):
         """Resolve download path from config on instantiation."""
@@ -58,8 +61,15 @@ class Download:
             self._executor.shutdown(wait=True, cancel_futures=False)
         return False
 
-    async def __aiter__(self):
-        """Stream download results as they complete using async iteration."""
+    def __aiter__(self):
+        """Return an async iterator that yields download results as they complete."""
+        return self._aiter()
+
+    async def _aiter(self):
+        """Async generator that downloads all URLs concurrently, yielding results as each completes.
+
+        Uses a semaphore to limit concurrency to ``max_concurrent`` workers.
+        """
         sem = asyncio.Semaphore(self.max_concurrent)
 
         async def download_one(url):
@@ -71,11 +81,11 @@ class Download:
         for task in asyncio.as_completed(tasks):
             yield await task
 
-    def _get_opts(self) -> dict:
+    def _get_opts(self) -> dict[str, Any]:
         """Build yt-dlp options dict based on codec type (audio or video)."""
         is_audio = self.codec in AUDIO_CODECS
 
-        base_opts = {
+        base_opts: dict[str, Any] = {
             "quiet": self.quiet,
             "no_warnings": True,
             "outtmpl": f"{self.download_path}/%(title)s.%(ext)s",
@@ -94,12 +104,13 @@ class Download:
                 ],
             )
             if self.metadata:
-                base_opts["postprocessors"].extend(
+                postprocessors = cast(list, base_opts.get("postprocessors", []))
+                postprocessors.extend(
                     [{"key": "FFmpegMetadata"}, {"key": "EmbedThumbnail"}]
                 )
                 base_opts.update(embedmetadata=True, writethumbnail=True)
         else:
-            audio_ext = VIDEO_CONTAINER_AUDIO_MAP.get(self.codec, "m4a")
+            audio_ext = VIDEO_CONTAINER_AUDIO_MAP.get(cast(str, self.codec), "m4a")
             format_str = (
                 f"bestvideo[ext=mp4]+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
                 if self.codec == "mp4"
@@ -110,7 +121,7 @@ class Download:
         if self.proxy:
             base_opts["proxy"] = self.proxy
         if self.cookies:
-            base_opts["cookiesfrombrowser"] = self.cookies
+            base_opts["cookiesfrombrowser"] = cast(str, self.cookies)
 
         return base_opts
 
@@ -137,5 +148,6 @@ class Download:
         """Synchronous yt-dlp download callable from a thread."""
         from yt_dlp import YoutubeDL
 
-        with YoutubeDL(self._get_opts()) as ydl:
+        opts: Any = self._get_opts()
+        with YoutubeDL(opts) as ydl:
             ydl.download([url])

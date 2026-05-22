@@ -7,7 +7,7 @@ import json
 import sys
 from pathlib import Path
 
-from color_kiss import BLUE, GRAY, RESET
+from color_kiss import BLUE, GRAY
 from color_kiss.utils import error, styled, success
 from platformdirs import user_config_dir
 
@@ -17,9 +17,9 @@ from platformdirs import user_config_dir
 # Linux:   ~/.config/fm-dlp/
 CONFIG_DIR = Path(user_config_dir("fm-dlp"))
 CONFIG_FILE = CONFIG_DIR / "config.json"
-HOME_PATH: str = str(Path.home())
+HOME_PATH = str(Path.home())
 
-KEY_NAME: str = "path"
+KEY_NAME = "path"
 
 
 def _ensure_config_dir() -> None:
@@ -81,7 +81,7 @@ def get_path() -> str:
         error("\nConfig file not found!\n")
         styled("Run: fm-dlp config /path or continue in the home directory\n", GRAY)
         user_input = input(
-            f"{BLUE}Do you want to continue in the home directory? (Y/n): {RESET}"
+            styled("Do you want to continue in the home directory? (Y/n): ", BLUE)
         )
         if user_input.lower() == "y":
             return HOME_PATH

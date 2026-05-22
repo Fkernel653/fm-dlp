@@ -1,7 +1,7 @@
 import sys
 
-from color_kiss import GREEN, RED, RESET
-from color_kiss.utils import error, info, styled
+from color_kiss import BLUE, GREEN, RED, RESET
+from color_kiss.utils import error
 
 
 def get_version() -> str:
@@ -15,8 +15,6 @@ def get_version() -> str:
 
 
 def main():
-    from typing import Optional
-
     from cliss import CLI
 
     app = CLI(
@@ -29,9 +27,9 @@ def main():
     def search(
         query: str,
         limit: int = 10,
-        platform: Optional[str] = "yt-music",
-        type: Optional[str] = "track",
-        proxy: Optional[str] = None,
+        platform: str = "yt-music",
+        type: str = "track",
+        proxy: str | None = None,
     ):
         """Search for music tracks or videos on YouTube/YTMusic.
 
@@ -41,7 +39,7 @@ def main():
             platform: Platform to search on. Options: 'yt-music' for YouTube Music
                 or 'yt-video' for YouTube videos. Defaults to 'yt-music'.
             type: Type of content to search for. Defaults to 'track'.
-            proxy: Optional proxy URL for making requests.
+            proxy: proxy URL for making requests.
                 Must be an HTTP proxy when platform is 'yt-music'.
 
         Raises:
@@ -74,13 +72,13 @@ def main():
     @app.command()
     def download(
         urls: str,
-        codec: Optional[str] = None,
+        codec: str | None = None,
         kbps: int = 256,
         max_concurrent: int = 5,
-        quiet: Optional[bool] = False,
-        metadata: Optional[bool] = True,
-        cookies: Optional[str] = None,
-        proxy: Optional[str] = None,
+        quiet: bool = False,
+        metadata: bool = True,
+        cookies: str | None = None,
+        proxy: str | None = None,
     ):
         """Download audio or video content from supported platforms.
 
@@ -98,7 +96,7 @@ def main():
             metadata: Embed metadata into downloaded files if True.
                 Defaults to True. Automatically disabled for WAV format.
             cookies: Path to cookies file for authenticated downloads.
-            proxy: Optional proxy URL for download requests.
+            proxy: proxy URL for download requests.
 
         Note:
             WAV format does not support metadata embedding.
@@ -131,7 +129,9 @@ def main():
 
             if codec == "wav" and metadata:
                 metadata = False
-                info("WAV format doesn't support metadata embedding")
+                print(
+                    f"{BLUE}Note: WAV format doesn't support metadata embedding{RESET}"
+                )
 
             import asyncio
 
@@ -139,7 +139,7 @@ def main():
 
             async def run_download():
                 async with Download(
-                    urls, codec, kbps, quiet, max_concurrent, metadata, cookies, proxy
+                    urls, codec, kbps, max_concurrent, quiet, metadata, cookies, proxy
                 ) as downloader:
                     await downloader.download_all()
 
@@ -175,7 +175,7 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        styled("\nGoodbye!", GREEN)
+        print(f"\n{GREEN}Goodbye!{RESET}")
         sys.exit(0)
     except Exception as e:
-        sys.exit(f"{RED}\nUnexpected Error: {RESET}{e}")
+        sys.exit(f"\n{RED}Unexpected Error: {RESET}{e}")
