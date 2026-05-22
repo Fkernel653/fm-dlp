@@ -4,7 +4,7 @@ import sys
 
 from color_kiss import GREEN, RED, RESET
 
-from fm_dlp.cli import main
+from .cli import main
 
 if __name__ == "__main__":
     try:
