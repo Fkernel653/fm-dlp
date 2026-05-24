@@ -1,9 +1,11 @@
 import sys
+from functools import lru_cache
 
-from color_kiss import BLUE, GREEN, RED, RESET
+from color_kiss import BLUE, RESET
 from color_kiss.utils import error
 
 
+@lru_cache(maxsize=1)
 def get_version() -> str:
     """Get version from installed package metadata."""
     try:
@@ -31,20 +33,7 @@ def main():
         type: str = "track",
         proxy: str | None = None,
     ):
-        """Search for music tracks or videos on YouTube/YTMusic.
-
-        Args:
-            query: Search query string for finding tracks or videos.
-            limit: Maximum number of search results to return. Defaults to 10.
-            platform: Platform to search on. Options: 'yt-music' for YouTube Music
-                or 'yt-video' for YouTube videos. Defaults to 'yt-music'.
-            type: Type of content to search for. Defaults to 'track'.
-            proxy: proxy URL for making requests.
-                Must be an HTTP proxy when platform is 'yt-music'.
-
-        Raises:
-            SystemExit: If validation fails or search encounters an error.
-        """
+        """Search for music tracks or videos on YouTube/YTMusic."""
         try:
             from fm_dlp.commands.search import Search
             from fm_dlp.utils.validator import validate_input
@@ -80,31 +69,7 @@ def main():
         cookies: str | None = None,
         proxy: str | None = None,
     ):
-        """Download audio or video content from supported platforms.
-
-        Downloads media files from provided URLs with configurable codec,
-        quality, and concurrency settings. Supports metadata embedding
-        and proxy configuration.
-
-        Args:
-            urls: One or more URLs to download from, separated by commas or spaces.
-            codec: Audio/video codec for the downloaded file.
-                If None, uses default codec. Common audio codecs: 'mp3', 'flac', 'wav'.
-            kbps: Audio bitrate in kbps. Defaults to 256.
-            max_concurrent: Maximum number of concurrent downloads. Defaults to 5.
-            quiet: Suppress progress output if True. Defaults to False.
-            metadata: Embed metadata into downloaded files if True.
-                Defaults to True. Automatically disabled for WAV format.
-            cookies: Path to cookies file for authenticated downloads.
-            proxy: proxy URL for download requests.
-
-        Note:
-            WAV format does not support metadata embedding.
-            FFmpeg is required for audio codec processing.
-
-        Raises:
-            SystemExit: If validation fails, FFmpeg is missing, or download fails.
-        """
+        """Download audio or video content from supported platforms."""
         try:
             from fm_dlp.utils.validator import (
                 AUDIO_CODECS,
@@ -150,17 +115,7 @@ def main():
 
     @app.command()
     def config(path: str):
-        """Configure the application settings path.
-
-        Sets the configuration directory path for storing application
-        settings and data files.
-
-        Args:
-            path: Directory path where configuration files will be stored.
-
-        Raises:
-            SystemExit: If configuration operation fails.
-        """
+        """Configure the application settings path."""
         try:
             from fm_dlp.utils.configer import set_path
 
@@ -169,13 +124,3 @@ def main():
             sys.exit(error(str(e)))
 
     app.run()
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print(f"\n{GREEN}Goodbye!{RESET}")
-        sys.exit(0)
-    except Exception as e:
-        sys.exit(f"\n{RED}Unexpected Error: {RESET}{e}")

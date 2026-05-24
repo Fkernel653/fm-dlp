@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fm-dlp"
-version = "3.5.4"
+version = "3.5.5"
 description = "CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -57,10 +57,10 @@ Repository = "https://github.com/Fkernel653/fm-dlp.git"
 Documentation = "https://github.com/Fkernel653/fm-dlp#readme"
 
 [project.scripts]
-fm-dlp = "fm_dlp.cli:main"
+fm-dlp = "fm_dlp.__main__:main"
 
-[tool.setuptools.packages.find]
-include = ["fm_dlp*"]
+[tool.hatch.build.targets.wheel]
+packages = ["fm_dlp"]
 
-[tool.setuptools.package-data]
-modules = ["*.json"]
+[tool.hatch.build.targets.wheel.force-include]
+"fm_dlp" = "*.json"
