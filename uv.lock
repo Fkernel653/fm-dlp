@@ -118,11 +118,11 @@ wheels = [
 
 [[package]]
 name = "cliss"
-version = "0.2.3"
+version = "0.3.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b3/14/c065d892197955cea525439f301a9cd5f941a489514df3822275b2417d7a/cliss-0.2.3.tar.gz", hash = "sha256:628c319a0aac463beed67ac0f6b403a895df502487a1a57895340131226ea38c", size = 8433, upload-time = "2026-05-22T14:37:41.304Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/26/f3/35126c38de804b96fd21d93917164504d4d922276d4425622b99492efaac/cliss-0.3.0.tar.gz", hash = "sha256:68069e1a666de547aa4b960b82c580d619344da7da3d07ea22f5892614f2c2e3", size = 13384, upload-time = "2026-05-24T04:05:41.352Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/63/ad/511630e8e916506db5d2bb49ba79103807e7fdf273becc0d613d39aff526/cliss-0.2.3-py3-none-any.whl", hash = "sha256:8b31f9957634c2baf5d66b219f1ba909a91cd7b9f16d22b898e2f72a893c6790", size = 8743, upload-time = "2026-05-22T14:37:40.078Z" },
+    { url = "https://files.pythonhosted.org/packages/f6/32/811bd6fb2cd463b65e7ac8a972dd062f5b70982930e340cab9b4c9a46075/cliss-0.3.0-py3-none-any.whl", hash = "sha256:a12d449a1c4a45851f9d8720a87980ab0327b3ee1b84da74167819a63b9568f1", size = 11692, upload-time = "2026-05-24T04:05:42.623Z" },
 ]
 
 [[package]]
@@ -136,7 +136,7 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "3.5.2"
+version = "3.5.3"
 source = { editable = "." }
 dependencies = [
     { name = "cliss" },
