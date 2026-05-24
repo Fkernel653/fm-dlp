@@ -118,20 +118,20 @@ wheels = [
 
 [[package]]
 name = "cliss"
-version = "0.3.4"
+version = "0.3.5"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/2a/68/2a96b07fa582449035943bfb61b3a196ae6deeb40fd66469451e24c6796b/cliss-0.3.4.tar.gz", hash = "sha256:b26a8ea151f7b5132c69163df3ac8ab0db76f3b25a8dd586b6d9374d88931d11", size = 13992, upload-time = "2026-05-24T04:21:21.161Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/27/fe/d175123d474d69078e1007b51419c0a5d0811865ab98852dc63e652663f4/cliss-0.3.5.tar.gz", hash = "sha256:8334ed88dea65aa58dd83078beff5ffedc177f8f7464a6b5dd546ce8ac1e4120", size = 10270, upload-time = "2026-05-24T04:24:11.221Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f1/77/523b037fca29f1f6289aa145833134653ec59ed4a172649c400a1705ed3d/cliss-0.3.4-py3-none-any.whl", hash = "sha256:df1d952baf08cb557e2158bbfd525fac7acd5dfa400029f94879dc5ee511acf7", size = 12274, upload-time = "2026-05-24T04:21:19.817Z" },
+    { url = "https://files.pythonhosted.org/packages/44/f2/be20e4853136274e2c3677fa4308517d4d96a9fd52e971dcf7feb95ea378/cliss-0.3.5-py3-none-any.whl", hash = "sha256:33a8f8ee166b4809c5ff3a07848be5791df95b6f8643c8266dc9fd96ec049b4e", size = 12054, upload-time = "2026-05-24T04:24:10.107Z" },
 ]
 
 [[package]]
 name = "color-kiss"
-version = "0.1.7"
+version = "0.1.8"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/cd/a6/eb68b4b8a5ad783ad273954bebd1d191968cabe9fe0969f73677cea54eeb/color_kiss-0.1.7.tar.gz", hash = "sha256:824a7bd9c82184b0bb86e5cc7d905005f24f5a87e3953bffb34e4ac99364f83c", size = 5258, upload-time = "2026-05-22T14:15:48.815Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6b/3f/b358d49eb6ffc5937540c39c2ffce13dd4c36d5c9dc93c7e7ec61b0efc31/color_kiss-0.1.8.tar.gz", hash = "sha256:e194d779fedfea8b0d3ac813e0505d42aaa4d53c4cbcceec75653c30f84150ac", size = 4607, upload-time = "2026-05-24T04:29:19.496Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/bc/c95037f5cde961a1e50f82c4fd906d60a24ea54416f78db089268580766d/color_kiss-0.1.7-py3-none-any.whl", hash = "sha256:fa7412e2d60b011adad35f6d94b2c407b1a57cd30ea0ebc9d41e9cba83f3ff2e", size = 5613, upload-time = "2026-05-22T14:15:47.176Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/fd/0c3ad44450ca4729b99a033d37d7b01fb0870d2f64ecb4a80658d6e4d047/color_kiss-0.1.8-py3-none-any.whl", hash = "sha256:5f3eead6506edf682317e2abe8df715f48f2494f31e221e55ad41c769e982347", size = 5378, upload-time = "2026-05-24T04:29:18.419Z" },
 ]
 
 [[package]]
