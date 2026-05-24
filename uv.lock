@@ -118,11 +118,11 @@ wheels = [
 
 [[package]]
 name = "cliss"
-version = "0.3.5"
+version = "0.3.6"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/27/fe/d175123d474d69078e1007b51419c0a5d0811865ab98852dc63e652663f4/cliss-0.3.5.tar.gz", hash = "sha256:8334ed88dea65aa58dd83078beff5ffedc177f8f7464a6b5dd546ce8ac1e4120", size = 10270, upload-time = "2026-05-24T04:24:11.221Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e6/da/e618559816a321dae51fcd4ec74a97baa4cf22b183dd0057b0c3b1535b7e/cliss-0.3.6.tar.gz", hash = "sha256:d02c7f42d2dc6496f98f0bcd66d75f3ab3497a895e8f1916f2ac2f8d255517b5", size = 10174, upload-time = "2026-05-24T04:37:30.068Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/f2/be20e4853136274e2c3677fa4308517d4d96a9fd52e971dcf7feb95ea378/cliss-0.3.5-py3-none-any.whl", hash = "sha256:33a8f8ee166b4809c5ff3a07848be5791df95b6f8643c8266dc9fd96ec049b4e", size = 12054, upload-time = "2026-05-24T04:24:10.107Z" },
+    { url = "https://files.pythonhosted.org/packages/f8/c1/bb265527d2847ead07bed792a4983b7805f43d35d13e511756427d685f59/cliss-0.3.6-py3-none-any.whl", hash = "sha256:99f67f9b0df3b201562f468ecec2cde520ed12c4c409281edd17023be883fc7b", size = 11968, upload-time = "2026-05-24T04:37:31.3Z" },
 ]
 
 [[package]]
