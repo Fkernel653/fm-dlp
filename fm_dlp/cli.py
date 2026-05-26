@@ -1,23 +1,23 @@
-import sys
 from functools import lru_cache
-
-from color_kiss import BLUE, RESET
-from color_kiss.utils import error
 
 
 @lru_cache(maxsize=1)
-def get_version() -> str:
+def get_version() -> str | None:
     """Get version from installed package metadata."""
     try:
         from importlib.metadata import version
 
         return version("fm-dlp")
+    except KeyboardInterrupt:
+        pass
     except Exception:
         return "unknown"
 
 
 def main():
     from cliss import CLI
+
+    from .utils.configer import get_path, set_path
 
     app = CLI(
         name="fm-dlp",
@@ -33,30 +33,31 @@ def main():
         type: str = "track",
         proxy: str | None = None,
     ):
-        """Search for music tracks or videos on YouTube/YTMusic."""
-        try:
-            from fm_dlp.commands.search import Search
-            from fm_dlp.utils.validator import validate_input
+        """Search for music tracks or videos on YouTube/YTMusic.
 
-            validate_input(
-                platform=platform,
-                type=type,
-                proxy=proxy,
-                proxy_only_http=(platform == "yt-music"),
-            )
+        Args:
+            query: Search query string.
+            limit: Maximum number of results to return.
+            platform: Search platform — "yt-video" or "yt-music".
+            type: Content type — "track" or "album".
+            proxy: Optional proxy URL.
+        """
+        from .utils.validator import validate_input
 
-            program = Search(query, limit, type, proxy)
+        validate_input(
+            limit=limit,
+            platform=platform,
+            type=type,
+            proxy=proxy,
+            proxy_only_http=(platform == "yt-music"),
+        )
 
-            match platform:
-                case "yt-video":
-                    for video_info in program.yt_video():
-                        print(video_info)
-                case "yt-music":
-                    for track_info in program.yt_music():
-                        print(track_info)
+        from .commands.search import Search
 
-        except Exception as e:
-            sys.exit(error(str(e)))
+        program = Search(query, limit, type, proxy)
+
+        for result in program.search(platform):
+            print(result)
 
     @app.command()
     def download(
@@ -66,61 +67,76 @@ def main():
         max_concurrent: int = 5,
         quiet: bool = False,
         metadata: bool = True,
+        path: str = get_path(),
         cookies: str | None = None,
         proxy: str | None = None,
     ):
-        """Download audio or video content from supported platforms."""
-        try:
-            from fm_dlp.utils.validator import (
-                AUDIO_CODECS,
-                DEFAULT_CODEC,
-                validate_input,
-                validate_with_shutil,
-            )
+        """Download audio or video content from supported platforms.
 
-            if codec is None:
-                codec = DEFAULT_CODEC
+        Args:
+            urls: Single URL or comma/space-separated list of URLs.
+            codec: Audio codec or video container. Default depends on platform.
+            kbps: Audio bitrate in kbps (64–320).
+            max_concurrent: Maximum concurrent downloads.
+            quiet: Suppress yt-dlp output.
+            metadata: Embed metadata and thumbnail (audio only).
+            path: Download directory path.
+            cookies: Browser name for cookie extraction.
+            proxy: Optional proxy URL.
+        """
+        from .utils.validator import (
+            AUDIO_CODECS,
+            DEFAULT_CODEC,
+            validate_input,
+            validate_with_shutil,
+        )
 
-            validate_input(
-                url=urls,
+        codec = codec or DEFAULT_CODEC
+
+        validate_input(
+            url=urls,
+            codec=codec,
+            kbps=kbps,
+            max_concurrent=max_concurrent,
+            proxy=proxy,
+        )
+
+        if codec in AUDIO_CODECS:
+            validate_with_shutil("ffmpeg", "FFmpeg")
+
+            if codec == "wav" and metadata:
+                from color_kiss.utils import info
+
+                metadata = False
+                print(info("WAV format doesn't support metadata embedding"))
+
+        import asyncio
+
+        from .commands.download import Download
+
+        async def run():
+            async with Download(
+                urls=urls,
                 codec=codec,
                 kbps=kbps,
                 max_concurrent=max_concurrent,
+                quiet=quiet,
+                metadata=metadata,
+                download_path=path,
+                cookies=cookies,
                 proxy=proxy,
-            )
+            ) as downloader:
+                await downloader.download_all()
 
-            if codec in AUDIO_CODECS:
-                validate_with_shutil("ffmpeg", "FFmpeg")
-
-            if codec == "wav" and metadata:
-                metadata = False
-                print(
-                    f"{BLUE}Note: WAV format doesn't support metadata embedding{RESET}"
-                )
-
-            import asyncio
-
-            from fm_dlp.commands.download import Download
-
-            async def run_download():
-                async with Download(
-                    urls, codec, kbps, max_concurrent, quiet, metadata, cookies, proxy
-                ) as downloader:
-                    await downloader.download_all()
-
-            asyncio.run(run_download())
-
-        except Exception as e:
-            sys.exit(error(str(e)))
+        asyncio.run(run())
 
     @app.command()
     def config(path: str):
-        """Configure the application settings path."""
-        try:
-            from fm_dlp.utils.configer import set_path
+        """Configure the application settings path.
 
-            print(set_path(path))
-        except Exception as e:
-            sys.exit(error(str(e)))
+        Args:
+            path: Directory path for downloaded files.
+        """
+        print(set_path(path))
 
     app.run()

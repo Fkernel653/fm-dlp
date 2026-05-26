@@ -1,51 +1,50 @@
-"""
-YouTube search handlers.
-"""
+"""YouTube search handlers."""
 
-from dataclasses import dataclass
-from itertools import islice
-from typing import Any, Generator, cast
+from typing import Any, Generator
 
 from color_kiss import BOLD, CYAN, GRAY, GREEN, RED, RESET
+from color_kiss.utils import error, styled
 
 
-@dataclass
 class Search:
     """Handles searching across YouTube and YouTube Music."""
 
-    query: str
-    limit: int
-    type: str
-    proxy: str | None = None
+    def __init__(self, query: str, limit: int, type: str, proxy: str | None = None):
+        self.query = query
+        self.limit = limit
+        self.type = type
+        self.proxy = proxy
+        self._is_track = type == "track"
 
     @staticmethod
-    def _fmt_views(v) -> str:
-        """Format view count with thousands separator."""
-        return f"{int(v):,}" if v else "N/A"
+    def _fmt_views(v: str) -> str:
+        try:
+            return f"{int(v):,}"
+        except ValueError:
+            return v
 
     @staticmethod
-    def _fmt_duration(d) -> str:
-        """Convert seconds to HH:MM:SS or MM:SS string."""
-        if not d:
-            return "N/A"
-        s = int(d)
-        h, remainder = divmod(s, 3600)
-        m, s = divmod(remainder, 60)
-        return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
+    def _fmt_duration(d: str) -> str:
+        if ":" in d:
+            return d
+        try:
+            s = int(d)
+            h, remainder = divmod(s, 3600)
+            m, s = divmod(remainder, 60)
+            return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
+        except ValueError:
+            return d
 
     @staticmethod
     def _extract_artist(item: dict) -> str:
-        """Extract artist name from ytmusicapi track dict."""
         artists = item.get("artists")
         if artists and artists[0]:
             return artists[0].get("name", "Unknown Artist")
         return "Unknown Artist"
 
     def _format_result(
-        self, num: int, title: str, artist: str, url: str, **kwargs
+        self, num: int, title: str, artist: str, url: str, **kwargs: Any
     ) -> str:
-        """Build formatted output string for a single search result."""
-
         tree = f"    {GRAY}├─{RESET}"
         corner = f"    {GRAY}└─{RESET}"
         sep = f" {GRAY}│{RESET} "
@@ -56,7 +55,7 @@ class Search:
             f"{tree} {artist}",
         ]
 
-        if self.type == "track":
+        if self._is_track:
             views = kwargs.get("views", "N/A")
             duration = kwargs.get("duration", "N/A")
             lines.append(f"{tree} {views}{sep}{duration}")
@@ -64,12 +63,10 @@ class Search:
             lines.append(f"{tree} {kwargs.get('year', 'N/A')}")
 
         lines.append(f"{corner} {RED}{url}{RESET}\n{div}")
-
         return "\n".join(lines)
 
-    def _ytdl_opts(self) -> dict[str, Any]:
-        """Return base yt-dlp options for video search."""
-        opts: dict[str, Any] = {
+    def _ytdl_opts(self) -> dict[str, Any]:  # type: ignore[explicit-any]
+        return {
             "proxy": self.proxy or None,
             "quiet": True,
             "extract_flat": True,
@@ -81,112 +78,84 @@ class Search:
                 }
             },
         }
-        return opts
 
     def yt_video(self) -> Generator[str, None, None]:
-        """Search YouTube videos using yt-dlp."""
         try:
             from yt_dlp import YoutubeDL
 
-            search_type = "playlist" if self.type == "album" else "video"
-            opts: Any = self._ytdl_opts()
-            with YoutubeDL(opts) as ydl:
+            search_type = "playlist" if not self._is_track else "video"
+            with YoutubeDL(self._ytdl_opts()) as ydl:  # type: ignore[explicit-any]
                 info = ydl.extract_info(
                     f"ytsearch{self.limit}:{search_type}:{self.query}", download=False
                 )
-                videos = info.get("entries") or []
+                entries = info.get("entries", [])  # type: ignore[assignment]
 
-            if not videos:
-                yield f"{RED}\nNo videos matching {RESET}'{self.query}'"
+            if not entries:
+                yield error(f"No videos matching '{self.query}'\n")
                 return
 
-            results = []
-            videos_list: Any = videos
-            for v in islice(videos_list, self.limit):
-                v = cast(dict, v)
+            for num, v in enumerate(entries, 1):  # type: ignore[arg-type]
                 if vid_id := v.get("id"):
-                    results.append(
-                        (
-                            v.get("title", "N/A"),
-                            v.get("channel", "N/A"),
-                            f"https://youtu.be/{vid_id}",
-                            self._fmt_views(v.get("view_count")),
-                            self._fmt_duration(v.get("duration")),
-                        )
+                    yield self._format_result(
+                        num,
+                        title=v.get("title", "N/A"),
+                        artist=v.get("channel", "N/A"),
+                        url=f"https://youtu.be/{vid_id}",
+                        views=self._fmt_views(v.get("view_count")),
+                        duration=self._fmt_duration(v.get("duration")),
                     )
 
-            for num, (title, channel, url, views, duration) in enumerate(results, 1):
-                yield self._format_result(
-                    num,
-                    title=title,
-                    artist=channel,
-                    url=url,
-                    views=views,
-                    duration=duration,
-                )
-
         except KeyboardInterrupt:
-            yield f"{GREEN}Goodbye!{RESET}"
+            yield styled("\nGoodbye!\n", GREEN)
         except Exception as e:
-            yield f"{RED}Youtube-Video error: {e}{RESET}"
+            yield styled(f"\nYoutube-Video error: {e}\n", RED)
 
     def yt_music(self) -> Generator[str, None, None]:
-        """Search YouTube Music for tracks or albums."""
         try:
             from ytmusicapi import YTMusic
 
-            search_type = "albums" if self.type == "album" else "songs"
-
+            search_type = "albums" if not self._is_track else "songs"
             yt = YTMusic(
-                proxies={"http": self.proxy, "https": self.proxy}
-                if self.proxy
-                else None
+                {"http": self.proxy, "https": self.proxy} if self.proxy else None
             )
             tracks = yt.search(query=self.query, limit=self.limit, filter=search_type)
 
             if not tracks:
-                yield f"{RED}\nNo tracks found for '{self.query}' on YouTube Music\n{RESET}"
+                yield error(f"No tracks found for '{self.query}' on YouTube Music\n")
                 return
 
-            results = []
-            for t in islice(tracks, self.limit):
-                t = cast(dict, t)
-                if self.type == "track":
-                    if vid_id := t.get("videoId"):
-                        results.append(
-                            (
-                                t.get("title", "Unknown Track"),
-                                self._extract_artist(t),
-                                f"https://music.youtube.com/watch?v={vid_id}",
-                                t.get("views", "N/A"),
-                                t.get("duration", "N/A"),
-                                None,
-                            )
-                        )
-                else:
-                    if pl_id := t.get("playlistId"):
-                        results.append(
-                            (
-                                t.get("title", "Unknown Track"),
-                                self._extract_artist(t),
-                                f"https://music.youtube.com/playlist?list={pl_id}",
-                                None,
-                                None,
-                                t.get("year", "N/A"),
-                            )
-                        )
+            from itertools import islice
 
-            for num, (title, artist, url, views, duration, year) in enumerate(
-                results, 1
-            ):
-                kwargs = (
-                    {"views": views, "duration": duration}
-                    if self.type == "track"
-                    else {"year": year}
-                )
-                yield self._format_result(num, title, artist, url, **kwargs)
+            for num, t in enumerate(islice(tracks, self.limit), 1):
+                if self._is_track:
+                    if vid_id := t.get("videoId"):
+                        yield self._format_result(
+                            num,
+                            title=t.get("title", "Unknown Track"),
+                            artist=self._extract_artist(t),
+                            url=f"https://music.youtube.com/watch?v={vid_id}",
+                            views=self._fmt_views(t.get("views", "N/A")),
+                            duration=self._fmt_duration(t.get("duration", "N/A")),
+                        )
+                elif pl_id := t.get("playlistId"):
+                    yield self._format_result(
+                        num,
+                        title=t.get("title", "Unknown Track"),
+                        artist=self._extract_artist(t),
+                        url=f"https://music.youtube.com/playlist?list={pl_id}",
+                        year=t.get("year", "N/A"),
+                    )
 
         except KeyboardInterrupt:
-            yield f"{GREEN}Goodbye!{RESET}"
+            yield styled("\nGoodbye!\n", GREEN)
         except Exception as e:
-            yield f"{RED}Youtube-Music error: {e}{RESET}"
+            yield styled(f"\nYoutube-Music error: {e}\n", RED)
+
+    def search(self, platform: str) -> Generator[str, None, None]:
+        match platform:
+            case "yt-video":
+                yield from self.yt_video()
+            case "yt-music":
+                yield from self.yt_music()
+            case _:
+                return

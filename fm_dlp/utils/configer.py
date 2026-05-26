@@ -1,101 +1,65 @@
-"""
-Persistent download path storage using JSON config file.
-Cross-platform config management via platformdirs.
-"""
+"""Persistent download path storage using JSON config file."""
 
 import json
 import sys
+from functools import lru_cache
 from pathlib import Path
 
-from color_kiss import BLUE, GRAY
-from color_kiss.utils import error, styled, success
+from color_kiss.utils import error, info, success
 from platformdirs import user_config_dir
 
-# Cross-platform paths:
-# Windows: %APPDATA%/fm-dlp/
-# macOS:   ~/Library/Application Support/fm-dlp/
-# Linux:   ~/.config/fm-dlp/
 CONFIG_DIR = Path(user_config_dir("fm-dlp"))
 CONFIG_FILE = CONFIG_DIR / "config.json"
 HOME_PATH = str(Path.home())
-
 KEY_NAME = "path"
 
 
 def _ensure_config_dir() -> None:
-    """Create config directory if it doesn't exist."""
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
 
+@lru_cache(maxsize=1)
 def _load_config() -> dict:
-    """Load config file or return empty dict if not exists."""
     if not CONFIG_FILE.exists():
         return {}
-
     try:
         return json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, FileNotFoundError):
+    except (json.JSONDecodeError, OSError):
         error("Config file is corrupted. Creating new one...")
         return {}
 
 
 def _save_config(data: dict) -> None:
-    """Save config data to file."""
     _ensure_config_dir()
-    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
+    CONFIG_FILE.write_text(
+        json.dumps(data, ensure_ascii=False, indent=4),
+        encoding="utf-8",
+    )
 
 
 def set_path(path: str) -> str:
-    """
-    Manage download directory storage.
-    - With path: saves to config.json
-    - Without path: displays current config
-    """
     try:
         input_path = Path(path).expanduser().resolve()
         if not input_path.is_dir():
             sys.exit(error("Please enter the correct path!"))
 
-        path_str = str(input_path)
-
-        _ensure_config_dir()
-        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-            json.dump({KEY_NAME: path_str}, f, ensure_ascii=False, indent=4)
-
-        return success(f"\nPath: {path_str}\nConfig file: {CONFIG_FILE}")
+        _save_config({KEY_NAME: str(input_path)})
+        _load_config.cache_clear()
+        return success(f"\nPath: {input_path}\nConfig file: {CONFIG_FILE}")
     except PermissionError:
-        return error(f"\nPermission denied! Cannot write to {CONFIG_FILE}")
+        return error(f"Permission denied! Cannot write to {CONFIG_FILE}")
     except OSError as e:
-        return error(f"\nError saving configuration: {e}")
+        return error(f"Error saving configuration: {e}")
 
 
 def get_path() -> str:
-    """
-    Get configured download path or prompt user to set one.
-
-    Returns:
-        str: Valid download path or None if not configured
-    """
     if not CONFIG_FILE.exists():
-        error("\nConfig file not found!\n")
-        styled("Run: fm-dlp config /path or continue in the home directory\n", GRAY)
-        user_input = input(
-            styled("Do you want to continue in the home directory? (Y/n): ", BLUE)
-        )
-        if user_input.lower() == "y":
-            return HOME_PATH
-        else:
-            sys.exit(1)
-
-    try:
-        data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, FileNotFoundError):
-        sys.exit(error("\nConfig file is corrupted."))
-
+        print(info("Config file not found! Home directory is used"))
+        return HOME_PATH
+    data = _load_config()
     download_path = data.get(KEY_NAME)
 
     if not download_path or not Path(download_path).is_dir():
-        sys.exit(error("\nDownload path does not exist."))
+        sys.exit(error("Download path does not exist."))
 
     return download_path
