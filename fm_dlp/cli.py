@@ -17,8 +17,6 @@ def get_version() -> str | None:
 def main():
     from cliss import CLI
 
-    from .utils.configer import get_path, set_path
-
     app = CLI(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
@@ -67,7 +65,7 @@ def main():
         max_concurrent: int = 5,
         quiet: bool = False,
         metadata: bool = True,
-        path: str = get_path(),
+        path: str | None = None,
         cookies: str | None = None,
         proxy: str | None = None,
     ):
@@ -100,6 +98,11 @@ def main():
             max_concurrent=max_concurrent,
             proxy=proxy,
         )
+
+        if path is None:
+            from .utils.configer import get_path
+
+            path = get_path()
 
         if codec in AUDIO_CODECS:
             validate_with_shutil("ffmpeg", "FFmpeg")
@@ -137,6 +140,8 @@ def main():
         Args:
             path: Directory path for downloaded files.
         """
+        from .utils.configer import set_path
+
         print(set_path(path))
 
     app.run()
