@@ -17,23 +17,27 @@ class Search:
         self._is_track = type == "track"
 
     @staticmethod
-    def _fmt_views(v: str) -> str:
+    def _fmt_views(v: Any) -> Any:
+        if v is None:
+            return "N/A"
         try:
-            return f"{int(v):,}"
-        except ValueError:
-            return v
+            return f"{int(float(v)):,}"
+        except (ValueError, TypeError):
+            return str(v) if v else "N/A"
 
     @staticmethod
-    def _fmt_duration(d: str) -> str:
-        if ":" in d:
-            return d
+    def _fmt_duration(d: Any) -> Any:
+        d_str = str(d) if d is not None else ""
+        if ":" in d_str:
+            return d_str
+
         try:
-            s = int(d)
+            s = int(float(d)) if d else 0
             h, remainder = divmod(s, 3600)
             m, s = divmod(remainder, 60)
             return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
-        except ValueError:
-            return d
+        except (ValueError, TypeError):
+            return d_str or "N/A"
 
     @staticmethod
     def _extract_artist(item: dict) -> str:
