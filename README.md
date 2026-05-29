@@ -12,7 +12,7 @@ Download high-quality music and video from YouTube, YouTube Music, and 1000+ sit
 ```bash
 pip install fm-dlp          # Requires Python 3.10+ & FFmpeg
 fm-dlp config ~/Music        # Set download directory
-fm-dlp search "artist"       # Search tracks
+fm-dlp search "artist"       # Search tracks (YouTube Music by default)
 fm-dlp download "URL" --codec flac  # Download audio
 ```
 
@@ -20,29 +20,29 @@ fm-dlp download "URL" --codec flac  # Download audio
 
 ### `search` — Find music
 ```bash
-fm-dlp search <query> [--limit 10] [--platform yt-music|yt-video] [--type track|album]
+fm-dlp search <query> [--limit 10] [--yt-video] [--type track|album]
 ```
+Search uses **YouTube Music by default**. Use `--yt-video` to search YouTube instead.
+
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--platform` | `yt-music` | `yt-music`, `yt-video` |
+| `--yt-video` | — | Search YouTube instead of YTMusic |
 | `--type` | `track` | `track`, `album` |
 | `--limit` | 10 | Results count |
-| `--proxy` | — | Proxy URL |
 
 ### `download` — Download audio/video
 ```bash
-fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--max-concurrent 5] [--quiet] [--no-metadata]
+fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--jobs 5] [--quiet] [--no-metadata]
 ```
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--codec` | `m4a`/`opus` | Audio: `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`<br>Video: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
+| `--codec` | `m4a`/`opus` | Audio: `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav` Video: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
 | `--kbps` | 256 | Bitrate 64–320 (audio) |
-| `--max-concurrent` | 5 | Parallel downloads |
+| `--jobs` | 5 | Parallel downloads |
 | `--quiet` | — | Suppress yt-dlp output |
 | `--no-metadata` | — | Skip metadata embedding |
 | `--path` | config | Override download directory |
 | `--cookies` | — | Browser: `chrome`, `firefox`, `edge` |
-| `--proxy` | — | `http://`, `socks5://`, etc. |
 
 ### `config` — Set download path
 ```bash
@@ -53,8 +53,9 @@ fm-dlp config ~/Music
 
 ```bash
 # Search
-fm-dlp search "Sewerslvt" --limit 10
+fm-dlp search "Sewerslvt" --limit 10          # YTMusic
 fm-dlp search "usedcvnt" --type album
+fm-dlp search "breakcore" --yt-video               # YouTube
 
 # Audio
 fm-dlp download "URL" --codec mp3 --kbps 320
@@ -68,8 +69,8 @@ fm-dlp download "URL" --codec mkv
 fm-dlp download "URL" --path ~/Downloads
 
 # Advanced
-fm-dlp download "URL" --cookies firefox --proxy socks5://127.0.0.1:9050
-fm-dlp download "URL1 URL2 URL3" --quiet --max-concurrent 10
+fm-dlp download "URL" --cookies firefox
+fm-dlp download "URL1 URL2 URL3" --quiet --jobs 10
 ```
 
 ## 🔧 Dependencies
@@ -90,7 +91,10 @@ fm-dlp download "URL1 URL2 URL3" --quiet --max-concurrent 10
 
 **Why M4A on macOS?** macOS treats M4A/AAC as native (Finder, Music.app). Linux/Windows default to Opus for better quality. Override with `--codec`.
 
-**Proxy support?** HTTP/HTTPS works everywhere. SOCKS only for download and yt-video search.
+**How to use a proxy?** fm-dlp doesn't include built-in proxy support. Use [proxychains](https://github.com/haad/proxychains) or similar tools:
+```bash
+proxychains fm-dlp download "URL"
+```
 
 ## 📄 License
 

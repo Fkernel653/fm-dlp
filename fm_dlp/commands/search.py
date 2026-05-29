@@ -9,11 +9,10 @@ from color_kiss.utils import error, styled
 class Search:
     """Handles searching across YouTube and YouTube Music."""
 
-    def __init__(self, query: str, limit: int, type: str, proxy: str | None = None):
+    def __init__(self, query: str, limit: int, type: str):
         self.query = query
         self.limit = limit
         self.type = type
-        self.proxy = proxy
         self._is_track = type == "track"
 
     @staticmethod
@@ -71,7 +70,6 @@ class Search:
 
     def _ytdl_opts(self) -> dict[str, Any]:  # type: ignore[explicit-any]
         return {
-            "proxy": self.proxy or None,
             "quiet": True,
             "extract_flat": True,
             "cachedir": False,
@@ -119,9 +117,7 @@ class Search:
             from ytmusicapi import YTMusic
 
             search_type = "albums" if not self._is_track else "songs"
-            yt = YTMusic(
-                {"http": self.proxy, "https": self.proxy} if self.proxy else None
-            )
+            yt = YTMusic()
             tracks = yt.search(query=self.query, limit=self.limit, filter=search_type)
 
             if not tracks:

@@ -27,22 +27,20 @@ class Download:
         urls: str,
         codec: str,
         kbps: int,
-        max_concurrent: int,
+        jobs: int,
         quiet: bool,
         metadata: bool,
-        download_path: str,
+        path: str,
         cookies: str | None = None,
-        proxy: str | None = None,
     ):
         self.urls = urls
         self.codec = codec
         self.kbps = kbps
-        self.max_concurrent = max_concurrent
+        self.jobs = jobs
         self.quiet = quiet
         self.metadata = metadata
-        self.download_path = download_path
+        self.path = path
         self.cookies = cookies
-        self.proxy = proxy
         self._executor: ThreadPoolExecutor | None = None
         self._url_list = self._parse_urls()
 
@@ -50,7 +48,7 @@ class Download:
         return [u.strip() for u in self.urls.replace(",", " ").split() if u.strip()]
 
     async def __aenter__(self):
-        self._executor = ThreadPoolExecutor(max_workers=self.max_concurrent)
+        self._executor = ThreadPoolExecutor(max_workers=self.jobs)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -62,7 +60,7 @@ class Download:
         return self._aiter()
 
     async def _aiter(self):
-        sem = asyncio.Semaphore(self.max_concurrent)
+        sem = asyncio.Semaphore(self.jobs)
 
         async def download_one(url):
             async with sem:
@@ -78,8 +76,8 @@ class Download:
         base_opts: dict[str, Any] = {
             "quiet": self.quiet,
             "no_warnings": self.quiet,
-            "outtmpl": f"{self.download_path}/%(title)s.%(ext)s",
-            "concurrent_fragment_downloads": self.max_concurrent,
+            "outtmpl": f"{self.path}/%(title)s.%(ext)s",
+            "concurrent_fragment_downloads": self.jobs,
             "extractor_retries": 3,
         }
 
@@ -108,8 +106,6 @@ class Download:
             )
             base_opts.update(format=format_str, merge_output_format=self.codec)
 
-        if self.proxy:
-            base_opts["proxy"] = self.proxy
         if self.cookies:
             base_opts["cookiesfrombrowser"] = self.cookies
 

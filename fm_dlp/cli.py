@@ -27,34 +27,29 @@ def main():
     def search(
         query: str,
         limit: int = 10,
-        platform: str = "yt-music",
+        yt_video: bool = False,
         type: str = "track",
-        proxy: str | None = None,
     ):
         """Search for music tracks or videos on YouTube/YTMusic.
 
         Args:
             query: Search query string.
             limit: Maximum number of results to return.
-            platform: Search platform — "yt-video" or "yt-music".
+            yt-video: Search for Youtube videos.
             type: Content type — "track" or "album".
-            proxy: Optional proxy URL.
         """
         from .utils.validator import validate_input
 
         validate_input(
             limit=limit,
-            platform=platform,
             type=type,
-            proxy=proxy,
-            proxy_only_http=(platform == "yt-music"),
         )
 
         from .commands.search import Search
 
-        program = Search(query, limit, type, proxy)
+        program = Search(query, limit, type)
 
-        for result in program.search(platform):
+        for result in program.search("yt-video" if yt_video else "yt-music"):
             print(result)
 
     @app.command()
@@ -62,12 +57,11 @@ def main():
         urls: str,
         codec: str | None = None,
         kbps: int = 256,
-        max_concurrent: int = 5,
+        jobs: int = 5,
         quiet: bool = False,
         metadata: bool = True,
         path: str | None = None,
         cookies: str | None = None,
-        proxy: str | None = None,
     ):
         """Download audio or video content from supported platforms.
 
@@ -75,12 +69,11 @@ def main():
             urls: Single URL or comma/space-separated list of URLs.
             codec: Audio codec or video container. Default depends on platform.
             kbps: Audio bitrate in kbps (64–320).
-            max_concurrent: Maximum concurrent downloads.
+            jobs: Maximum concurrent downloads.
             quiet: Suppress yt-dlp output.
             metadata: Embed metadata and thumbnail (audio only).
             path: Download directory path.
             cookies: Browser name for cookie extraction.
-            proxy: Optional proxy URL.
         """
         from .utils.validator import (
             AUDIO_CODECS,
@@ -95,8 +88,7 @@ def main():
             url=urls,
             codec=codec,
             kbps=kbps,
-            max_concurrent=max_concurrent,
-            proxy=proxy,
+            jobs=jobs,
         )
 
         if path is None:
@@ -122,12 +114,11 @@ def main():
                 urls=urls,
                 codec=codec,
                 kbps=kbps,
-                max_concurrent=max_concurrent,
+                jobs=jobs,
                 quiet=quiet,
                 metadata=metadata,
-                download_path=path,
+                path=path,
                 cookies=cookies,
-                proxy=proxy,
             ) as downloader:
                 await downloader.download_all()
 
