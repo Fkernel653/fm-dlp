@@ -115,19 +115,26 @@ class Download:
         if not self._url_list:
             return
         async for result in self:
-            print(result)
+            if result is not None:
+                print(result)
 
-    async def _download_url(self, url: str) -> str:
+    async def _download_url(self, url: str) -> str | None:
+        import sys
+
         from color_kiss import BOLD, GREEN, YELLOW
-        from color_kiss.utils import styled
+        from color_kiss.utils import info, styled
         from yt_dlp.utils import DownloadError
+
+        if self.codec == "wav" and self.metadata:
+            self.metadata = False
+            print(info("WAV format doesn't support metadata embedding"))
 
         print(styled(f"\nStarting: {url}\n", YELLOW, BOLD))
         try:
             await asyncio.to_thread(self._sync_download, url)
             return styled(f"\nDone: {url}\n", GREEN, BOLD)
         except DownloadError:
-            return ""
+            return sys.exit(1)
 
     def _sync_download(self, url: str):
         from yt_dlp import YoutubeDL

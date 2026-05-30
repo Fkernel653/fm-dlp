@@ -75,6 +75,7 @@ def main():
             path: Download directory path.
             cookies: Browser name for cookie extraction.
         """
+        from .utils.configer import get_path
         from .utils.validator import (
             AUDIO_CODECS,
             DEFAULT_CODEC,
@@ -83,6 +84,7 @@ def main():
         )
 
         codec = codec or DEFAULT_CODEC
+        path = path or get_path()
 
         validate_input(
             url=urls,
@@ -91,19 +93,8 @@ def main():
             jobs=jobs,
         )
 
-        if path is None:
-            from .utils.configer import get_path
-
-            path = get_path()
-
         if codec in AUDIO_CODECS:
             validate_with_shutil("ffmpeg", "FFmpeg")
-
-            if codec == "wav" and metadata:
-                from color_kiss.utils import info
-
-                metadata = False
-                print(info("WAV format doesn't support metadata embedding"))
 
         import asyncio
 

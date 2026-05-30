@@ -16,17 +16,19 @@ class Search:
         self._is_track = type == "track"
 
     @staticmethod
-    def _fmt_views(v: Any) -> Any:
+    def _fmt_views(v: Any) -> str:
         if v is None:
             return "N/A"
         try:
             return f"{int(float(v)):,}"
         except (ValueError, TypeError):
-            return str(v) if v else "N/A"
+            return str(v)
 
     @staticmethod
-    def _fmt_duration(d: Any) -> Any:
-        d_str = str(d) if d is not None else ""
+    def _fmt_duration(d: Any) -> str:
+        if d is None:
+            return "N/A"
+        d_str = str(d)
         if ":" in d_str:
             return d_str
 
@@ -36,7 +38,7 @@ class Search:
             m, s = divmod(remainder, 60)
             return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
         except (ValueError, TypeError):
-            return d_str or "N/A"
+            return d_str
 
     @staticmethod
     def _extract_artist(item: dict) -> str:
@@ -157,5 +159,3 @@ class Search:
                 yield from self.yt_video()
             case "yt-music":
                 yield from self.yt_music()
-            case _:
-                return
