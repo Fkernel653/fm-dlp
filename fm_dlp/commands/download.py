@@ -119,7 +119,6 @@ class Download:
                 print(result)
 
     async def _download_url(self, url: str) -> str | None:
-        import sys
 
         from color_kiss import BOLD, GREEN, YELLOW
         from color_kiss.utils import info, styled
@@ -134,7 +133,7 @@ class Download:
             await asyncio.to_thread(self._sync_download, url)
             return styled(f"\nDone: {url}\n", GREEN, BOLD)
         except DownloadError:
-            return sys.exit(1)
+            return
 
     def _sync_download(self, url: str):
         from yt_dlp import YoutubeDL
