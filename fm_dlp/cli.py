@@ -38,6 +38,7 @@ def main():
             yt-video: Search for Youtube videos.
             type: Content type — "track" or "album".
         """
+        from .utils.functions import echo
         from .utils.validator import validate_input
 
         validate_input(
@@ -50,7 +51,7 @@ def main():
         program = Search(query, limit, type)
 
         for result in program.search("yt-video" if yt_video else "yt-music"):
-            print(result)
+            echo(result)
 
     @app.command()
     def download(
@@ -123,7 +124,8 @@ def main():
             path: Directory path for downloaded files.
         """
         from .utils.configer import set_path
+        from .utils.functions import echo
 
-        print(set_path(path))
+        echo(set_path(path))
 
     app.run()

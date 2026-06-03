@@ -4,6 +4,8 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
+from fm_dlp.utils.functions import echo
+
 AUDIO_CODECS = frozenset({"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"})
 
 VIDEO_CONTAINER_AUDIO_MAP = {
@@ -116,7 +118,7 @@ class Download:
             return
         async for result in self:
             if result is not None:
-                print(result)
+                echo(result)
 
     async def _download_url(self, url: str) -> str | None:
 
@@ -126,9 +128,9 @@ class Download:
 
         if self.codec == "wav" and self.metadata:
             self.metadata = False
-            print(info("WAV format doesn't support metadata embedding"))
+            echo(info("WAV format doesn't support metadata embedding"))
 
-        print(styled(f"\nStarting: {url}\n", YELLOW, BOLD))
+        echo(styled(f"\nStarting: {url}\n", YELLOW, BOLD))
         try:
             await asyncio.to_thread(self._sync_download, url)
             return styled(f"\nDone: {url}\n", GREEN, BOLD)

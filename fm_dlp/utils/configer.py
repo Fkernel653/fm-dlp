@@ -39,9 +39,12 @@ def _save_config(data: dict) -> None:
 
 def set_path(path: str) -> str:
     try:
+        from functions import echo
+
         input_path = Path(path).expanduser().resolve()
         if not input_path.is_dir():
-            sys.exit(error("Please enter the correct path!"))
+            echo(error("Please enter the correct path!"), file=sys.stderr)
+            sys.exit(1)
 
         _save_config({KEY_NAME: str(input_path)})
         _load_config.cache_clear()
@@ -53,13 +56,16 @@ def set_path(path: str) -> str:
 
 
 def get_path() -> str:
+    from functions import echo
+
     if not CONFIG_FILE.exists():
-        print(info("Config file not found! Home directory is used"))
+        echo(info("Config file not found! Home directory is used"), file=sys.stderr)
         return HOME_PATH
     data = _load_config()
     download_path = data.get(KEY_NAME)
 
     if not download_path or not Path(download_path).is_dir():
-        sys.exit(error("Download path does not exist."))
+        echo(error("Download path does not exist."), file=sys.stderr)
+        sys.exit(1)
 
     return download_path
