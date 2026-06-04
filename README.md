@@ -42,7 +42,7 @@ fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--jobs 5] [--quiet] [--no-m
 | `--quiet` | — | Suppress yt-dlp output |
 | `--no-metadata` | — | Skip metadata embedding |
 | `--path` | config | Override download directory |
-| `--cookies` | — | Browser: `chrome`, `firefox`, `edge` |
+| `--cookies` | — | Path to cookies file OR browser name (`chrome`, `firefox`, `edge`, `safari`, `brave`, `opera`) |
 
 ### `config` — Set download path
 ```bash
@@ -55,7 +55,7 @@ fm-dlp config ~/Music
 # Search
 fm-dlp search "Sewerslvt" --limit 10          # YTMusic
 fm-dlp search "usedcvnt" --type album
-fm-dlp search "breakcore" --yt-video               # YouTube
+fm-dlp search "breakcore" --yt-video          # YouTube
 
 # Audio
 fm-dlp download "URL" --codec mp3 --kbps 320
@@ -70,6 +70,7 @@ fm-dlp download "URL" --path ~/Downloads
 
 # Advanced
 fm-dlp download "URL" --cookies firefox
+fm-dlp download "URL" --cookies /path/to/cookies.txt
 fm-dlp download "URL1 URL2 URL3" --quiet --jobs 10
 ```
 
@@ -90,6 +91,8 @@ fm-dlp download "URL1 URL2 URL3" --quiet --jobs 10
 **Why fm-dlp over yt-dlp?** Simplifies complex flags into clean commands: readable search output, single `--codec` option, automatic metadata tagging.
 
 **Why M4A on macOS?** macOS treats M4A/AAC as native (Finder, Music.app). Linux/Windows default to Opus for better quality. Override with `--codec`.
+
+**How to use cookies?** Provide either browser name for automatic extraction (`--cookies firefox`) or path to exported cookies file (`--cookies cookies.txt`).
 
 **How to use a proxy?** fm-dlp doesn't include built-in proxy support. Use [proxychains](https://github.com/haad/proxychains) or similar tools:
 ```bash

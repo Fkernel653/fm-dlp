@@ -109,7 +109,13 @@ class Download:
             base_opts.update(format=format_str, merge_output_format=self.codec)
 
         if self.cookies:
-            base_opts["cookiesfrombrowser"] = self.cookies
+            from pathlib import Path
+
+            cookie_path = Path(self.cookies)
+            if cookie_path.is_file():
+                base_opts["cookiefile"] = str(cookie_path)
+            else:
+                base_opts["cookiesfrombrowser"] = self.cookies
 
         return base_opts
 

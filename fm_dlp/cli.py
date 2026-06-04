@@ -74,7 +74,9 @@ def main():
             quiet: Suppress yt-dlp output.
             metadata: Embed metadata and thumbnail (audio only).
             path: Download directory path.
-            cookies: Browser name for cookie extraction.
+            cookies: Path to cookies file (e.g., 'cookies.txt') or browser name
+                         (e.g., 'chrome', 'firefox', 'edge', 'safari', 'brave', 'opera')
+                         for cookie extraction.
         """
         from .utils.configer import get_path
         from .utils.validator import (
