@@ -39,7 +39,7 @@ def _save_config(data: dict) -> None:
 
 def set_path(path: str) -> str:
     try:
-        from functions import echo
+        from .functions import echo
 
         input_path = Path(path).expanduser().resolve()
         if not input_path.is_dir():
@@ -56,7 +56,7 @@ def set_path(path: str) -> str:
 
 
 def get_path() -> str:
-    from functions import echo
+    from .functions import echo
 
     if not CONFIG_FILE.exists():
         echo(info("Config file not found! Home directory is used"), file=sys.stderr)
