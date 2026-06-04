@@ -59,7 +59,7 @@ def get_path() -> str:
     from .functions import echo
 
     if not CONFIG_FILE.exists():
-        echo(info("Config file not found! Home directory is used"), file=sys.stderr)
+        echo(info("Config file not found! Home directory is used"))
         return HOME_PATH
     data = _load_config()
     download_path = data.get(KEY_NAME)
