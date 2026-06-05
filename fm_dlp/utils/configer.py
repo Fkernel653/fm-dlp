@@ -8,6 +8,8 @@ from pathlib import Path
 from color_kiss.utils import error, info, success
 from platformdirs import user_config_dir
 
+from .functions import echo
+
 CONFIG_DIR = Path(user_config_dir("fm-dlp"))
 CONFIG_FILE = CONFIG_DIR / "config.json"
 HOME_PATH = str(Path.home())
@@ -25,7 +27,7 @@ def _load_config() -> dict:
     try:
         return json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
-        error("Config file is corrupted. Creating new one...")
+        echo(error("Config file is corrupted. Creating new one..."))
         return {}
 
 
@@ -39,8 +41,6 @@ def _save_config(data: dict) -> None:
 
 def set_path(path: str) -> str:
     try:
-        from .functions import echo
-
         input_path = Path(path).expanduser().resolve()
         if not input_path.is_dir():
             echo(error("Please enter the correct path!"), file=sys.stderr)
@@ -56,8 +56,6 @@ def set_path(path: str) -> str:
 
 
 def get_path() -> str:
-    from .functions import echo
-
     if not CONFIG_FILE.exists():
         echo(info("Config file not found! Home directory is used"))
         return HOME_PATH

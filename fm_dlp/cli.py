@@ -78,15 +78,16 @@ def main():
                          (e.g., 'chrome', 'firefox', 'edge', 'safari', 'brave', 'opera')
                          for cookie extraction.
         """
+        import sys
+
         from .utils.configer import get_path
         from .utils.validator import (
             AUDIO_CODECS,
-            DEFAULT_CODEC,
             validate_input,
             validate_with_shutil,
         )
 
-        codec = codec or DEFAULT_CODEC
+        codec = codec or "m4a" if sys.platform == "darwin" else "opus"
         path = path or get_path()
 
         validate_input(

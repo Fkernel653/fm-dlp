@@ -1,14 +1,12 @@
 """Input validation module for fm-dlp CLI application."""
 
-import sys
-from typing import Any, Literal, TypeAlias
+from typing import Any, Literal
 
 AUDIO_CODECS = ("mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav")
 VIDEO_CONTAINERS = ("mp4", "mov", "mkv", "webm", "avi", "flv")
 ALL_CODECS = AUDIO_CODECS + VIDEO_CONTAINERS
-DEFAULT_CODEC = "m4a" if sys.platform == "darwin" else "opus"
 
-Codec: TypeAlias = Literal[
+Codec = Literal[
     "mp3",
     "aac",
     "flac",
@@ -23,7 +21,7 @@ Codec: TypeAlias = Literal[
     "avi",
     "flv",
 ]
-SearchType: TypeAlias = Literal["track", "album"]
+SearchType = Literal["track", "album"]
 
 
 class ValidationError(ValueError):
