@@ -5,7 +5,7 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 
-from color_kiss.utils import error, info, success
+from color_kiss.utils import error, success
 from platformdirs import user_config_dir
 
 from .functions import echo
@@ -57,7 +57,6 @@ def set_path(path: str) -> str:
 
 def get_path() -> str:
     if not CONFIG_FILE.exists():
-        echo(info("Config file not found! Home directory is used"))
         return HOME_PATH
     data = _load_config()
     download_path = data.get(KEY_NAME)

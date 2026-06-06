@@ -15,6 +15,7 @@ def get_version() -> str | None:
 
 
 def main():
+
     from cliss import CLI
 
     app = CLI(
@@ -41,10 +42,11 @@ def main():
         from .utils.functions import echo
         from .utils.validator import validate_input
 
-        validate_input(
+        if not validate_input(
             limit=limit,
-            type=type,
-        )
+            search_type=type,
+        ):
+            return
 
         from .commands.search import Search
 
@@ -90,12 +92,13 @@ def main():
         codec = codec or "m4a" if sys.platform == "darwin" else "opus"
         path = path or get_path()
 
-        validate_input(
+        if not validate_input(
             url=urls,
             codec=codec,
             kbps=kbps,
             jobs=jobs,
-        )
+        ):
+            return
 
         if codec in AUDIO_CODECS:
             validate_with_shutil("ffmpeg", "FFmpeg")

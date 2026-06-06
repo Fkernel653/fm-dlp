@@ -119,8 +119,10 @@ class Search:
             from ytmusicapi import YTMusic
 
             search_type = "albums" if not self._is_track else "songs"
-            yt = YTMusic()
-            tracks = yt.search(query=self.query, limit=self.limit, filter=search_type)
+            ytmusic = YTMusic()
+            tracks = ytmusic.search(
+                query=self.query, limit=self.limit, filter=search_type
+            )
 
             if not tracks:
                 yield error(f"No tracks found for '{self.query}' on YouTube Music\n")

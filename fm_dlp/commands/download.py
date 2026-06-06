@@ -129,7 +129,8 @@ class Download:
     async def _download_url(self, url: str) -> str | None:
 
         from color_kiss import BOLD, GREEN, YELLOW
-        from color_kiss.utils import info, styled
+        from color_kiss.utils import error, info, styled
+        from yt_dlp.networking.exceptions import RequestError
         from yt_dlp.utils import DownloadError
 
         if self.codec == "wav" and self.metadata:
@@ -141,6 +142,10 @@ class Download:
             await asyncio.to_thread(self._sync_download, url)
             return styled(f"\nDone: {url}\n", GREEN, BOLD)
         except DownloadError:
+            return
+        except RequestError:
+            echo("\n" + error(f"Invalid URL: '{url}'"))
+            echo(info("Enter a valid URL"))
             return
 
     def _sync_download(self, url: str):
