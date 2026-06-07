@@ -2,7 +2,7 @@
 
 from typing import Any, Generator
 
-from color_kiss import BOLD, CYAN, GRAY, GREEN, RED, RESET
+from color_kiss import BOLD, BOLD_RED, CYAN, GRAY, GREEN, RESET
 from color_kiss.utils import error, styled
 
 
@@ -67,7 +67,7 @@ class Search:
         else:
             lines.append(f"{tree} {kwargs.get('year', 'N/A')}")
 
-        lines.append(f"{corner} {RED}{url}{RESET}\n{div}")
+        lines.append(f"{corner} {BOLD_RED}{url}{RESET}\n{div}")
         return "\n".join(lines)
 
     def _ytdl_opts(self) -> dict[str, Any]:  # type: ignore[explicit-any]
