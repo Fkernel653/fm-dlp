@@ -10,4 +10,3 @@ def echo(text: Any, file: TextIO = sys.stdout) -> None:
         file: File to write to (default: stdout).
     """
     file.write(text + "\n")
-    file.flush()
