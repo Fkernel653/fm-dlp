@@ -14,6 +14,7 @@ pip install fm-dlp          # Requires Python 3.10+ & FFmpeg
 fm-dlp config ~/Music        # Set download directory
 fm-dlp search "artist"       # Search tracks (YouTube Music by default)
 fm-dlp download "URL" --codec flac  # Download audio
+fm-dlp download urls.txt --codec mp3 # Download from file
 ```
 
 ## 📋 Commands
@@ -34,20 +35,21 @@ Search uses **YouTube Music by default**. Use `--yt-video` to search YouTube ins
 ```bash
 fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--jobs 5] [--quiet] [--no-metadata]
 ```
+
+**URLs can be:**
+- Single URL: `"https://youtube.com/watch?v=..."`
+- Multiple URLs: `"URL1 URL2 URL3"` or `"URL1,URL2,URL3"`
+- File with URLs: `"urls.txt"` (one URL per line, supports `#` comments)
+
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--codec` | `m4a`/`opus` | Audio: `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav` Video: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
+| `--codec` | `m4a`/`opus` | Audio: `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`<br>Video: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
 | `--kbps` | 256 | Bitrate 64–320 (audio) |
 | `--jobs` | 5 | Parallel downloads |
 | `--quiet` | — | Suppress yt-dlp output |
 | `--no-metadata` | — | Skip metadata embedding |
 | `--path` | config | Override download directory |
 | `--cookies` | — | Path to cookies file OR browser name (`chrome`, `firefox`, `edge`, `safari`, `brave`, `opera`) |
-
-### `config` — Set download path
-```bash
-fm-dlp config ~/Music
-```
 
 ## 📖 Examples
 
@@ -57,9 +59,18 @@ fm-dlp search "Sewerslvt" --limit 10          # YTMusic
 fm-dlp search "usedcvnt" --type album
 fm-dlp search "breakcore" --yt-video          # YouTube
 
-# Audio
-fm-dlp download "URL" --codec mp3 --kbps 320
+# Audio - single URL
+fm-dlp download "https://youtube.com/watch?v=..." --codec mp3 --kbps 320
+fm-dlp download "https://youtu.be/..." --codec flac
+
+# Audio - multiple URLs
 fm-dlp download "URL1 URL2 URL3" --codec flac
+fm-dlp download "URL1,URL2,URL3" --jobs 10
+
+# Audio - from file
+echo "https://youtube.com/watch?v=123" > urls.txt
+echo "https://youtu.be/456" >> urls.txt
+fm-dlp download urls.txt --codec mp3
 
 # Video
 fm-dlp download "URL" --codec mp4
@@ -72,6 +83,7 @@ fm-dlp download "URL" --path ~/Downloads
 fm-dlp download "URL" --cookies firefox
 fm-dlp download "URL" --cookies /path/to/cookies.txt
 fm-dlp download "URL1 URL2 URL3" --quiet --jobs 10
+fm-dlp download urls.txt --codec opus --kbps 192 --no-metadata
 ```
 
 ## 🔧 Dependencies
@@ -93,6 +105,8 @@ fm-dlp download "URL1 URL2 URL3" --quiet --jobs 10
 **Why M4A on macOS?** macOS treats M4A/AAC as native (Finder, Music.app). Linux/Windows default to Opus for better quality. Override with `--codec`.
 
 **How to use cookies?** Provide either browser name for automatic extraction (`--cookies firefox`) or path to exported cookies file (`--cookies cookies.txt`).
+
+**How to use a URL file?** Pass a path to a text file instead of URLs. Each URL on new line, lines starting with `#` are ignored as comments. Supports UTF-8 encoding.
 
 **How to use a proxy?** fm-dlp doesn't include built-in proxy support. Use [proxychains](https://github.com/haad/proxychains) or similar tools:
 ```bash
