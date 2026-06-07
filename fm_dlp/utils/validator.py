@@ -1,5 +1,7 @@
 """Input validation module for fm-dlp CLI application."""
 
+from pathlib import Path
+
 from color_kiss.utils import error, info
 
 from .functions import echo
@@ -39,52 +41,59 @@ def validate_input(
 ) -> bool:
     """Validate all CLI input parameters.
 
+    URL can be either a direct HTTP/HTTPS link or a path to a file with URLs.
+
     Returns:
         True if all parameters are valid, False otherwise.
     """
 
-    # URLs
     if url is not None:
-        if not isinstance(url, str):
-            echo(error(f"URL must be a string, got {type(url).__name__}"))
-            return False
-
-        if not url.strip():
+        if not isinstance(url, str) or not url.strip():
             echo(error("URL cannot be empty or whitespace only"))
             return False
 
-        if not (url.startswith("http://") or url.startswith("https://")):
-            echo(error(f"Invalid URL: '{url}'"))
-            echo(info("Must start with 'http://' or 'https://'"))
+        url_path = Path(url)
+
+        if url_path.is_file():
+            if url_path.stat().st_size == 0:
+                echo(error(f"URL file is empty: '{url}'"))
+                return False
+        elif url_path.exists():
+            echo(error(f"Path exists but is not a file: '{url}'"))
             return False
+        else:
+            if not (url.startswith("http://") or url.startswith("https://")):
+                echo(error(f"Invalid URL: '{url}'"))
+                echo(
+                    info(
+                        "Must start with 'http://' or 'https://' or be a path to a file"
+                    )
+                )
+                return False
 
     # Codec
-    if codec is not None:
-        if codec not in ALL_CODECS:
-            echo(error(f"Invalid codec: '{codec}'"))
-            echo(info(f"Allowed values: {', '.join(ALL_CODECS)}"))
-            return False
+    if codec is not None and codec not in ALL_CODECS:
+        echo(error(f"Invalid codec: '{codec}'"))
+        echo(info(f"Allowed values: {', '.join(ALL_CODECS)}"))
+        return False
 
     # Bitrate
-    if kbps is not None:
-        if not isinstance(kbps, int) or not (64 <= kbps <= 320):
-            echo(error(f"Invalid bitrate: {kbps}"))
-            echo(info("Must be an integer between 64 and 320."))
-            return False
+    if kbps is not None and (not isinstance(kbps, int) or not (64 <= kbps <= 320)):
+        echo(error(f"Invalid bitrate: {kbps}"))
+        echo(info("Must be an integer between 64 and 320."))
+        return False
 
     # Jobs
-    if jobs is not None:
-        if not isinstance(jobs, int) or jobs < 1:
-            echo(error(f"Invalid jobs: {jobs}"))
-            echo(info("Must be an integer >= 1."))
-            return False
+    if jobs is not None and (not isinstance(jobs, int) or jobs < 1):
+        echo(error(f"Invalid jobs: {jobs}"))
+        echo(info("Must be an integer >= 1."))
+        return False
 
     # Limit
-    if limit is not None:
-        if not isinstance(limit, int) or limit <= 0:
-            echo(error(f"Invalid limit: {limit}"))
-            echo(info("Must be a non-negative integer."))
-            return False
+    if limit is not None and (not isinstance(limit, int) or limit < 0):
+        echo(error(f"Invalid limit: {limit}"))
+        echo(info("Must be a non-negative integer."))
+        return False
 
     # Search type
     if search_type is not None:
