@@ -5,8 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
-from color_kiss.utils import error, info
-
+from fm_dlp.utils.colors import BOLD_GREEN, BOLD_YELLOW, error, info, styled
 from fm_dlp.utils.functions import echo
 
 AUDIO_CODECS = frozenset({"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"})
@@ -164,9 +163,6 @@ class Download:
                 echo(result)
 
     async def _download_url(self, url: str) -> str | None:
-
-        from color_kiss import BOLD, GREEN, YELLOW
-        from color_kiss.utils import error, info, styled
         from yt_dlp.networking.exceptions import RequestError
         from yt_dlp.utils import DownloadError
 
@@ -174,10 +170,10 @@ class Download:
             self.metadata = False
             echo(info("WAV format doesn't support metadata embedding"))
 
-        echo(styled(f"\nStarting: {url}\n", YELLOW, BOLD))
+        echo(styled(f"\nStarting: {url}\n", BOLD_YELLOW))
         try:
             await asyncio.to_thread(self._sync_download, url)
-            return styled(f"\nDone: {url}\n", GREEN, BOLD)
+            return styled(f"\nDone: {url}\n", BOLD_GREEN)
         except DownloadError:
             return
         except RequestError:

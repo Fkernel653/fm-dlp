@@ -2,8 +2,16 @@
 
 from typing import Any, Generator
 
-from color_kiss import BOLD, BOLD_RED, CYAN, GRAY, GREEN, RESET
-from color_kiss.utils import error, styled
+from fm_dlp.utils.colors import (
+    BOLD,
+    BOLD_CYAN,
+    BOLD_RED,
+    GRAY,
+    RESET,
+    error,
+    say_goodbye,
+    styled,
+)
 
 
 class Search:
@@ -56,7 +64,7 @@ class Search:
         div = f"       {GRAY}{'─' * 50}{RESET}\n"
 
         lines = [
-            f"\n{BOLD}{CYAN}{num}. {RESET}{BOLD}{title}{RESET}",
+            f"\n{BOLD_CYAN}{num}. {RESET}{BOLD}{title}{RESET}",
             f"{tree} {artist}",
         ]
 
@@ -110,9 +118,9 @@ class Search:
                     )
 
         except KeyboardInterrupt:
-            yield styled("\nGoodbye!\n", GREEN)
+            yield say_goodbye()
         except Exception as e:
-            yield styled(f"\nYoutube-Video error: {e}\n", RED)
+            yield styled(f"\nYoutube-Video error: {e}\n", BOLD_RED)
 
     def yt_music(self) -> Generator[str, None, None]:
         try:
@@ -151,9 +159,9 @@ class Search:
                     )
 
         except KeyboardInterrupt:
-            yield styled("\nGoodbye!\n", GREEN)
+            yield say_goodbye()
         except Exception as e:
-            yield styled(f"\nYoutube-Music error: {e}\n", RED)
+            yield styled(f"\nYoutube-Music error: {e}\n", BOLD_RED)
 
     def search(self, platform: str) -> Generator[str, None, None]:
         match platform:

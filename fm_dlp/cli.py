@@ -1,22 +1,22 @@
-from functools import lru_cache
-
-
-@lru_cache(maxsize=1)
-def get_version() -> str | None:
-    """Get version from installed package metadata."""
-    try:
-        from importlib.metadata import version
-
-        return version("fm-dlp")
-    except KeyboardInterrupt:
-        pass
-    except Exception:
-        return "unknown"
-
-
 def main():
 
+    import sys
+    from functools import lru_cache
+
     from cliss import CLI
+
+    from .utils.colors import say_goodbye
+    from .utils.functions import echo
+
+    @lru_cache(maxsize=1)
+    def get_version() -> str | None:
+        """Get version from installed package metadata."""
+        try:
+            from importlib.metadata import version
+
+            return version("fm-dlp")
+        except Exception:
+            return "unknown"
 
     app = CLI(
         name="fm-dlp",
@@ -39,7 +39,6 @@ def main():
             yt-video: Search for Youtube videos.
             type: Content type — "track" or "album".
         """
-        from .utils.functions import echo
         from .utils.validator import validate_input
 
         if not validate_input(
@@ -80,8 +79,6 @@ def main():
                          (e.g., 'chrome', 'firefox', 'edge', 'safari', 'brave', 'opera')
                          for cookie extraction.
         """
-        import sys
-
         from .utils.configer import get_path
         from .utils.validator import (
             AUDIO_CODECS,
@@ -130,8 +127,13 @@ def main():
             path: Directory path for downloaded files.
         """
         from .utils.configer import set_path
-        from .utils.functions import echo
 
         echo(set_path(path))
 
-    app.run()
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        echo(say_goodbye())
+        sys.exit(0)
+    except SystemExit as e:
+        sys.exit(e.code if e.code is not None else 0)

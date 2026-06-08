@@ -2,8 +2,7 @@
 
 from pathlib import Path
 
-from color_kiss.utils import error, info
-
+from .colors import error, info
 from .functions import echo
 
 AUDIO_CODECS = ("mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav")

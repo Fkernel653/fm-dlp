@@ -5,9 +5,9 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 
-from color_kiss.utils import error, success
 from platformdirs import user_config_dir
 
+from .colors import error, success
 from .functions import echo
 
 CONFIG_DIR = Path(user_config_dir("fm-dlp"))
