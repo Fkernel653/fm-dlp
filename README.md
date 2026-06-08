@@ -94,7 +94,6 @@ fm-dlp download urls.txt --codec opus --kbps 192 --no-metadata
 | `ytmusicapi` | YouTube Music API |
 | `mutagen` | Metadata tagging |
 | `platformdirs` | Config paths |
-| `color-kiss` | Terminal colors |
 | `cliss` | CLI framework |
 | **FFmpeg** | Audio/video conversion (system) |
 
@@ -123,7 +122,6 @@ MIT License — see [LICENSE](LICENSE) file.
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi) — YouTube Music API
 - [mutagen](https://github.com/quodlibet/mutagen) — Metadata tagging
 - [platformdirs](https://github.com/platformdirs/platformdirs) — Config paths
-- [color-kiss](https://github.com/Fkernel653/color-kiss) — Terminal colors
 - [cliss](https://github.com/Fkernel653/cliss) — CLI framework
 
 ---

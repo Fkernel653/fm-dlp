@@ -118,29 +118,19 @@ wheels = [
 
 [[package]]
 name = "cliss"
-version = "0.7.8"
+version = "0.8.1"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "color-kiss" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/0f/25/98abaad6a44801cb7e3804743d8d05aa06edb8a3d9da384fbb6c82690519/cliss-0.7.8.tar.gz", hash = "sha256:8d13b9628856575c4ef4591b234541d98872ff981804aab94c1d33fba6e89078", size = 12915, upload-time = "2026-06-07T07:34:58.91Z" }
-
-[[package]]
-name = "color-kiss"
-version = "0.3.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6f/5e/8972b55d8198a6f924c11017cc0612766aaccf585e1eeeb9b5f8b5bcab2f/color_kiss-0.3.2.tar.gz", hash = "sha256:57656a3dfb241736d291e270defd4446a0156b9cad532501f3534eac9826923b", size = 7367, upload-time = "2026-06-07T07:32:19.484Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/04/ba/93c8c2fae02ac10d6c37c9d3a14efe2903a9a00b1644f50dfaca1911c709/cliss-0.8.1.tar.gz", hash = "sha256:2c9b93a41a85c33e897cdd7a7a09c8632923aab3a71997866dd419d55070496c", size = 12749, upload-time = "2026-06-08T06:54:19.454Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/66/5e76342dc4a914112bb313e7cbe1280f58d4cc8a36f4b58f18d70ce844cb/color_kiss-0.3.2-py3-none-any.whl", hash = "sha256:e3da362dea75c01868617d9f0e5978b472ff2f3ab2fd73eb9c83ed0a3a3d4bfd", size = 8084, upload-time = "2026-06-07T07:32:20.399Z" },
+    { url = "https://files.pythonhosted.org/packages/65/a1/6b8aa00088855f0a20092f7a636dedad372faf2257209c828313eeaee238/cliss-0.8.1-py3-none-any.whl", hash = "sha256:2acc37c52255e87c17d86e3dd6ed16000fc5a725dbc993dc7891f83bea2fcc31", size = 11881, upload-time = "2026-06-08T06:54:18.612Z" },
 ]
 
 [[package]]
 name = "fm-dlp"
-version = "3.9.0"
+version = "3.9.2"
 source = { editable = "." }
 dependencies = [
     { name = "cliss" },
-    { name = "color-kiss" },
     { name = "mutagen" },
     { name = "platformdirs" },
     { name = "yt-dlp" },
@@ -155,7 +145,6 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "cliss" },
-    { name = "color-kiss" },
     { name = "mutagen" },
     { name = "platformdirs" },
     { name = "ruff", marker = "extra == 'dev'" },
