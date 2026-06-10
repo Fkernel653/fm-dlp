@@ -9,7 +9,6 @@ from fm_dlp.utils.colors import (
     GRAY,
     RESET,
     error,
-    say_goodbye,
     styled,
 )
 
@@ -50,7 +49,7 @@ class Search:
 
     @staticmethod
     def _extract_artist(item: dict) -> str:
-        artists = item.get("artists")
+        artists = item["artists"]
         if artists and artists[0]:
             return artists[0].get("name", "Unknown Artist")
         return "Unknown Artist"
@@ -95,7 +94,7 @@ class Search:
         try:
             from yt_dlp import YoutubeDL
 
-            search_type = "playlist" if not self._is_track else "video"
+            search_type = "video" if self._is_track else "playlist"
             with YoutubeDL(self._ytdl_opts()) as ydl:  # type: ignore[explicit-any]
                 info = ydl.extract_info(
                     f"ytsearch{self.limit}:{search_type}:{self.query}", download=False
@@ -107,18 +106,19 @@ class Search:
                 return
 
             for num, v in enumerate(entries, 1):  # type: ignore[arg-type]
-                if vid_id := v.get("id"):
+                if v_id := v["id"]:
+                    url = "https://youtu.be/" + v_id
                     yield self._format_result(
                         num,
                         title=v.get("title", "N/A"),
                         artist=v.get("channel", "N/A"),
-                        url=f"https://youtu.be/{vid_id}",
-                        views=self._fmt_views(v.get("view_count")),
-                        duration=self._fmt_duration(v.get("duration")),
+                        url=url,
+                        views=self._fmt_views(v["view_count"]),
+                        duration=self._fmt_duration(v["duration"]),
                     )
 
         except KeyboardInterrupt:
-            yield say_goodbye()
+            return
         except Exception as e:
             yield styled(f"\nYoutube-Video error: {e}\n", BOLD_RED)
 
@@ -126,7 +126,7 @@ class Search:
         try:
             from ytmusicapi import YTMusic
 
-            search_type = "albums" if not self._is_track else "songs"
+            search_type = "songs" if self._is_track else "albums"
             ytmusic = YTMusic()
             tracks = ytmusic.search(
                 query=self.query, limit=self.limit, filter=search_type
@@ -140,26 +140,28 @@ class Search:
 
             for num, t in enumerate(islice(tracks, self.limit), 1):
                 if self._is_track:
-                    if vid_id := t.get("videoId"):
+                    if t_id := t["videoId"]:
+                        url = "https://music.youtube.com/watch?v=" + t_id
                         yield self._format_result(
                             num,
                             title=t.get("title", "Unknown Track"),
                             artist=self._extract_artist(t),
-                            url=f"https://music.youtube.com/watch?v={vid_id}",
+                            url=url,
                             views=self._fmt_views(t.get("views", "N/A")),
                             duration=self._fmt_duration(t.get("duration", "N/A")),
                         )
-                elif pl_id := t.get("playlistId"):
+                elif pl_id := t["playlistId"]:
+                    url = "https://music.youtube.com/playlist?list=" + pl_id
                     yield self._format_result(
                         num,
                         title=t.get("title", "Unknown Track"),
                         artist=self._extract_artist(t),
-                        url=f"https://music.youtube.com/playlist?list={pl_id}",
+                        url=url,
                         year=t.get("year", "N/A"),
                     )
 
         except KeyboardInterrupt:
-            yield say_goodbye()
+            return
         except Exception as e:
             yield styled(f"\nYoutube-Music error: {e}\n", BOLD_RED)
 

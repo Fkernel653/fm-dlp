@@ -9,16 +9,6 @@ BOLD_YELLOW = "\033[1;33m"
 BOLD_CYAN = "\033[1;36m"
 
 
-def say_goodbye() -> str:
-    """Return a goodbye message in green color.
-
-    Returns:
-        str: Formatted string "\\nGoodbye!\\n" with ANSI green color codes
-             and reset formatting.
-    """
-    return BOLD_GREEN + "\nGoodbye!\n" + RESET
-
-
 def styled(text: str, color: str) -> str:
     """Wrap text in ANSI color code and add reset.
 
