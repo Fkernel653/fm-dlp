@@ -10,14 +10,16 @@ VIDEO_CONTAINERS = ("mp4", "mov", "mkv", "webm", "avi", "flv")
 ALL_CODECS = AUDIO_CODECS + VIDEO_CONTAINERS
 
 
-def validate_with_shutil(target: str, name: str) -> bool:
-    """Verify a system dependency is installed.
+def validate_ffmpeg() -> bool:
+    """Verify FFmpeg is installed.
 
     Returns:
-        True if dependency is found, False otherwise.
+        True if FFmpeg is found, False otherwise.
     """
     import shutil
 
+    target = "ffmpeg"
+    name = "FFmpeg"
     if shutil.which(target) is None:
         echo(error(f"{name} is not installed or not found in system PATH!"))
         echo(
@@ -35,6 +37,7 @@ def validate_input(
     codec: str | None = None,
     kbps: int | None = None,
     jobs: int | None = None,
+    path: str | None = None,
     limit: int | None = None,
     search_type: str | None = None,
 ) -> bool:
@@ -87,6 +90,19 @@ def validate_input(
         echo(error(f"Invalid jobs: {jobs}"))
         echo(info("Must be an integer >= 1."))
         return False
+
+    # Path
+    if path is not None:
+        real_path = Path(path)
+        if real_path.is_file():
+            echo(error("The path must not be a file"))
+            echo(info("Enter the path to the folder"))
+            return False
+        elif real_path.is_dir():
+            return True
+        else:
+            echo(error("Please enter the correct path!"))
+            return False
 
     # Limit
     if limit is not None and (not isinstance(limit, int) or limit < 0):
