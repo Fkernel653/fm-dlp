@@ -5,11 +5,10 @@ def main():
 
     from cliss import CLI
 
-    from .utils.colors import say_goodbye
     from .utils.functions import echo
 
     @lru_cache(maxsize=1)
-    def get_version() -> str | None:
+    def get_version() -> str:
         """Get version from installed package metadata."""
         try:
             from importlib.metadata import version
@@ -82,23 +81,19 @@ def main():
         from .utils.configer import get_path
         from .utils.validator import (
             AUDIO_CODECS,
+            validate_ffmpeg,
             validate_input,
-            validate_with_shutil,
         )
 
-        codec = codec or "m4a" if sys.platform == "darwin" else "opus"
+        default_codec = "m4a" if sys.platform == "darwin" else "opus"
+        codec = codec or default_codec
         path = path or get_path()
 
-        if not validate_input(
-            url=urls,
-            codec=codec,
-            kbps=kbps,
-            jobs=jobs,
-        ):
+        if not validate_input(url=urls, codec=codec, kbps=kbps, jobs=jobs, path=path):
             return
 
         if codec in AUDIO_CODECS:
-            validate_with_shutil("ffmpeg", "FFmpeg")
+            validate_ffmpeg()
 
         import asyncio
 
@@ -133,7 +128,6 @@ def main():
     try:
         app.run()
     except KeyboardInterrupt:
-        echo(say_goodbye())
         sys.exit(0)
     except SystemExit as e:
         sys.exit(e.code if e.code is not None else 0)
