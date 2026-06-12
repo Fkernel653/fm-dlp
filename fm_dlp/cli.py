@@ -1,26 +1,15 @@
 def main():
 
     import sys
-    from functools import lru_cache
 
     from arg_kiss import CLI
 
     from .utils.functions import echo
 
-    @lru_cache(maxsize=1)
-    def get_version() -> str:
-        """Get version from installed package metadata."""
-        try:
-            from importlib.metadata import version
-
-            return version("fm-dlp")
-        except Exception:
-            return "unknown"
-
     app = CLI(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version=get_version(),
+        version="3.9.7",
     )
 
     @app.command()
