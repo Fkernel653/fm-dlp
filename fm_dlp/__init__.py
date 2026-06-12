@@ -1,4 +1,4 @@
-"""fm-dlp — CLI tool for searching and downloading audio/video."""
+"""fm-dlp — Download music/video from YouTube, YTMusic, and 1000+ sites."""
 
 from .commands.download import Download
 from .commands.search import Search

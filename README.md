@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Ruff](https://img.shields.io/badge/code%20style-ruff-261230?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
 
-Download high-quality music and video from YouTube, YouTube Music, and 1000+ sites — with metadata tagging, from your terminal.
+CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms
 
 ## 🚀 Quick Start
 
