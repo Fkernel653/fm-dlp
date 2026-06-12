@@ -3,6 +3,15 @@ revision = 3
 requires-python = ">=3.10"
 
 [[package]]
+name = "arg-kiss"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/29/f2/7e7e4cc8a47025d004c280ffb4863f96ea1d0f3523ae3c2aa4900180d356/arg_kiss-0.2.0.tar.gz", hash = "sha256:e3282f9add5a490a3c7af4bfd5a525721d72e42385973e5531f0eba081dc36eb", size = 6390, upload-time = "2026-06-10T05:14:22.412Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3f/6f/5230ef135bf4fa512670053c0bbe9e72ca49168b460e6f907e14387cb35f/arg_kiss-0.2.0-py3-none-any.whl", hash = "sha256:e3a26cc6321a15e45ca265d6ecf62fdaa3d874d30e6e643f8f6963147559144a", size = 7306, upload-time = "2026-06-10T05:14:21.585Z" },
+]
+
+[[package]]
 name = "certifi"
 version = "2026.5.20"
 source = { registry = "https://pypi.org/simple" }
@@ -117,20 +126,11 @@ wheels = [
 ]
 
 [[package]]
-name = "cliss"
-version = "1.0.3"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d3/fd/0a81c3429662f8dc7bd2500c13fe2ff1e5ce36368c295f0524300bf12d7e/cliss-1.0.3.tar.gz", hash = "sha256:39edf46bd7330cb610075f04b5fd897136ec5e4a4a18e1afcf2feb301abcd9e6", size = 13857, upload-time = "2026-06-10T05:20:37.423Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/df/c1/e8da955ccacd6d0c6194067e4bedfd55ca1212901b679129b00ad63863ca/cliss-1.0.3-py3-none-any.whl", hash = "sha256:58c505c46cc05fe87150b4413c5ac86606fd99093c7ce74acd8ea9c02bd15019", size = 12824, upload-time = "2026-06-10T05:20:38.233Z" },
-]
-
-[[package]]
 name = "fm-dlp"
-version = "3.9.5"
+version = "3.9.6"
 source = { editable = "." }
 dependencies = [
-    { name = "cliss" },
+    { name = "arg-kiss" },
     { name = "mutagen" },
     { name = "platformdirs" },
     { name = "yt-dlp" },
@@ -144,7 +144,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cliss" },
+    { name = "arg-kiss" },
     { name = "mutagen" },
     { name = "platformdirs" },
     { name = "ruff", marker = "extra == 'dev'" },

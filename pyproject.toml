@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fm-dlp"
-version = "3.9.5"
+version = "3.9.6"
 description = "CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -44,7 +44,7 @@ dependencies = [
     "ytmusicapi",
     "mutagen",
     "platformdirs",
-    "cliss",
+    "arg-kiss",
 ]
 
 [project.optional-dependencies]

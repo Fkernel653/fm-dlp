@@ -21,14 +21,14 @@ fm-dlp download urls.txt --codec mp3 # Download from file
 
 ### `search` — Find music
 ```bash
-fm-dlp search <query> [--limit 10] [--yt-video] [--type track|album]
+fm-dlp search <query> [--limit 10] [--yt-video] [--album ]
 ```
 Search uses **YouTube Music by default**. Use `--yt-video` to search YouTube instead.
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--yt-video` | — | Search YouTube instead of YTMusic |
-| `--type` | `track` | `track`, `album` |
+| `--album` | — | Search by albums |
 | `--limit` | 10 | Results count |
 
 ### `download` — Download audio/video
@@ -56,7 +56,7 @@ fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--jobs 5] [--quiet] [--no-m
 ```bash
 # Search
 fm-dlp search "Sewerslvt" --limit 10          # YTMusic
-fm-dlp search "usedcvnt" --type album
+fm-dlp search "usedcvnt" --album
 fm-dlp search "breakcore" --yt-video          # YouTube
 
 # Audio - single URL
@@ -94,7 +94,7 @@ fm-dlp download urls.txt --codec opus --kbps 192 --no-metadata
 | `ytmusicapi` | YouTube Music API |
 | `mutagen` | Metadata tagging |
 | `platformdirs` | Config paths |
-| `cliss` | CLI framework |
+| `arg-kiss` | CLI framework |
 | **FFmpeg** | Audio/video conversion (system) |
 
 ## ❓ FAQ
@@ -122,7 +122,7 @@ MIT License — see [LICENSE](LICENSE) file.
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi) — YouTube Music API
 - [mutagen](https://github.com/quodlibet/mutagen) — Metadata tagging
 - [platformdirs](https://github.com/platformdirs/platformdirs) — Config paths
-- [cliss](https://github.com/Fkernel653/cliss) — CLI framework
+- [arg-kiss](https://github.com/Fkernel653/arg-kiss) — CLI framework
 
 ---
 
