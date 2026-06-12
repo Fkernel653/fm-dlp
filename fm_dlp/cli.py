@@ -3,7 +3,7 @@ def main():
     import sys
     from functools import lru_cache
 
-    from cliss import CLI
+    from arg_kiss import CLI
 
     from .utils.functions import echo
 
@@ -28,7 +28,7 @@ def main():
         query: str,
         limit: int = 10,
         yt_video: bool = False,
-        type: str = "track",
+        album: bool = False,
     ):
         """Search for music tracks or videos on YouTube/YTMusic.
 
@@ -36,19 +36,18 @@ def main():
             query: Search query string.
             limit: Maximum number of results to return.
             yt-video: Search for Youtube videos.
-            type: Content type — "track" or "album".
+            album: Search by albums
         """
-        from .utils.validator import validate_input
+        if not isinstance(limit, int) or limit < 0:
+            from .utils.colors import error, info
 
-        if not validate_input(
-            limit=limit,
-            search_type=type,
-        ):
+            echo(error(f"Invalid limit: {limit}"))
+            echo(info("Must be a non-negative integer."))
             return
 
         from .commands.search import Search
 
-        program = Search(query, limit, type)
+        program = Search(query, limit, album)
 
         for result in program.search("yt-video" if yt_video else "yt-music"):
             echo(result)
@@ -81,15 +80,17 @@ def main():
         from .utils.configer import get_path
         from .utils.validator import (
             AUDIO_CODECS,
+            validate_download,
             validate_ffmpeg,
-            validate_input,
         )
 
         default_codec = "m4a" if sys.platform == "darwin" else "opus"
         codec = codec or default_codec
         path = path or get_path()
 
-        if not validate_input(url=urls, codec=codec, kbps=kbps, jobs=jobs, path=path):
+        if not validate_download(
+            url=urls, codec=codec, kbps=kbps, jobs=jobs, path=path
+        ):
             return
 
         if codec in AUDIO_CODECS:

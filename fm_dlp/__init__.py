@@ -2,6 +2,6 @@
 
 from .commands.download import Download
 from .commands.search import Search
-from .utils import configer, validator
+from .utils import configer, functions, validator
 
-__all__ = ["Download", "Search", "validator", "configer"]
+__all__ = ["Download", "Search", "validator", "configer", "functions"]

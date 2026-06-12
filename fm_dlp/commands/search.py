@@ -16,11 +16,11 @@ from fm_dlp.utils.colors import (
 class Search:
     """Handles searching across YouTube and YouTube Music."""
 
-    def __init__(self, query: str, limit: int, type: str):
+    def __init__(self, query: str, limit: int, album: bool):
         self.query = query
         self.limit = limit
-        self.type = type
-        self._is_track = type == "track"
+        self.type = "album" if album else "track"
+        self._is_track = self.type == "track"
 
     @staticmethod
     def _fmt_views(v: Any) -> str:

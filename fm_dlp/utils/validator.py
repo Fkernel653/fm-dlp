@@ -32,16 +32,14 @@ def validate_ffmpeg() -> bool:
     return True
 
 
-def validate_input(
+def validate_download(
     url: str | None = None,
     codec: str | None = None,
     kbps: int | None = None,
     jobs: int | None = None,
     path: str | None = None,
-    limit: int | None = None,
-    search_type: str | None = None,
 ) -> bool:
-    """Validate all CLI input parameters.
+    """Validate all CLI download parameters.
 
     URL can be either a direct HTTP/HTTPS link or a path to a file with URLs.
 
@@ -102,20 +100,6 @@ def validate_input(
             return True
         else:
             echo(error("Please enter the correct path!"))
-            return False
-
-    # Limit
-    if limit is not None and (not isinstance(limit, int) or limit < 0):
-        echo(error(f"Invalid limit: {limit}"))
-        echo(info("Must be a non-negative integer."))
-        return False
-
-    # Search type
-    if search_type is not None:
-        allowed = ("track", "album")
-        if search_type not in allowed:
-            echo(error(f"Invalid search type: '{search_type}'"))
-            echo(info(f"Allowed values: {', '.join(allowed)}"))
             return False
 
     return True
