@@ -16,10 +16,6 @@ HOME_PATH = str(Path.home())
 KEY_NAME = "path"
 
 
-def _ensure_config_dir() -> None:
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-
-
 @lru_cache(maxsize=1)
 def _load_config() -> dict:
     if not CONFIG_FILE.exists():
@@ -32,7 +28,7 @@ def _load_config() -> dict:
 
 
 def _save_config(data: dict) -> None:
-    _ensure_config_dir()
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     CONFIG_FILE.write_text(
         json.dumps(data, ensure_ascii=False, indent=4),
         encoding="utf-8",
