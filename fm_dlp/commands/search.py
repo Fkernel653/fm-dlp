@@ -16,9 +16,10 @@ from fm_dlp.utils.colors import (
 class Search:
     """Handles searching across YouTube and YouTube Music."""
 
-    def __init__(self, query: str, limit: int, album: bool):
+    def __init__(self, query: str, limit: int, album: bool, raw: bool):
         self.query = query
         self.limit = limit
+        self.raw = raw
         self.type = "album" if album else "track"
         self._is_track = self.type == "track"
 
@@ -105,17 +106,21 @@ class Search:
                 yield error(f"No videos matching '{self.query}'\n")
                 return
 
-            for num, v in enumerate(entries, 1):  # type: ignore[arg-type]
-                if v_id := v["id"]:
-                    url = "https://youtu.be/" + v_id
-                    yield self._format_result(
-                        num,
-                        title=v.get("title", "N/A"),
-                        artist=v.get("channel", "N/A"),
-                        url=url,
-                        views=self._fmt_views(v["view_count"]),
-                        duration=self._fmt_duration(v["duration"]),
-                    )
+            if self.raw:
+                for v in entries:
+                    yield str(entries)
+            else:
+                for num, v in enumerate(entries, 1):  # type: ignore[arg-type]
+                    if v_id := v["id"]:
+                        url = "https://youtu.be/" + v_id
+                        yield self._format_result(
+                            num,
+                            title=v.get("title", "N/A"),
+                            artist=v.get("channel", "N/A"),
+                            url=url,
+                            views=self._fmt_views(v["view_count"]),
+                            duration=self._fmt_duration(v["duration"]),
+                        )
 
         except KeyboardInterrupt:
             return
@@ -138,27 +143,33 @@ class Search:
 
             from itertools import islice
 
-            for num, t in enumerate(islice(tracks, self.limit), 1):
-                if self._is_track:
-                    if t_id := t["videoId"]:
-                        url = "https://music.youtube.com/watch?v=" + t_id
+            slice_tracks = islice(tracks, self.limit)
+
+            if self.raw:
+                for t in slice_tracks:
+                    yield str(t)
+            else:
+                for num, t in enumerate(slice_tracks, 1):
+                    if self._is_track:
+                        if t_id := t["videoId"]:
+                            url = "https://music.youtube.com/watch?v=" + t_id
+                            yield self._format_result(
+                                num,
+                                title=t.get("title", "Unknown Track"),
+                                artist=self._extract_artist(t),
+                                url=url,
+                                views=self._fmt_views(t.get("views", "N/A")),
+                                duration=self._fmt_duration(t.get("duration", "N/A")),
+                            )
+                    elif pl_id := t["playlistId"]:
+                        url = "https://music.youtube.com/playlist?list=" + pl_id
                         yield self._format_result(
                             num,
                             title=t.get("title", "Unknown Track"),
                             artist=self._extract_artist(t),
                             url=url,
-                            views=self._fmt_views(t.get("views", "N/A")),
-                            duration=self._fmt_duration(t.get("duration", "N/A")),
+                            year=t.get("year", "N/A"),
                         )
-                elif pl_id := t["playlistId"]:
-                    url = "https://music.youtube.com/playlist?list=" + pl_id
-                    yield self._format_result(
-                        num,
-                        title=t.get("title", "Unknown Track"),
-                        artist=self._extract_artist(t),
-                        url=url,
-                        year=t.get("year", "N/A"),
-                    )
 
         except KeyboardInterrupt:
             return

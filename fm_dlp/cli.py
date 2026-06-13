@@ -9,7 +9,7 @@ def main():
     app = CLI(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="3.9.7",
+        version="3.9.8",
     )
 
     @app.command()
@@ -18,6 +18,7 @@ def main():
         limit: int = 10,
         yt_video: bool = False,
         album: bool = False,
+        raw: bool = False,
     ):
         """Search for music tracks or videos on YouTube/YTMusic.
 
@@ -26,8 +27,18 @@ def main():
             limit: Maximum number of results to return.
             yt-video: Search for Youtube videos.
             album: Search by albums
+            raw: Output of results in RAW format
         """
-        if not isinstance(limit, int) or limit < 0:
+        try:
+            limit_int = int(limit) if limit is not None else 10
+            if limit_int <= 0:
+                from .utils.colors import error, info
+
+                echo(error(f"Invalid limit: {limit}"))
+                echo(info("Must be a positive integer."))
+                return
+            limit = limit_int
+        except (TypeError, ValueError):
             from .utils.colors import error, info
 
             echo(error(f"Invalid limit: {limit}"))
@@ -36,7 +47,7 @@ def main():
 
         from .commands.search import Search
 
-        program = Search(query, limit, album)
+        program = Search(query, limit, album, raw)
 
         for result in program.search("yt-video" if yt_video else "yt-music"):
             echo(result)
@@ -77,13 +88,12 @@ def main():
         codec = codec or default_codec
         path = path or get_path()
 
-        if not validate_download(
-            url=urls, codec=codec, kbps=kbps, jobs=jobs, path=path
-        ):
+        if not validate_download(urls, codec, kbps, jobs, path):
             return
 
         if codec in AUDIO_CODECS:
-            validate_ffmpeg()
+            if not validate_ffmpeg():
+                return
 
         import asyncio
 
@@ -99,8 +109,8 @@ def main():
                 metadata=metadata,
                 path=path,
                 cookies=cookies,
-            ) as downloader:
-                await downloader.download_all()
+            ) as dl:
+                await dl.download_all()
 
         asyncio.run(run())
 
