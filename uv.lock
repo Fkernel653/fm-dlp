@@ -4,11 +4,11 @@ requires-python = ">=3.10"
 
 [[package]]
 name = "arg-kiss"
-version = "0.2.1"
+version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a4/3a/cb4639a8d95529ce6556aa5d6937b82c3cdae1c9da2737a0ac11c1441e46/arg_kiss-0.2.1.tar.gz", hash = "sha256:5e5ae52e1474f605a09cf3c2e3002ce7532cdb410d85d67425fcbf0e8f7481ac", size = 6656, upload-time = "2026-06-12T14:26:50.261Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9b/28/46908629c10c8fbae73392f844289ec792e1abf83a62f5c7e2165b819f5d/arg_kiss-0.2.2.tar.gz", hash = "sha256:b95bc191904abc301c408df380c652767426819c4e2036d16a96dd2090bbe493", size = 7694, upload-time = "2026-06-13T14:28:54.701Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8a/7b/219ade85aae4c2961d9550d533aa1d7c7a7d378b438b0a08b262ca87c887/arg_kiss-0.2.1-py3-none-any.whl", hash = "sha256:d179bd63882d35a94764fef930963d28786dab9294bf274cffcfd2042d9b8eed", size = 7583, upload-time = "2026-06-12T14:26:49.233Z" },
+    { url = "https://files.pythonhosted.org/packages/30/80/cfa3bc1219dd6fd3a27b54d4173016cc553662e332e47b70475cee0e50a1/arg_kiss-0.2.2-py3-none-any.whl", hash = "sha256:138cf64cc38cd0c17d6defc236c0d63126bc2172a572a121128e6579fb8d083d", size = 8755, upload-time = "2026-06-13T14:28:53.815Z" },
 ]
 
 [[package]]
