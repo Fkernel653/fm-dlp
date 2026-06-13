@@ -21,7 +21,7 @@ fm-dlp download urls.txt --codec mp3 # Download from file
 
 ### `search` — Find music
 ```bash
-fm-dlp search <query> [--limit 10] [--yt-video] [--album ]
+fm-dlp search <query> [--limit 10] [--yt-video] [--album] [--raw]
 ```
 Search uses **YouTube Music by default**. Use `--yt-video` to search YouTube instead.
 
@@ -30,6 +30,9 @@ Search uses **YouTube Music by default**. Use `--yt-video` to search YouTube ins
 | `--yt-video` | — | Search YouTube instead of YTMusic |
 | `--album` | — | Search by albums |
 | `--limit` | 10 | Results count |
+| `--raw` | — | Output of results in RAW format |
+
+**RAW format output** includes complete unformatted data (JSON/YAML) suitable for scripting and external tool integration, preserving all metadata fields without pretty-printing or truncation.
 
 ### `download` — Download audio/video
 ```bash
@@ -58,6 +61,11 @@ fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--jobs 5] [--quiet] [--no-m
 fm-dlp search "Sewerslvt" --limit 10          # YTMusic
 fm-dlp search "usedcvnt" --album
 fm-dlp search "breakcore" --yt-video          # YouTube
+
+# RAW output for scripting
+fm-dlp search "Sewerslvt" --raw               # Machine-readable output
+fm-dlp search "breakcore" --yt-video --raw    # RAW from YouTube
+fm-dlp search "album" --album --raw > results.json  # Save to file
 
 # Audio - single URL
 fm-dlp download "https://youtube.com/watch?v=..." --codec mp3 --kbps 320
