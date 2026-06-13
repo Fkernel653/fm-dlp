@@ -1,5 +1,6 @@
 """Input validation module for fm-dlp CLI application."""
 
+from functools import lru_cache
 from pathlib import Path
 
 from .colors import error, info
@@ -10,6 +11,7 @@ VIDEO_CONTAINERS = ("mp4", "mov", "mkv", "webm", "avi", "flv")
 ALL_CODECS = AUDIO_CODECS + VIDEO_CONTAINERS
 
 
+@lru_cache(maxsize=1)
 def validate_ffmpeg() -> bool:
     """Verify FFmpeg is installed.
 
@@ -47,6 +49,7 @@ def validate_download(
         True if all parameters are valid, False otherwise.
     """
 
+    # URL
     if url is not None:
         if not isinstance(url, str) or not url.strip():
             echo(error("URL cannot be empty or whitespace only"))
