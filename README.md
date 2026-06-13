@@ -10,11 +10,11 @@ CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ pl
 ## 🚀 Quick Start
 
 ```bash
-pip install fm-dlp          # Requires Python 3.10+ & FFmpeg
-fm-dlp config ~/Music        # Set download directory
-fm-dlp search "artist"       # Search tracks (YouTube Music by default)
-fm-dlp download "URL" --codec flac  # Download audio
-fm-dlp download urls.txt --codec mp3 # Download from file
+pip install fm-dlp                    # Requires Python 3.10+ & FFmpeg
+fm-dlp config ~/Music                 # Set download directory
+fm-dlp search "artist"                # Search tracks (YouTube Music by default)
+fm-dlp download "URL" --codec flac    # Download audio
+fm-dlp download urls.txt --codec mp3  # Download from file
 ```
 
 ## 📋 Commands
@@ -58,13 +58,13 @@ fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--jobs 5] [--quiet] [--no-m
 
 ```bash
 # Search
-fm-dlp search "Sewerslvt" --limit 10          # YTMusic
+fm-dlp search "Sewerslvt" --limit 10                # YTMusic
 fm-dlp search "usedcvnt" --album
-fm-dlp search "breakcore" --yt-video          # YouTube
+fm-dlp search "breakcore" --yt-video                # YouTube
 
 # RAW output for scripting
-fm-dlp search "Sewerslvt" --raw               # Machine-readable output
-fm-dlp search "breakcore" --yt-video --raw    # RAW from YouTube
+fm-dlp search "Sewerslvt" --raw                     # Machine-readable output
+fm-dlp search "breakcore" --yt-video --raw          # RAW from YouTube
 fm-dlp search "album" --album --raw > results.json  # Save to file
 
 # Audio - single URL
