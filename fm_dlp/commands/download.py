@@ -111,8 +111,6 @@ class Download:
             yield await task
 
     def _get_opts(self) -> dict[str, Any]:  # type: ignore[explicit-any]
-        is_audio = self.codec in AUDIO_CODECS
-
         base_opts: dict[str, Any] = {
             "quiet": self.quiet,
             "no_warnings": self.quiet,
@@ -121,7 +119,7 @@ class Download:
             "extractor_retries": 3,
         }
 
-        if is_audio:
+        if self.codec in AUDIO_CODECS:
             base_opts.update(
                 format="bestaudio/best",
                 postprocessors=[
@@ -138,7 +136,7 @@ class Download:
                 )
                 base_opts.update(embedmetadata=True, writethumbnail=True)
         else:
-            audio_ext = VIDEO_CONTAINER_AUDIO_MAP.get(self.codec, "m4a")
+            audio_ext = VIDEO_CONTAINER_AUDIO_MAP[self.codec]
             format_str = (
                 f"bestvideo[ext=mp4]+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
                 if self.codec == "mp4"
