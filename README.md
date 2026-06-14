@@ -9,6 +9,7 @@
 CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms
 
 ## 🚀 Quick Start
+
 ```bash
 pip install fm-dlp                    # Python 3.10+ & FFmpeg required
 fm-dlp config ~/Music                 # Set download directory
@@ -19,26 +20,49 @@ fm-dlp download "URL" --codec flac    # Download audio
 ## 📋 Commands
 
 ### `search`
-```bash
-fm-dlp search <query> [--limit 10] [--yt-video] [--album] [--raw]
-```
-`--yt-video` (YouTube vs YTMusic), `--album`, `--limit N`, `--raw` (JSON output)
 
-### `download`
 ```bash
-fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--jobs 5]
+fm-dlp search <query> [--limit 10] [--yt-video] [--album] [--raw] [--only-url] [--no-color]
 ```
-**URLs:** Single, multiple (space/comma), or file (one per line, `#` comments)
 
 | Option | Description |
 |--------|-------------|
-| `--codec` | Audio: `mp3,aac,flac,m4a,opus,vorbis,wav` Video: `mp4,mkv,webm,mov,avi,flv` |
-| `--kbps` | Bitrate 64–320 (default: 256) |
-| `--jobs` | Parallel downloads (default: 5) |
-| `--quiet` | Suppress yt-dlp output |
-| `--no-metadata` | Skip metadata tagging |
+| `--limit N` | Maximum number of results (default: 10) |
+| `--yt-video` | Search YouTube videos instead of YouTube Music |
+| `--album` | Search for albums instead of individual tracks |
+| `--raw` | Output raw JSON/Python dict format |
+| `--only-url` | Output only URLs without any formatting |
+| `--no-color` | Disable colored output in search results |
+
+### `download`
+
+```bash
+fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--jobs 5] [--quiet] [--no-metadata] [--path PATH] [--cookies COOKIES] [--no-color]
+```
+
+**URLs:** Single, multiple (space/comma), or file path (one URL per line, `#` for comments)
+
+| Option | Description |
+|--------|-------------|
+| `--codec` | Audio: `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`<br>Video: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
+| `--kbps` | Audio bitrate 64–320 (default: 256) |
+| `--jobs` | Number of parallel downloads (default: 5) |
+| `--quiet` | Suppress yt-dlp output messages |
+| `--no-metadata` | Skip metadata and thumbnail embedding |
 | `--path` | Override download directory |
-| `--cookies` | Browser (`chrome,firefox`) or cookies file |
+| `--cookies` | Browser name (`chrome`, `firefox`, `edge`, `safari`, `brave`, `opera`) or path to cookies file |
+| `--no-color` | Disable colored output in download messages |
+
+### `config`
+
+```bash
+fm-dlp config <path> [--no-color]
+```
+
+| Option | Description |
+|--------|-------------|
+| `path` | Default download directory (absolute path recommended) |
+| `--no-color` | Disable colored output in configuration messages |
 
 ## 📄 License & Acknowledgments
 
@@ -53,4 +77,5 @@ MIT License — Built with:
 | [arg-kiss](https://github.com/Fkernel653/arg-kiss) | CLI framework |
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
+
 **Project:** [GitHub](https://github.com/Fkernel653/fm-dlp) • [PyPI](https://pypi.org/project/fm-dlp/)
