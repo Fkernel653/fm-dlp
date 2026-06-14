@@ -7,7 +7,7 @@ from pathlib import Path
 
 from platformdirs import user_config_dir
 
-from .colors import error, success
+from .colors import error, set_colors, success
 from .functions import echo
 
 CONFIG_DIR = Path(user_config_dir("fm-dlp"))
@@ -17,17 +17,34 @@ KEY_NAME = "path"
 
 
 @lru_cache(maxsize=1)
-def _load_config() -> dict:
+def _load_config(no_color: bool) -> dict:
+    """Load configuration from JSON file with caching.
+
+    Args:
+        no_color: Disable colored output for error messages.
+
+    Returns:
+        Dictionary containing configuration data. Empty dict if file doesn't exist.
+    """
     if not CONFIG_FILE.exists():
         return {}
     try:
         return json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
+        if no_color:
+            set_colors(False)
         echo(error("Config file is corrupted. Creating new one..."))
         return {}
 
 
 def _save_config(data: dict) -> None:
+    """Save configuration data to JSON file.
+
+    Creates the config directory if it doesn't exist.
+
+    Args:
+        data: Dictionary containing configuration data to save.
+    """
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     CONFIG_FILE.write_text(
         json.dumps(data, ensure_ascii=False, indent=4),
@@ -35,7 +52,24 @@ def _save_config(data: dict) -> None:
     )
 
 
-def set_path(path: str) -> str:
+def set_path(path: str, no_color: bool) -> str:
+    """Set and save the download directory path.
+
+    Validates the path, creates parent directories if needed, and saves
+    the configuration. Exits with error if path is invalid.
+
+    Args:
+        path: Directory path for downloads. Can be absolute or relative.
+        no_color: Disable colored output in success/error messages.
+
+    Returns:
+        Success message with the configured path and config file location.
+
+    Raises:
+        SystemExit: If path is invalid or permission denied.
+    """
+    if no_color:
+        set_colors(False)
     try:
         input_path = Path(path).expanduser().resolve()
         if not input_path.is_dir():
@@ -51,13 +85,29 @@ def set_path(path: str) -> str:
         return error(f"Error saving configuration: {e}")
 
 
-def get_path() -> str:
+def get_path(no_color: bool) -> str:
+    """Get the configured download directory path.
+
+    Returns the saved path from config or defaults to user's home directory
+    if no configuration exists. Exits with error if saved path is invalid.
+
+    Args:
+        no_color: Disable colored output in error messages.
+
+    Returns:
+        String containing the download directory path.
+
+    Raises:
+        SystemExit: If saved path doesn't exist or is not a directory.
+    """
     if not CONFIG_FILE.exists():
         return HOME_PATH
-    data = _load_config()
+    data = _load_config(no_color)
     download_path = data.get(KEY_NAME)
 
     if not download_path or not Path(download_path).is_dir():
+        if no_color:
+            set_colors(False)
         echo(error("Download path does not exist."), file=sys.stderr)
         sys.exit(1)
 

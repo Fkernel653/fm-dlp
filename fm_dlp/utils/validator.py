@@ -3,7 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from .colors import error, info
+from .colors import error, info, set_colors
 from .functions import echo
 
 AUDIO_CODECS = ("mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav")
@@ -12,13 +12,19 @@ ALL_CODECS = AUDIO_CODECS + VIDEO_CONTAINERS
 
 
 @lru_cache(maxsize=1)
-def validate_ffmpeg() -> bool:
+def validate_ffmpeg(no_color: bool = False) -> bool:
     """Verify FFmpeg is installed.
+
+    Args:
+        no_color: Disable colored output in error messages.
 
     Returns:
         True if FFmpeg is found, False otherwise.
     """
     import shutil
+
+    if no_color:
+        set_colors(False)
 
     target = "ffmpeg"
     name = "FFmpeg"
@@ -40,16 +46,27 @@ def validate_download(
     kbps: int | None = None,
     jobs: int | None = None,
     path: str | None = None,
+    no_color: bool = False,
 ) -> bool:
     """Validate all CLI download parameters.
 
     URL can be either a direct HTTP/HTTPS link or a path to a file with URLs.
 
+    Args:
+        url: URL to validate (HTTP/HTTPS or path to file).
+        codec: Audio/video codec to validate.
+        kbps: Bitrate to validate (64-320).
+        jobs: Number of concurrent jobs to validate (>=1).
+        path: Download directory path to validate.
+        no_color: Disable colored output in validation messages.
+
     Returns:
         True if all parameters are valid, False otherwise.
     """
+    if no_color:
+        set_colors(False)
 
-    # URL
+    # URL validation
     if url is not None:
         if not isinstance(url, str) or not url.strip():
             echo(error("URL cannot be empty or whitespace only"))
@@ -74,35 +91,41 @@ def validate_download(
                 )
                 return False
 
-    # Codec
+    # Codec validation
     if codec is not None and codec not in ALL_CODECS:
         echo(error(f"Invalid codec: '{codec}'"))
         echo(info(f"Allowed values: {', '.join(ALL_CODECS)}"))
         return False
 
-    # Bitrate
+    # Bitrate validation
     if kbps is not None and (not isinstance(kbps, int) or not (64 <= kbps <= 320)):
         echo(error(f"Invalid bitrate: {kbps}"))
         echo(info("Must be an integer between 64 and 320."))
         return False
 
-    # Jobs
+    # Jobs validation
     if jobs is not None and (not isinstance(jobs, int) or jobs < 1):
         echo(error(f"Invalid jobs: {jobs}"))
         echo(info("Must be an integer >= 1."))
         return False
 
-    # Path
+    # Path validation
     if path is not None:
         real_path = Path(path)
         if real_path.is_file():
             echo(error("The path must not be a file"))
             echo(info("Enter the path to the folder"))
             return False
-        elif real_path.is_dir():
+        elif not real_path.is_dir():
+            if real_path.exists():
+                echo(error(f"Path exists but is not a directory: '{path}'"))
+                echo(info("Enter a valid directory path"))
+                return False
+            parent = real_path.parent
+            if parent.exists() and not parent.is_dir():
+                echo(error(f"Parent path is not a directory: '{parent}'"))
+                return False
             return True
-        else:
-            echo(error("Please enter the correct path!"))
-            return False
+        return True
 
     return True

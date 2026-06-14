@@ -9,7 +9,7 @@ def main():
     app = CLI(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="3.9.9.1",
+        version="4.0.0",
     )
 
     @app.command()
@@ -19,16 +19,24 @@ def main():
         yt_video: bool = False,
         album: bool = False,
         raw: bool = False,
+        only_url: bool = False,
+        no_color: bool = False,
     ):
         """Search for music tracks or videos on YouTube/YTMusic.
 
         Args:
             query: Search query string.
             limit: Maximum number of results to return.
-            yt-video: Search for Youtube videos.
-            album: Search by albums
-            raw: Output of results in RAW format
+            yt_video: Search for YouTube videos instead of music tracks.
+            album: Search for albums instead of individual tracks.
+            raw: Output results in raw format (Python dict representation).
+            only_url: Output only the URLs without any formatting.
+            no_color: Disable colored output in search results.
         """
+        if no_color:
+            from fm_dlp.utils.colors import set_colors
+
+            set_colors(False)
         try:
             limit_int = int(limit) if limit is not None else 10
             if limit_int <= 0:
@@ -47,9 +55,9 @@ def main():
 
         from .commands.search import Search
 
-        program = Search(query, limit, album, raw)
+        program = Search(query, limit, yt_video, album, raw, only_url, no_color)
 
-        for result in program.search("yt-video" if yt_video else "yt-music"):
+        for result in program.search():
             echo(result)
 
     @app.command()
@@ -62,20 +70,24 @@ def main():
         metadata: bool = True,
         path: str | None = None,
         cookies: str | None = None,
+        no_color: bool = False,
     ):
         """Download audio or video content from supported platforms.
 
         Args:
-            urls: Single URL or comma/space-separated list of URLs.
+            urls: Single URL or comma/space-separated list of URLs. Can also be a path to a text file containing URLs (one per line).
             codec: Audio codec or video container. Default depends on platform.
-            kbps: Audio bitrate in kbps (64–320).
-            jobs: Maximum concurrent downloads.
-            quiet: Suppress yt-dlp output.
-            metadata: Embed metadata and thumbnail (audio only).
-            path: Download directory path.
-            cookies: Path to cookies file (e.g., 'cookies.txt') or browser name
-                         (e.g., 'chrome', 'firefox', 'edge', 'safari', 'brave', 'opera')
-                         for cookie extraction.
+                  For audio: mp3, aac, flac, m4a, opus, vorbis, wav.
+                  For video: mp4, mov, mkv, webm, avi, flv.
+            kbps: Audio bitrate in kbps (64–320). Higher bitrate = better quality but larger file size.
+            jobs: Maximum number of concurrent downloads. Increase for faster batch downloads.
+            quiet: Suppress yt-dlp output messages. Errors will still be shown.
+            metadata: Embed metadata (title, artist, album) and thumbnail into audio files.
+            path: Custom download directory path. Uses configured default if not specified.
+            cookies: Path to cookies file (e.g., 'cookies.txt') for authenticated downloads,
+                    or browser name ('chrome', 'firefox', 'edge', 'safari', 'brave', 'opera')
+                    to extract cookies from browser.
+            no_color: Disable colored output in download progress and status messages.
         """
         from .utils.configer import get_path
         from .utils.validator import (
@@ -86,7 +98,7 @@ def main():
 
         default_codec = "m4a" if sys.platform == "darwin" else "opus"
         codec = codec or default_codec
-        path = path or get_path()
+        path = path or get_path(no_color)
 
         if not validate_download(urls, codec, kbps, jobs, path):
             return
@@ -109,21 +121,24 @@ def main():
                 metadata=metadata,
                 path=path,
                 cookies=cookies,
+                no_color=no_color,
             ) as dl:
                 await dl.download_all()
 
         asyncio.run(run())
 
     @app.command()
-    def config(path: str):
-        """Configure the application settings path.
+    def config(path: str, no_color: bool = False):
+        """Configure the application settings.
 
         Args:
-            path: Directory path for downloaded files.
+            path: Default directory path where downloaded files will be saved.
+                 Use absolute path for best results (e.g., '/home/user/Music' or 'C:\\Music').
+            no_color: Disable colored output in configuration messages.
         """
         from .utils.configer import set_path
 
-        echo(set_path(path))
+        echo(set_path(path, no_color))
 
     try:
         app.run()
