@@ -8,6 +8,17 @@ BOLD_GREEN = "\033[1;32m"
 BOLD_YELLOW = "\033[1;33m"
 BOLD_CYAN = "\033[1;36m"
 
+_COLORS_ENABLED = True
+
+
+def set_colors(enabled: bool):
+    global _COLORS_ENABLED
+    _COLORS_ENABLED = enabled
+
+
+def is_colors_enabled() -> bool:
+    return _COLORS_ENABLED
+
 
 def styled(text: str, color: str) -> str:
     """Wrap text in ANSI color code and add reset.
@@ -33,7 +44,10 @@ def success(text: str) -> str:
     Returns:
         str: Formatted success message.
     """
-    return BOLD_GREEN + "Success: " + RESET + text
+    if is_colors_enabled():
+        return BOLD_GREEN + "Success: " + RESET + text
+    else:
+        return "Success: " + text
 
 
 def error(text: str) -> str:
@@ -47,7 +61,10 @@ def error(text: str) -> str:
     Returns:
         str: Formatted error message.
     """
-    return BOLD_RED + "Error: " + RESET + text
+    if is_colors_enabled():
+        return BOLD_RED + "Error: " + RESET + text
+    else:
+        return "Error: " + text
 
 
 def info(text: str) -> str:
@@ -61,4 +78,7 @@ def info(text: str) -> str:
     Returns:
         str: Formatted info message.
     """
-    return BOLD_CYAN + "Info: " + RESET + text
+    if is_colors_enabled():
+        return BOLD_CYAN + "Info: " + RESET + text
+    else:
+        return "Info: " + text
