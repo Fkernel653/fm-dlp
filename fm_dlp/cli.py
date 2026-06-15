@@ -2,14 +2,14 @@ def main():
 
     import sys
 
-    from arg_kiss import CLI
+    from argss import CLI
 
     from .utils.functions import echo
 
     app = CLI(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.0.0",
+        version="4.0.1",
     )
 
     @app.command()

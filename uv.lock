@@ -3,12 +3,12 @@ revision = 3
 requires-python = ">=3.10"
 
 [[package]]
-name = "arg-kiss"
-version = "0.2.2"
+name = "argss"
+version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/9b/28/46908629c10c8fbae73392f844289ec792e1abf83a62f5c7e2165b819f5d/arg_kiss-0.2.2.tar.gz", hash = "sha256:b95bc191904abc301c408df380c652767426819c4e2036d16a96dd2090bbe493", size = 7694, upload-time = "2026-06-13T14:28:54.701Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5f/86/d87b9ac69d59b60ce1502cd2d300f233a4ec01a118104892fdcebb65f1a4/argss-0.1.2.tar.gz", hash = "sha256:9b52aa78de8e8726683b26efe0676b2423e8758ff41973c4912cdfe0ee6a3660", size = 5908, upload-time = "2026-06-15T08:48:55.794Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/80/cfa3bc1219dd6fd3a27b54d4173016cc553662e332e47b70475cee0e50a1/arg_kiss-0.2.2-py3-none-any.whl", hash = "sha256:138cf64cc38cd0c17d6defc236c0d63126bc2172a572a121128e6579fb8d083d", size = 8755, upload-time = "2026-06-13T14:28:53.815Z" },
+    { url = "https://files.pythonhosted.org/packages/5d/ee/492936bad1d3543a2d5ae7ee320ff8f0ec16645bc840ba22f8502deba906/argss-0.1.2-py3-none-any.whl", hash = "sha256:3994a14c74680df355710651392d05fdc83145d640d56ecc2641b10173c4ddb1", size = 6883, upload-time = "2026-06-15T08:48:54.894Z" },
 ]
 
 [[package]]
@@ -127,10 +127,10 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "4.0.0"
+version = "4.0.1"
 source = { editable = "." }
 dependencies = [
-    { name = "arg-kiss" },
+    { name = "argss" },
     { name = "mutagen" },
     { name = "platformdirs" },
     { name = "yt-dlp" },
@@ -144,7 +144,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "arg-kiss" },
+    { name = "argss" },
     { name = "mutagen" },
     { name = "platformdirs" },
     { name = "ruff", marker = "extra == 'dev'" },

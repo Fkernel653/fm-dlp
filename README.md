@@ -74,7 +74,7 @@ MIT License — Built with:
 | [ytmusicapi](https://github.com/sigma67/ytmusicapi) | YouTube Music API |
 | [mutagen](https://github.com/quodlibet/mutagen) | Metadata tagging |
 | [platformdirs](https://github.com/platformdirs/platformdirs) | Config paths |
-| [arg-kiss](https://github.com/Fkernel653/arg-kiss) | CLI framework |
+| [argss](https://github.com/Fkernel653/argss) | CLI framework |
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 
