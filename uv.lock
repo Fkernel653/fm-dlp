@@ -4,11 +4,10 @@ requires-python = ">=3.10"
 
 [[package]]
 name = "argss"
-version = "0.1.2"
+version = "0.1.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/5f/86/d87b9ac69d59b60ce1502cd2d300f233a4ec01a118104892fdcebb65f1a4/argss-0.1.2.tar.gz", hash = "sha256:9b52aa78de8e8726683b26efe0676b2423e8758ff41973c4912cdfe0ee6a3660", size = 5908, upload-time = "2026-06-15T08:48:55.794Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5d/ee/492936bad1d3543a2d5ae7ee320ff8f0ec16645bc840ba22f8502deba906/argss-0.1.2-py3-none-any.whl", hash = "sha256:3994a14c74680df355710651392d05fdc83145d640d56ecc2641b10173c4ddb1", size = 6883, upload-time = "2026-06-15T08:48:54.894Z" },
+    { url = "https://files.pythonhosted.org/packages/88/6a/4d4ffb25a243d46d06c8189865f3053fd3971e0cab6a77fa1131ca5737c1/argss-0.1.3-py3-none-any.whl", hash = "sha256:813508ff841f1f84084da6ad43678fd694b46edef1fc286fddcd55302f3404e7", size = 6878, upload-time = "2026-06-16T06:41:32.198Z" },
 ]
 
 [[package]]
