@@ -15,7 +15,7 @@ def main():
     app = CLI(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.0.2",
+        version="4.0.3",
     )
 
     @app.command()
@@ -105,7 +105,7 @@ def main():
         Args:
             path: Default directory path where downloaded files will be saved.
                  Use absolute path for best results (e.g., '/home/user/Music' or 'C:\\Music').
-            no_color: Disable colored output in configuration messages.
+            color: Colored output in configuration messages.
         """
         echo(set_path(path, color))
 
