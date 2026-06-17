@@ -51,7 +51,7 @@ def main():
     app = CLI(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.0.4",
+        version="4.0.5",
     )
 
     @app.command()

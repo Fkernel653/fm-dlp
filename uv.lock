@@ -4,20 +4,20 @@ requires-python = ">=3.10"
 
 [[package]]
 name = "argss"
-version = "0.1.4"
+version = "0.1.5"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b0/fa/9b9eee077bc288ac7331b03c2b00bfa34d35b43da5d6d7d27ff8a8699f96/argss-0.1.4.tar.gz", hash = "sha256:163adcd615ad90f326453326de6a4ac412a4365ecf2a5b13a45a6843b2bc84e1", size = 5910, upload-time = "2026-06-16T06:51:20.322Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bf/dd/717f1fa384b801ec8f43d21a6801047bb5be3c08a8910bf4a63543316cbb/argss-0.1.5.tar.gz", hash = "sha256:1947201f206e497297178a24dd602f10940b813530275576a4a7290e0e61e794", size = 6923, upload-time = "2026-06-17T17:18:18.432Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fe/59/2e98c123a6faefd0799badc5c2baad598012a20caf04225d9119a259d59e/argss-0.1.4-py3-none-any.whl", hash = "sha256:623e413be680c45eb94e96c059e2fb0f7df4b1624847e1402fb7aa77e37ad15b", size = 6884, upload-time = "2026-06-16T06:51:19.5Z" },
+    { url = "https://files.pythonhosted.org/packages/40/a3/6ce2dcf2bf74b3c9575c3f3191ebea4fd0adc35a8fcce192bdbd9c303de9/argss-0.1.5-py3-none-any.whl", hash = "sha256:5476085412fd1f8f46ac2df54701fcfe5eba47f808faeceaeb9c13563f6ade93", size = 7991, upload-time = "2026-06-17T17:18:17.538Z" },
 ]
 
 [[package]]
 name = "certifi"
-version = "2026.5.20"
+version = "2026.6.17"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f3/ce/ee2ecad540810a79593028e88299baeae54d346cc7a0d94b6199988b89b1/certifi-2026.5.20.tar.gz", hash = "sha256:69dea482ab64caa7b9f6aba1c6bf48bb6a5448d1c0f1b17ab42ad8c763a5344d", size = 135422, upload-time = "2026-05-20T11:46:50.073Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c9/c7/424b75da314c1045981bd9777432fad05a9e0c69daa4ed7e308bbaffe405/certifi-2026.6.17.tar.gz", hash = "sha256:024c88eeec92ca068db80f02b8b07c9cef7b9fe261d1d535abfd5abd6f6af432", size = 134594, upload-time = "2026-06-17T10:31:07.894Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/8c/57e832b7af6d7c5abe66eb3fbe3a3a32f4d11ea23a1aa7131371035be991/certifi-2026.5.20-py3-none-any.whl", hash = "sha256:3c52e209ba0a4ad7aebe60436a4ab349c39e1e602e8c134221e546902ad25897", size = 134134, upload-time = "2026-05-20T11:46:48.578Z" },
+    { url = "https://files.pythonhosted.org/packages/ef/2f/c5464532e965badff2f4c4c1a3a83f5697f0d7c407ed0cda44aaa99bb451/certifi-2026.6.17-py3-none-any.whl", hash = "sha256:2227dcbaafe0d2f59279d1762ddddc37783ed4354594f194ffc31d20f41fc3db", size = 133289, upload-time = "2026-06-17T10:31:06.348Z" },
 ]
 
 [[package]]
@@ -127,7 +127,7 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "4.0.1"
+version = "4.0.5"
 source = { editable = "." }
 dependencies = [
     { name = "argss" },

@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from .colors import error, info, set_colors, warning
+from .colors import error, info, set_colors
 from .functions import echo
 
 AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"}
@@ -74,7 +74,7 @@ def validate_download(
         cookies: Browser name for cookie extraction or path to cookie file (optional).
 
     Returns:
-        True if all parameters are valid, False otherwise.
+        bool: True if all parameters are valid, False otherwise.
     """
     set_colors(color)
 
@@ -155,8 +155,8 @@ def validate_download(
                     ".cookies",
                 }:
                     echo(
-                        warning(
-                            f"Cookie file has unusual extension: '{cookies_path.suffix}'"
+                        error(
+                            f"Cookie file has unusual extension: '{cookies_path.suffix}'",
                         )
                     )
                     echo(
@@ -164,6 +164,7 @@ def validate_download(
                             "Expected .txt (Netscape format), .sqlite, .db, or .cookies"
                         )
                     )
+                    return False
             else:
                 echo(error(f"Path exists but is not a file: '{cookies}'"))
                 echo(info("Must be a path to a cookie file"))
@@ -182,6 +183,24 @@ def validate_download(
 
 
 def validate_search(limit: Any, color: bool) -> bool:
+    """
+    Validate the search limit parameter.
+
+    This function validates that the provided limit is a positive integer.
+    If the limit is None, it defaults to 10. If the limit is invalid
+    (non-integer or non-positive), an error message is displayed and
+    False is returned.
+
+    Args:
+        limit (Any): The limit value to validate. Can be any type,
+                     but should be convertible to an integer.
+        color (bool): Flag indicating whether to use colored output
+                      for error and info messages.
+
+    Returns:
+        bool: True if the limit is valid (positive integer or None),
+              False otherwise.
+    """
     set_colors(color)
     try:
         limit_int = int(limit) if limit is not None else 10
