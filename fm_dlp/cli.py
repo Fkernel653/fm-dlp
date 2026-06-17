@@ -4,12 +4,18 @@ def main():
 
     from argss import CLI
 
+    from .utils.configer import get_path, set_path
     from .utils.functions import echo
+    from .utils.validator import (
+        validate_download,
+        validate_ffmpeg,
+        validate_search,
+    )
 
     app = CLI(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.0.1",
+        version="4.0.2",
     )
 
     @app.command()
@@ -20,7 +26,7 @@ def main():
         album: bool = False,
         raw: bool = False,
         only_url: bool = False,
-        no_color: bool = False,
+        color: bool = True,
     ):
         """Search for music tracks or videos on YouTube/YTMusic.
 
@@ -31,31 +37,14 @@ def main():
             album: Search for albums instead of individual tracks.
             raw: Output results in raw format (Python dict representation).
             only_url: Output only the URLs without any formatting.
-            no_color: Disable colored output in search results.
+            color: Colored output in search results.
         """
-        if no_color:
-            from fm_dlp.utils.colors import set_colors
-
-            set_colors(False)
-        try:
-            limit_int = int(limit) if limit is not None else 10
-            if limit_int <= 0:
-                from .utils.colors import error, info
-
-                echo(error(f"Invalid limit: {limit}"))
-                echo(info("Must be a positive integer."))
-                return
-            limit = limit_int
-        except (TypeError, ValueError):
-            from .utils.colors import error, info
-
-            echo(error(f"Invalid limit: {limit}"))
-            echo(info("Must be a non-negative integer."))
+        if not validate_search(limit, color):
             return
 
         from .commands.search import Search
 
-        program = Search(query, limit, yt_video, album, raw, only_url, no_color)
+        program = Search(query, limit, yt_video, album, raw, only_url, color)
 
         for result in program.search():
             echo(result)
@@ -70,7 +59,7 @@ def main():
         metadata: bool = True,
         path: str | None = None,
         cookies: str | None = None,
-        no_color: bool = False,
+        color: bool = True,
     ):
         """Download audio or video content from supported platforms.
 
@@ -87,48 +76,30 @@ def main():
             cookies: Path to cookies file (e.g., 'cookies.txt') for authenticated downloads,
                     or browser name ('chrome', 'firefox', 'edge', 'safari', 'brave', 'opera')
                     to extract cookies from browser.
-            no_color: Disable colored output in download progress and status messages.
+            color: Colored output in download progress and status messages.
         """
-        from .utils.configer import get_path
-        from .utils.validator import (
-            AUDIO_CODECS,
-            validate_download,
-            validate_ffmpeg,
-        )
-
         default_codec = "m4a" if sys.platform == "darwin" else "opus"
         codec = codec or default_codec
-        path = path or get_path(no_color)
+        path = path or get_path(color)
 
-        if not validate_download(urls, codec, kbps, jobs, path):
+        if not validate_download(urls, codec, kbps, jobs, path, color):
             return
 
-        if codec in AUDIO_CODECS:
-            if not validate_ffmpeg():
-                return
+        if not validate_ffmpeg(color):
+            return
 
         import asyncio
 
-        from .commands.download import Download
+        from .commands.download import run_downloader
 
-        async def run():
-            async with Download(
-                urls=urls,
-                codec=codec,
-                kbps=kbps,
-                jobs=jobs,
-                quiet=quiet,
-                metadata=metadata,
-                path=path,
-                cookies=cookies,
-                no_color=no_color,
-            ) as dl:
-                await dl.download_all()
-
-        asyncio.run(run())
+        asyncio.run(
+            run_downloader(
+                urls, codec, kbps, jobs, quiet, metadata, path, cookies, color
+            )
+        )
 
     @app.command()
-    def config(path: str, no_color: bool = False):
+    def config(path: str, color: bool = True):
         """Configure the application settings.
 
         Args:
@@ -136,12 +107,10 @@ def main():
                  Use absolute path for best results (e.g., '/home/user/Music' or 'C:\\Music').
             no_color: Disable colored output in configuration messages.
         """
-        from .utils.configer import set_path
-
-        echo(set_path(path, no_color))
+        echo(set_path(path, color))
 
     try:
-        app.run()
+        app()
     except KeyboardInterrupt:
         sys.exit(0)
     except SystemExit as e:

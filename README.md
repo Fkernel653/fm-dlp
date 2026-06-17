@@ -61,7 +61,7 @@ fm-dlp config <path> [--no-color]
 
 | Option | Description |
 |--------|-------------|
-| `path` | Default download directory (absolute path recommended) |
+| `path` | Default download directory |
 | `--no-color` | Disable colored output in configuration messages |
 
 ## 📄 License & Acknowledgments

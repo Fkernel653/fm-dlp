@@ -82,3 +82,20 @@ def info(text: str) -> str:
         return BOLD_CYAN + "Info: " + RESET + text
     else:
         return "Info: " + text
+
+
+def warning(text: str) -> str:
+    """Format text as a warning message.
+
+    Adds 'Warning: ' prefix and colors everything in bold yellow.
+
+    Args:
+        text (str): The message content.
+
+    Returns:
+        str: Formatted warning message.
+    """
+    if is_colors_enabled():
+        return BOLD_YELLOW + "Warning: " + RESET + text
+    else:
+        return "Warning: " + text

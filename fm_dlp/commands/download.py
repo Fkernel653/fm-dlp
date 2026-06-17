@@ -7,8 +7,7 @@ from typing import Any
 
 from fm_dlp.utils.colors import BOLD_GREEN, BOLD_YELLOW, error, info, set_colors, styled
 from fm_dlp.utils.functions import echo
-
-AUDIO_CODECS = frozenset({"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"})
+from fm_dlp.utils.validator import AUDIO_CODECS
 
 VIDEO_CONTAINER_AUDIO_MAP = {
     "mp4": "m4a",
@@ -35,8 +34,8 @@ class Download:
         quiet: bool,
         metadata: bool,
         path: str,
+        color: bool,
         cookies: str | None = None,
-        no_color: bool = False,
     ):
         """Initialize downloader with configuration.
 
@@ -50,7 +49,7 @@ class Download:
             metadata: Embed metadata and thumbnail into audio files.
             path: Download directory path.
             cookies: Path to cookies file or browser name for authentication.
-            no_color: Disable colored output.
+            color: Colored output.
         """
         self.urls = urls
         self.codec = codec
@@ -60,15 +59,14 @@ class Download:
         self.metadata = metadata
         self.path = path
         self.cookies = cookies
-        self.no_color = no_color
+        self.color = color
         self._executor: ThreadPoolExecutor | None = None
         self._url_list = self._parse_urls()
 
-        if no_color:
-            set_colors(False)
+        set_colors(color)
 
-        self._green = BOLD_GREEN if not no_color else ""
-        self._yellow = BOLD_YELLOW if not no_color else ""
+        self._green = BOLD_GREEN if color else ""
+        self._yellow = BOLD_YELLOW if color else ""
 
     def _parse_urls(self) -> list[str]:
         """Parse URLs from string or file path."""
@@ -145,8 +143,8 @@ class Download:
             "extractor_retries": 3,
         }
 
-        if self.no_color:
-            base_opts["color"] = "no_color"
+        if not self.color:
+            base_opts["color"] = "never"
 
         if self.codec in AUDIO_CODECS:
             base_opts.update(
@@ -220,3 +218,29 @@ class Download:
 
         with YoutubeDL(self._get_opts()) as ydl:
             ydl.download([url])
+
+
+async def run_downloader(
+    urls: str,
+    codec: str,
+    kbps: int,
+    jobs: int,
+    quiet: bool,
+    metadata: bool,
+    path: str,
+    cookies: str | None,
+    color: bool,
+) -> None:
+    """Run downloader with given parameters."""
+    async with Download(
+        urls=urls,
+        codec=codec,
+        kbps=kbps,
+        jobs=jobs,
+        quiet=quiet,
+        metadata=metadata,
+        path=path,
+        cookies=cookies,
+        color=color,
+    ) as dl:
+        await dl.download_all()

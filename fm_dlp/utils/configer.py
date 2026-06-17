@@ -17,7 +17,7 @@ KEY_NAME = "path"
 
 
 @lru_cache(maxsize=1)
-def _load_config(no_color: bool) -> dict:
+def _load_config(color: bool) -> dict:
     """Load configuration from JSON file with caching.
 
     Args:
@@ -31,8 +31,7 @@ def _load_config(no_color: bool) -> dict:
     try:
         return json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
-        if no_color:
-            set_colors(False)
+        set_colors(color)
         echo(error("Config file is corrupted. Creating new one..."))
         return {}
 
@@ -52,7 +51,7 @@ def _save_config(data: dict) -> None:
     )
 
 
-def set_path(path: str, no_color: bool) -> str:
+def set_path(path: str, color: bool) -> str:
     """Set and save the download directory path.
 
     Validates the path, creates parent directories if needed, and saves
@@ -68,8 +67,7 @@ def set_path(path: str, no_color: bool) -> str:
     Raises:
         SystemExit: If path is invalid or permission denied.
     """
-    if no_color:
-        set_colors(False)
+    set_colors(color)
     try:
         input_path = Path(path).expanduser().resolve()
         if not input_path.is_dir():
@@ -85,14 +83,14 @@ def set_path(path: str, no_color: bool) -> str:
         return error(f"Error saving configuration: {e}")
 
 
-def get_path(no_color: bool) -> str:
+def get_path(color: bool) -> str:
     """Get the configured download directory path.
 
     Returns the saved path from config or defaults to user's home directory
     if no configuration exists. Exits with error if saved path is invalid.
 
     Args:
-        no_color: Disable colored output in error messages.
+        color: Colored output in error messages.
 
     Returns:
         String containing the download directory path.
@@ -102,12 +100,11 @@ def get_path(no_color: bool) -> str:
     """
     if not CONFIG_FILE.exists():
         return HOME_PATH
-    data = _load_config(no_color)
+    data = _load_config(color)
     download_path = data.get(KEY_NAME)
 
     if not download_path or not Path(download_path).is_dir():
-        if no_color:
-            set_colors(False)
+        set_colors(color)
         echo(error("Download path does not exist."), file=sys.stderr)
         sys.exit(1)
 

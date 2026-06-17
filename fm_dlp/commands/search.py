@@ -25,7 +25,7 @@ class Search:
         album: bool,
         raw: bool,
         only_url: bool,
-        no_color: bool = False,
+        color: bool,
     ):
         """Initialize search with query parameters.
 
@@ -36,7 +36,7 @@ class Search:
             album: Search for albums instead of tracks.
             raw: Output raw Python dicts instead of formatted strings.
             only_url: Output only URLs without formatting.
-            no_color: Disable colored output.
+            color: Colored output.
         """
         self.query = query
         self.limit = limit
@@ -46,15 +46,14 @@ class Search:
         self.type = "album" if album else "track"
         self._is_track = self.type == "track"
 
-        if no_color:
-            set_colors(False)
+        set_colors(color)
 
         self._c = {
-            "bold": BOLD if not no_color else "",
-            "bold_cyan": BOLD_CYAN if not no_color else "",
-            "bold_red": BOLD_RED if not no_color else "",
-            "gray": GRAY if not no_color else "",
-            "reset": RESET if not no_color else "",
+            "bold": BOLD if color else "",
+            "bold_cyan": BOLD_CYAN if color else "",
+            "bold_red": BOLD_RED if color else "",
+            "gray": GRAY if color else "",
+            "reset": RESET if color else "",
         }
 
     @staticmethod
