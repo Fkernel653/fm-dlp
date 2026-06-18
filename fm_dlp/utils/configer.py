@@ -7,8 +7,8 @@ from pathlib import Path
 
 from platformdirs import user_config_dir
 
-from .colors import error, set_colors, success
-from .functions import echo
+from fm_dlp.utils.colors import error, set_colors, success
+from fm_dlp.utils.functions import echo
 
 CONFIG_DIR = Path(user_config_dir("fm-dlp"))
 CONFIG_FILE = CONFIG_DIR / "config.json"

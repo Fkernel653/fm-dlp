@@ -40,9 +40,9 @@ def main():
 
     from argss import CLI
 
-    from .utils.configer import get_path, set_path
-    from .utils.functions import echo
-    from .utils.validator import (
+    from fm_dlp.utils.configer import get_path, set_path
+    from fm_dlp.utils.functions import echo
+    from fm_dlp.utils.validator import (
         validate_download,
         validate_ffmpeg,
         validate_search,
@@ -51,7 +51,7 @@ def main():
     app = CLI(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.0.8",
+        version="4.0.9",
     )
 
     @app.command()
@@ -78,7 +78,7 @@ def main():
         if not validate_search(limit, color):
             return
 
-        from .commands.search import Search
+        from fm_dlp.commands.search import Search
 
         program = Search(query, limit, yt_video, album, raw, only_url, color)
 
@@ -126,7 +126,7 @@ def main():
 
         import asyncio
 
-        from .commands.download import run_downloader
+        from fm_dlp.commands.download import run_downloader
 
         asyncio.run(
             run_downloader(
