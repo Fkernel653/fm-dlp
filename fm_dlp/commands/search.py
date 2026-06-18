@@ -164,7 +164,7 @@ class Search:
                         num,
                         title=v.get("title", "N/A"),
                         artist=v.get("channel", "N/A"),
-                        url=f"https://youtu.be/{v_id}",
+                        url="https://youtu.be/" + v_id,
                         views=self._fmt_views(v.get("view_count")),
                         duration=self._fmt_duration(v.get("duration")),
                     )
@@ -204,7 +204,7 @@ class Search:
                         title=t.get("title", "Unknown Track"),
                         artist=self._extract_artist(t),
                         album=t.get("album", {}).get("name", "Unknown Album"),
-                        url=f"https://music.youtube.com/watch?v={t_id}",
+                        url="https://music.youtube.com/watch?v=" + t_id,
                         views=self._fmt_views(t.get("views")),
                         duration=self._fmt_duration(t.get("duration")),
                     )
@@ -213,7 +213,7 @@ class Search:
                         num,
                         title=t.get("title", "Unknown Album"),
                         artist=self._extract_artist(t),
-                        url=f"https://music.youtube.com/playlist?list={pl_id}",
+                        url="https://music.youtube.com/playlist?list=" + pl_id,
                         year=t.get("year", "N/A"),
                     )
 
