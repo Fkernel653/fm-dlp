@@ -5,6 +5,9 @@ on:
     types: [created]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build on ${{ matrix.os }}
@@ -34,13 +37,13 @@ jobs:
           pyinstaller --onefile \
             --hidden-import=yt_dlp \
             --hidden-import=ytmusicapi \
-            --hidden-import=mutagen\
+            --hidden-import=mutagen \
             --hidden-import=argss \
             --collect-all yt_dlp \
             --collect-all ytmusicapi \
             --collect-all mutagen \
             --name fm-dlp \
-            cli.py
+            fm_dlp/cli.py
 
       - name: Rename executable for each OS
         shell: bash
