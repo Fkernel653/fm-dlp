@@ -1,9 +1,9 @@
 """
 fm-dlp - Download music/video from YouTube, YTMusic, and 1000+ sites.
 
-This module serves as the main entry point for the fm-dlp CLI application, providing
+This module serves as the main entry point for the fm-dlp CLI clilication, providing
 functionality to search YouTube/YTMusic for tracks and albums, download audio/video
-content from over 1000+ platforms, and configure application settings.
+content from over 1000+ platforms, and configure clilication settings.
 
 The CLI is built using the argss library and offers three primary commands:
 - search: Search for music tracks, albums, or videos on YouTube/YTMusic
@@ -38,7 +38,7 @@ def main():
 
     import sys
 
-    from argss import CLI
+    from argss import Argss
 
     from fm_dlp.utils.configer import get_path, set_path
     from fm_dlp.utils.functions import echo
@@ -48,13 +48,13 @@ def main():
         validate_search,
     )
 
-    app = CLI(
+    cli = Argss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.0.9",
+        version="4.1.0",
     )
 
-    @app.command()
+    @cli.command()
     def search(
         query: str,
         limit: int = 10,
@@ -85,7 +85,7 @@ def main():
         for result in program.search():
             echo(result)
 
-    @app.command()
+    @cli.command()
     def download(
         urls: str,
         codec: str | None = None,
@@ -134,9 +134,9 @@ def main():
             )
         )
 
-    @app.command()
+    @cli.command()
     def config(path: str, color: bool = True):
-        """Configure the application settings.
+        """Configure the clilication settings.
 
         Args:
             path: Default directory path where downloaded files will be saved.
@@ -146,7 +146,7 @@ def main():
         echo(set_path(path, color))
 
     try:
-        app()
+        cli()
     except KeyboardInterrupt:
         sys.exit(0)
     except SystemExit as e:

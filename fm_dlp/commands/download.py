@@ -208,7 +208,7 @@ class Download:
         except DownloadError:
             return None
         except RequestError:
-            echo(f"\n{error(f'Invalid URL: {url}')}")
+            echo("\n" + error(f"Invalid URL: {url}"))
             echo(info("Enter a valid URL"))
             return None
 
