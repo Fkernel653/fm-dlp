@@ -51,7 +51,7 @@ def main():
     cli = Argss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.1.0",
+        version="4.1.1",
     )
 
     @cli.command()
@@ -136,7 +136,7 @@ def main():
 
     @cli.command()
     def config(path: str, color: bool = True):
-        """Configure the clilication settings.
+        """Configure the application settings.
 
         Args:
             path: Default directory path where downloaded files will be saved.

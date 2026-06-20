@@ -4,11 +4,11 @@ requires-python = ">=3.10"
 
 [[package]]
 name = "argss"
-version = "0.1.8"
+version = "0.1.9"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6a/aa/81dc5844e0ab510447c3e2a3ac31eaf131fef2c657386f9fdf3fc885baf5/argss-0.1.8.tar.gz", hash = "sha256:f571fcccfcf9ad40b7b784fd2a74e1a70d73d7d7b0ad5941cc476007659de547", size = 7789, upload-time = "2026-06-19T06:47:25.336Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/27/2a/a61fbf498c915b3e31144e7b8a51ce9e8d71af611e927f2e86eea4a42f86/argss-0.1.9.tar.gz", hash = "sha256:d03dc1d4871c739a2aab662e37e2832e613047d7c549bb2d7fdea88864711c75", size = 7781, upload-time = "2026-06-20T02:52:26.985Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/fb/2cc1429b42ac1984ccb51fbf922d9973c86cebcf7ad91f9183a30b2a1086/argss-0.1.8-py3-none-any.whl", hash = "sha256:c16fea5a5abd68adaf51806bb5105b0dde4da555903c945b66768f6aa2ff5454", size = 8860, upload-time = "2026-06-19T06:47:24.473Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/95/7ddb82852127d3246121a6d685f5485a01fffc7c082c70c66625047f3cc1/argss-0.1.9-py3-none-any.whl", hash = "sha256:45355a208b394212146c3f2f3c74be54b2c0b4f17022a86f16d1210a01e6bdce", size = 8882, upload-time = "2026-06-20T02:52:26.171Z" },
 ]
 
 [[package]]
@@ -127,7 +127,7 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "4.1.0"
+version = "4.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "argss" },
