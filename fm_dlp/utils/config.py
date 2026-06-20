@@ -12,7 +12,6 @@ from fm_dlp.utils.functions import echo
 
 CONFIG_DIR = Path(user_config_dir("fm-dlp"))
 CONFIG_FILE = CONFIG_DIR / "config.json"
-HOME_PATH = str(Path.home())
 KEY_NAME = "path"
 
 
@@ -99,7 +98,7 @@ def get_path(color: bool) -> str:
         SystemExit: If saved path doesn't exist or is not a directory.
     """
     if not CONFIG_FILE.exists():
-        return HOME_PATH
+        return str(Path.home())
     data = _load_config(color)
     download_path = data.get(KEY_NAME)
 

@@ -2,6 +2,6 @@
 
 from fm_dlp.commands.download import Download
 from fm_dlp.commands.search import Search
-from fm_dlp.utils import configer, functions, validator
+from fm_dlp.utils import config, functions, validate
 
-__all__ = ["Download", "Search", "validator", "configer", "functions"]
+__all__ = ["Download", "Search", "validate", "config", "functions"]

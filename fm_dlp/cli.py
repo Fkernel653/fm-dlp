@@ -40,9 +40,9 @@ def main():
 
     from argss import Argss
 
-    from fm_dlp.utils.configer import get_path, set_path
+    from fm_dlp.utils.config import get_path, set_path
     from fm_dlp.utils.functions import echo
-    from fm_dlp.utils.validator import (
+    from fm_dlp.utils.validate import (
         validate_download,
         validate_ffmpeg,
         validate_search,
@@ -51,7 +51,7 @@ def main():
     cli = Argss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.1.1",
+        version="4.1.2",
     )
 
     @cli.command()

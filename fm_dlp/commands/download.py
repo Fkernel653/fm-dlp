@@ -7,7 +7,7 @@ from typing import Any
 
 from fm_dlp.utils.colors import BOLD_GREEN, BOLD_YELLOW, error, info, set_colors, styled
 from fm_dlp.utils.functions import echo
-from fm_dlp.utils.validator import AUDIO_CODECS
+from fm_dlp.utils.validate import AUDIO_CODECS
 
 VIDEO_CONTAINER_AUDIO_MAP = {
     "mp4": "m4a",
