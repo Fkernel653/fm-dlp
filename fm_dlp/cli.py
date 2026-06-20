@@ -1,9 +1,9 @@
 """
 fm-dlp - Download music/video from YouTube, YTMusic, and 1000+ sites.
 
-This module serves as the main entry point for the fm-dlp CLI clilication, providing
+This module serves as the main entry point for the fm-dlp CLI application, providing
 functionality to search YouTube/YTMusic for tracks and albums, download audio/video
-content from over 1000+ platforms, and configure clilication settings.
+content from over 1000+ platforms, and configure application settings.
 
 The CLI is built using the argss library and offers three primary commands:
 - search: Search for music tracks, albums, or videos on YouTube/YTMusic
