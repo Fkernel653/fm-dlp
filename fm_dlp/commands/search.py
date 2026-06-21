@@ -137,7 +137,7 @@ class Search:
             },
         }
 
-    def search_yt_video(self) -> Generator[str, None, None]:
+    def yt_video(self) -> Generator[str, None, None]:
         """Search YouTube for videos or playlists."""
         try:
             from yt_dlp import YoutubeDL
@@ -174,7 +174,7 @@ class Search:
         except Exception as e:
             yield styled(f"\nYoutube-Video error: {e}\n", BOLD_RED)
 
-    def search_yt_music(self) -> Generator[str, None, None]:
+    def yt_music(self) -> Generator[str, None, None]:
         """Search YouTube Music for tracks or albums."""
         try:
             from ytmusicapi import YTMusic
@@ -222,6 +222,18 @@ class Search:
         except Exception as e:
             yield styled(f"\nYoutube-Music error: {e}\n", BOLD_RED)
 
-    def search(self) -> Generator[str, None, None]:
-        """Execute search based on initialized parameters."""
-        yield from self.search_yt_video() if self.yt_video else self.search_yt_music()
+
+def search(
+    query: str,
+    limit: int,
+    yt_video: bool,
+    album: bool,
+    raw: bool,
+    only_url: bool,
+    color: bool,
+):
+    """Search YouTube or YouTube Music."""
+    s = Search(query, limit, yt_video, album, raw, only_url, color)
+
+    method = "yt_video" if yt_video else "yt_music"
+    return getattr(s, method)()

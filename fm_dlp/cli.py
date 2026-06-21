@@ -51,7 +51,7 @@ def main():
     cli = Argss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.1.2",
+        version="4.1.3",
     )
 
     @cli.command()
@@ -78,11 +78,9 @@ def main():
         if not validate_search(limit, color):
             return
 
-        from fm_dlp.commands.search import Search
+        from fm_dlp.commands.search import search
 
-        program = Search(query, limit, yt_video, album, raw, only_url, color)
-
-        for result in program.search():
+        for result in search(query, limit, yt_video, album, raw, only_url, color):
             echo(result)
 
     @cli.command()
