@@ -51,7 +51,7 @@ def main():
     cli = Argss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.1.3",
+        version="4.1.3.1",
     )
 
     @cli.command()
@@ -144,7 +144,7 @@ def main():
         echo(set_path(path, color))
 
     try:
-        cli()
+        cli.run()
     except KeyboardInterrupt:
         sys.exit(0)
     except SystemExit as e:
