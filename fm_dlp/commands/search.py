@@ -1,16 +1,13 @@
 """YouTube search handlers."""
 
-from typing import Any, Generator
+from typing import Generator
 
 from fm_dlp.utils.colors import (
-    BOLD,
     BOLD_CYAN,
     BOLD_RED,
-    GRAY,
     RESET,
     error,
     set_colors,
-    styled,
 )
 
 
@@ -49,39 +46,40 @@ class Search:
         set_colors(color)
 
         self._c = {
-            "bold": BOLD if color else "",
             "bold_cyan": BOLD_CYAN if color else "",
             "bold_red": BOLD_RED if color else "",
-            "gray": GRAY if color else "",
+            "bold_white": "\033[37m" if color else "",
+            "gray": "\033[90m" if color else "",
+            "white": "\033[0;37m" if color else "",
             "reset": RESET if color else "",
         }
 
     @staticmethod
-    def _fmt_views(v: Any) -> str:
+    def _fmt_views(v: str | int | None) -> str:
         """Format view count with commas."""
         if v is None:
             return "N/A"
-        try:
-            return f"{int(float(v)):,}"
-        except (ValueError, TypeError):
-            return str(v)
+
+        if isinstance(v, str):
+            return v
+
+        return f"{int(float(v)):,}"
 
     @staticmethod
-    def _fmt_duration(d: Any) -> str:
+    def _fmt_duration(d: str | float | None) -> str:
         """Format duration from seconds to MM:SS or HH:MM:SS."""
         if d is None:
             return "N/A"
+
         d_str = str(d)
         if ":" in d_str:
             return d_str
 
-        try:
-            s = int(float(d)) if d else 0
-            h, remainder = divmod(s, 3600)
-            m, s = divmod(remainder, 60)
-            return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
-        except (ValueError, TypeError):
-            return d_str
+        s = int(d)
+        h, remainder = divmod(s, 3600)
+        m, s = divmod(remainder, 60)
+
+        return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
 
     @staticmethod
     def _extract_artist(item: dict) -> str:
@@ -90,37 +88,55 @@ class Search:
         return artists[0].get("name", "Unknown Artist") if artists else "Unknown Artist"
 
     def _format_result(
-        self, num: int, title: str, artist: str, url: str, **kwargs
+        self,
+        num: int,
+        title: str,
+        artist: str,
+        url: str,
+        **kwargs,
     ) -> str:
         """Format a single search result with optional metadata."""
         if self.only_url:
             return url
 
         c = self._c
-        tree = f"    {c['gray']}├─{c['reset']}"
-        corner = f"    {c['gray']}└─{c['reset']}"
-        sep = f" {c['gray']}│{c['reset']} "
-        div = f"       {c['gray']}{'─' * 50}{c['reset']}\n"
+        w = c["white"]
+        g = c["gray"]
 
-        lines = [f"\n{c['bold_cyan']}{num}. {c['reset']}{c['bold']}{title}{c['reset']}"]
+        tree = f"    {g}├─"
+        corner = f"    {g}└─"
+        sep = f" {g}│{w} "
+        div = f"       {g}{'─' * 50}{c['reset']}\n"
+
+        lines = [f"\n{c['bold_cyan']}{num}. {c['bold_white']}{title}"]
 
         if self.yt_video:
-            lines.append(f"{tree} {artist}")
-            if self._is_track:
-                lines.append(
-                    f"{tree} {kwargs.get('views', 'N/A')}{sep}{kwargs.get('duration', 'N/A')}"
-                )
-        elif self._is_track:
-            lines.extend(
-                [f"{tree} {artist}", f"{tree} {kwargs.get('album', 'Unknown Album')}"]
-            )
-            lines.append(
-                f"{tree} {kwargs.get('views', 'N/A')}{sep}{kwargs.get('duration', 'N/A')}"
-            )
-        else:
-            lines.extend([f"{tree} {artist}", f"{tree} {kwargs.get('year', 'N/A')}"])
+            views = kwargs["views"]
+            duration = kwargs["duration"]
 
-        lines.append(f"{corner} {c['bold_red']}{url}{c['reset']}\n{div}")
+            lines.append(f"{tree} {w + artist}")
+            lines.append(f"{tree} {w + views}{sep}{w + duration}")
+
+        elif self._is_track:
+            album = kwargs["album"]
+            views = kwargs["views"]
+            duration = kwargs["duration"]
+
+            lines.extend(
+                [
+                    f"{tree} {w + artist}",
+                    f"{tree} {w + album}",
+                    f"{tree} {w + views}{sep}{w + duration}",
+                ]
+            )
+
+        else:
+            year = kwargs.get("year", "N/A")
+            lines.extend([f"{tree} {w + artist}", f"{tree} {w + year}"])
+
+        lines.append(f"{corner} {c['bold_red']}{url}")
+        lines.append(div)
+
         return "\n".join(lines)
 
     def _ytdl_opts(self) -> dict:
@@ -137,7 +153,7 @@ class Search:
             },
         }
 
-    def yt_video(self) -> Generator[str, None, None]:
+    def search_yt_video(self) -> Generator[str, None, None]:
         """Search YouTube for videos or playlists."""
         try:
             from yt_dlp import YoutubeDL
@@ -155,7 +171,7 @@ class Search:
 
             if self.raw:
                 for v in entries:
-                    yield str(entries)
+                    yield str(entries) + "\n"
                 return
 
             for num, v in enumerate(entries, 1):
@@ -165,16 +181,16 @@ class Search:
                         title=v.get("title", "N/A"),
                         artist=v.get("channel", "N/A"),
                         url="https://youtu.be/" + v_id,
-                        views=self._fmt_views(v.get("view_count")),
-                        duration=self._fmt_duration(v.get("duration")),
+                        views=self._fmt_views(v["view_count"]),
+                        duration=self._fmt_duration(v["duration"]),
                     )
 
         except KeyboardInterrupt:
             return
         except Exception as e:
-            yield styled(f"\nYoutube-Video error: {e}\n", BOLD_RED)
+            yield f"\n{self._c['bold_red']}Youtube-Video ERROR:{self._c['reset']} {e}\n"
 
-    def yt_music(self) -> Generator[str, None, None]:
+    def search_yt_music(self) -> Generator[str, None, None]:
         """Search YouTube Music for tracks or albums."""
         try:
             from ytmusicapi import YTMusic
@@ -194,7 +210,7 @@ class Search:
 
             if self.raw:
                 for t in islice(tracks, self.limit):
-                    yield str(t)
+                    yield str(t) + "\n"
                 return
 
             for num, t in enumerate(islice(tracks, self.limit), 1):
@@ -205,22 +221,22 @@ class Search:
                         artist=self._extract_artist(t),
                         album=t.get("album", {}).get("name", "Unknown Album"),
                         url="https://music.youtube.com/watch?v=" + t_id,
-                        views=self._fmt_views(t.get("views")),
-                        duration=self._fmt_duration(t.get("duration")),
+                        views=self._fmt_views(t["views"]),
+                        duration=self._fmt_duration(t["duration"]),
                     )
                 elif pl_id := t.get("playlistId"):
                     yield self._format_result(
                         num,
                         title=t.get("title", "Unknown Album"),
                         artist=self._extract_artist(t),
-                        url="https://music.youtube.com/playlist?list=" + pl_id,
                         year=t.get("year", "N/A"),
+                        url="https://music.youtube.com/playlist?list=" + pl_id,
                     )
 
         except KeyboardInterrupt:
             return
         except Exception as e:
-            yield styled(f"\nYoutube-Music error: {e}\n", BOLD_RED)
+            yield f"\n{self._c['bold_red']}Youtube-Music ERROR:{self._c['reset']} {e}\n"
 
 
 def search(
@@ -235,5 +251,5 @@ def search(
     """Search YouTube or YouTube Music."""
     s = Search(query, limit, yt_video, album, raw, only_url, color)
 
-    method = "yt_video" if yt_video else "yt_music"
+    method = "search_yt_video" if yt_video else "search_yt_music"
     return getattr(s, method)()

@@ -2,10 +2,9 @@
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
 
-from .colors import error, info, set_colors
-from .functions import echo
+from fm_dlp.utils.colors import error, info, set_colors
+from fm_dlp.utils.functions import echo
 
 AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"}
 VIDEO_CONTAINERS = {"mp4", "mov", "mkv", "webm", "avi", "flv"}
@@ -79,10 +78,6 @@ def validate_download(
     set_colors(color)
 
     # URL validation
-    if not isinstance(url, str) or not url.strip():
-        echo(error("URL cannot be empty or whitespace only"))
-        return False
-
     url_path = Path(url)
 
     if url_path.is_file():
@@ -182,34 +177,23 @@ def validate_download(
     return True
 
 
-def validate_search(limit: Any, color: bool) -> bool:
+def validate_search(limit: int, color: bool) -> bool:
     """
     Validate the search limit parameter.
 
-    This function validates that the provided limit is a positive integer.
-    If the limit is None, it defaults to 10. If the limit is invalid
-    (non-integer or non-positive), an error message is displayed and
-    False is returned.
+    Ensures the limit is a positive integer. If the limit is invalid
+    (<= 0), displays an error message and returns False.
 
     Args:
-        limit (Any): The limit value to validate. Can be any type,
-                     but should be convertible to an integer.
-        color (bool): Flag indicating whether to use colored output
-                      for error and info messages.
+        limit (int): The limit value to validate. Must be a positive integer.
+        color (bool): Whether to use colored output for error messages.
 
     Returns:
-        bool: True if the limit is valid (positive integer or None),
-              False otherwise.
+        bool: True if limit is valid (> 0), False otherwise.
     """
     set_colors(color)
-    try:
-        limit_int = int(limit) if limit is not None else 10
-        if limit_int <= 0:
-            echo(error(f"Invalid limit: {limit}"))
-            echo(info("Must be a positive integer."))
-            return False
-        return True
-    except (TypeError, ValueError):
+    if limit <= 0:
         echo(error(f"Invalid limit: {limit}"))
-        echo(info("Must be an integer."))
+        echo(info("Must be a positive integer."))
         return False
+    return True

@@ -5,7 +5,15 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
-from fm_dlp.utils.colors import BOLD_GREEN, BOLD_YELLOW, error, info, set_colors, styled
+from fm_dlp.utils.colors import (
+    BOLD_GREEN,
+    BOLD_YELLOW,
+    RESET,
+    error,
+    info,
+    set_colors,
+    success,
+)
 from fm_dlp.utils.functions import echo
 from fm_dlp.utils.validate import AUDIO_CODECS
 
@@ -67,6 +75,7 @@ class Download:
 
         self._green = BOLD_GREEN if color else ""
         self._yellow = BOLD_YELLOW if color else ""
+        self._bold = "\033[1m" if color else ""
 
     def _parse_urls(self) -> list[str]:
         """Parse URLs from string or file path."""
@@ -200,15 +209,16 @@ class Download:
             self.metadata = False
             echo(info("WAV format doesn't support metadata embedding"))
 
-        echo(styled(f"\nStarting: {url}\n", self._yellow))
+        url_prefix = self._bold + url + RESET
+        echo(f"\n{self._yellow}STARTING:{RESET} {url_prefix}\n")
 
         try:
             await asyncio.to_thread(self._sync_download, url)
-            return styled(f"\nDone: {url}\n", self._green)
+            return success(url_prefix)
         except DownloadError:
             return None
         except RequestError:
-            echo("\n" + error(f"Invalid URL: {url}"))
+            echo("\n" + error(f"Invalid URL: {url_prefix}"))
             echo(info("Enter a valid URL"))
             return None
 

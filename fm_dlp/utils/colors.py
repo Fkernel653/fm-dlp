@@ -1,7 +1,4 @@
 RESET = "\033[0m"
-BOLD = "\033[1m"
-
-GRAY = "\033[90m"
 
 BOLD_RED = "\033[1;31m"
 BOLD_GREEN = "\033[1;32m"
@@ -20,19 +17,6 @@ def is_colors_enabled() -> bool:
     return _COLORS_ENABLED
 
 
-def styled(text: str, color: str) -> str:
-    """Wrap text in ANSI color code and add reset.
-
-    Args:
-        text (str): The text to color.
-        color (str): ANSI color code (e.g., BOLD_GREEN, GRAY).
-
-    Returns:
-        str: Colored text followed by reset formatting.
-    """
-    return color + text + RESET
-
-
 def success(text: str) -> str:
     """Format text as a success message.
 
@@ -44,10 +28,11 @@ def success(text: str) -> str:
     Returns:
         str: Formatted success message.
     """
+    prefix = "SUCCESS: "
     if is_colors_enabled():
-        return BOLD_GREEN + "Success: " + RESET + text
+        return BOLD_GREEN + prefix + RESET + text
     else:
-        return "Success: " + text
+        return prefix + text
 
 
 def error(text: str) -> str:
@@ -61,10 +46,11 @@ def error(text: str) -> str:
     Returns:
         str: Formatted error message.
     """
+    prefix = "ERROR: "
     if is_colors_enabled():
-        return BOLD_RED + "Error: " + RESET + text
+        return BOLD_RED + prefix + RESET + text
     else:
-        return "Error: " + text
+        return prefix + text
 
 
 def info(text: str) -> str:
@@ -78,7 +64,8 @@ def info(text: str) -> str:
     Returns:
         str: Formatted info message.
     """
+    prefix = "INFO: "
     if is_colors_enabled():
-        return BOLD_CYAN + "Info: " + RESET + text
+        return BOLD_CYAN + prefix + RESET + text
     else:
-        return "Info: " + text
+        return prefix + text
