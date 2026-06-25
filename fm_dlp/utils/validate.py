@@ -6,7 +6,7 @@ from pathlib import Path
 from fm_dlp.utils.colors import error, info, set_colors
 from fm_dlp.utils.functions import echo
 
-AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav"}
+AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav", "alac"}
 VIDEO_CONTAINERS = {"mp4", "mov", "mkv", "webm", "avi", "flv"}
 ALL_CODECS = AUDIO_CODECS | VIDEO_CONTAINERS
 SUPPORTED_BROWSERS = {
@@ -14,39 +14,106 @@ SUPPORTED_BROWSERS = {
     "chrome",
     "chromium",
     "edge",
-    "firefox",
     "opera",
-    "safari",
     "vivaldi",
     "whale",
+    "firefox",
+    "safari",
 }
+COOKIE_EXTENSIONS = {".txt", ".sqlite", ".db", ".cookies"}
+
+
+def _fail(msg: str, hint: str | None = None) -> bool:
+    """Print error message and return False."""
+    echo(error(msg))
+    if hint:
+        echo(info(hint))
+    return False
+
+
+def _check(condition: bool, msg: str, hint: str | None = None) -> bool:
+    """Check condition and return False with error if not met."""
+    return condition or _fail(msg, hint)
 
 
 @lru_cache(maxsize=1)
 def validate_ffmpeg(color: bool) -> bool:
-    """Verify FFmpeg is installed.
-
-    Args:
-        color: Colored output in error messages.
-
-    Returns:
-        True if FFmpeg is found, False otherwise.
-    """
+    """Verify FFmpeg is installed."""
     import shutil
 
     set_colors(color)
 
-    target = "ffmpeg"
-    name = "FFmpeg"
-    if shutil.which(target) is None:
-        echo(error(f"{name} is not installed or not found in system PATH!"))
-        echo(
-            info(
-                f"Please install {name} and ensure it's accessible from the command line."
-            )
+    return _check(
+        shutil.which("ffmpeg") is not None,
+        "FFmpeg is not installed or not found in system PATH!",
+        "Install FFmpeg and ensure it's accessible from the command line.\nTip: Run 'ffmpeg --version' to verify installation.",
+    )
+
+
+def _validate_url(url: str) -> bool:
+    """Validate URL or file path."""
+    path = Path(url)
+
+    if path.is_file():
+        return _check(path.stat().st_size > 0, f"URL file is empty: '{url}'")
+    if path.exists():
+        return _fail(f"Path exists but is not a file: '{url}'")
+    return _check(
+        url.startswith(("http://", "https://")),
+        f"Invalid URL: '{url}'",
+        "Must start with 'http://' or 'https://' or be a path to a file",
+    )
+
+
+def _validate_path(path: str) -> bool:
+    """Validate download directory path."""
+    real_path = Path(path)
+
+    if real_path.is_file():
+        return _fail("The path must not be a file", "Enter the path to the folder")
+    if real_path.exists() and not real_path.is_dir():
+        return _fail(
+            f"Path exists but is not a directory: '{path}'",
+            "Enter a valid directory path",
         )
-        echo(info(f"Tip: Run '{target} --version' to verify installation."))
-        return False
+
+    parent = real_path.parent
+    if parent.exists() and not parent.is_dir():
+        return _fail(f"Parent path is not a directory: '{parent}'")
+
+    return True
+
+
+def _validate_cookies(cookies: str) -> bool:
+    """Validate cookies parameter (browser name or file path)."""
+    if not cookies:
+        return _fail(
+            "Cookies parameter cannot be empty",
+            "Provide a browser name or path to cookie file",
+        )
+
+    cookies_path = Path(cookies)
+
+    if cookies_path.exists():
+        if not cookies_path.is_file():
+            return _fail(
+                f"Path exists but is not a file: '{cookies}'",
+                "Must be a path to a cookie file",
+            )
+        if cookies_path.stat().st_size == 0:
+            return _fail(f"Cookie file is empty: '{cookies}'")
+        if cookies_path.suffix.lower() not in COOKIE_EXTENSIONS:
+            return _fail(
+                f"Cookie file has unusual extension: '{cookies_path.suffix}'",
+                "Expected .txt (Netscape format), .sqlite, .db, or .cookies",
+            )
+    else:
+        if cookies.lower() not in SUPPORTED_BROWSERS:
+            return _fail(
+                f"Unsupported browser: '{cookies}'",
+                f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}\nOr provide a path to a cookie file",
+            )
+
     return True
 
 
@@ -59,141 +126,28 @@ def validate_download(
     color: bool,
     cookies: str | None = None,
 ) -> bool:
-    """Validate all CLI download parameters.
-
-    URL can be either a direct HTTP/HTTPS link or a path to a file with URLs.
-
-    Args:
-        url: URL to validate (HTTP/HTTPS or path to file).
-        codec: Audio/video codec to validate.
-        kbps: Bitrate to validate (64-320).
-        jobs: Number of concurrent jobs to validate (>=1).
-        path: Download directory path to validate.
-        color: Colored output in validation messages.
-        cookies: Browser name for cookie extraction or path to cookie file (optional).
-
-    Returns:
-        bool: True if all parameters are valid, False otherwise.
-    """
+    """Validate all CLI download parameters."""
     set_colors(color)
 
-    # URL validation
-    url_path = Path(url)
-
-    if url_path.is_file():
-        if url_path.stat().st_size == 0:
-            echo(error(f"URL file is empty: '{url}'"))
-            return False
-    elif url_path.exists():
-        echo(error(f"Path exists but is not a file: '{url}'"))
-        return False
-    else:
-        if not (url.startswith("http://") or url.startswith("https://")):
-            echo(error(f"Invalid URL: '{url}'"))
-            echo(info("Must start with 'http://' or 'https://' or be a path to a file"))
-            return False
-
-    # Codec validation
-    if codec not in ALL_CODECS:
-        echo(error(f"Invalid codec: '{codec}'"))
-        echo(info(f"Allowed values: {', '.join(ALL_CODECS)}"))
-        return False
-
-    # Bitrate validation
-    if kbps < 64 or kbps > 320:
-        echo(error(f"Invalid bitrate: {kbps}"))
-        echo(info("Must be an integer between 64 and 320."))
-        return False
-
-    # Jobs validation
-    if jobs < 1:
-        echo(error(f"Invalid jobs: {jobs}"))
-        echo(info("Must be an integer >= 1."))
-        return False
-
-    # Path validation
-    real_path = Path(path)
-
-    if real_path.is_file():
-        echo(error("The path must not be a file"))
-        echo(info("Enter the path to the folder"))
-        return False
-
-    if real_path.exists() and not real_path.is_dir():
-        echo(error(f"Path exists but is not a directory: '{path}'"))
-        echo(info("Enter a valid directory path"))
-        return False
-
-    parent = real_path.parent
-    if parent.exists() and not parent.is_dir():
-        echo(error(f"Parent path is not a directory: '{parent}'"))
-        return False
-
-    # Cookies validation (optional)
-    if cookies is not None:
-        cookies = cookies.strip()
-        if not cookies:
-            echo(error("Cookies parameter cannot be empty"))
-            echo(info("Provide a browser name or path to cookie file"))
-            return False
-
-        cookies_path = Path(cookies)
-        if cookies_path.exists():
-            if cookies_path.is_file():
-                if cookies_path.stat().st_size == 0:
-                    echo(error(f"Cookie file is empty: '{cookies}'"))
-                    return False
-                if cookies_path.suffix.lower() not in {
-                    ".txt",
-                    ".sqlite",
-                    ".db",
-                    ".cookies",
-                }:
-                    echo(
-                        error(
-                            f"Cookie file has unusual extension: '{cookies_path.suffix}'",
-                        )
-                    )
-                    echo(
-                        info(
-                            "Expected .txt (Netscape format), .sqlite, .db, or .cookies"
-                        )
-                    )
-                    return False
-            else:
-                echo(error(f"Path exists but is not a file: '{cookies}'"))
-                echo(info("Must be a path to a cookie file"))
-                return False
-        else:
-            browser_name = cookies.lower()
-            if browser_name not in SUPPORTED_BROWSERS:
-                echo(error(f"Unsupported browser: '{cookies}'"))
-                echo(
-                    info(f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}")
-                )
-                echo(info("Or provide a path to a cookie file"))
-                return False
-
-    return True
+    return (
+        _validate_url(url)
+        and _check(
+            codec in ALL_CODECS,
+            f"Invalid codec: '{codec}'",
+            f"Allowed values: {', '.join(ALL_CODECS)}",
+        )
+        and _check(
+            64 <= kbps <= 320,
+            f"Invalid bitrate: {kbps}",
+            "Must be an integer between 64 and 320",
+        )
+        and _check(jobs >= 1, f"Invalid jobs: {jobs}", "Must be an integer >= 1")
+        and _validate_path(path)
+        and (cookies is None or _validate_cookies(cookies))
+    )
 
 
 def validate_search(limit: int, color: bool) -> bool:
-    """
-    Validate the search limit parameter.
-
-    Ensures the limit is a positive integer. If the limit is invalid
-    (<= 0), displays an error message and returns False.
-
-    Args:
-        limit (int): The limit value to validate. Must be a positive integer.
-        color (bool): Whether to use colored output for error messages.
-
-    Returns:
-        bool: True if limit is valid (> 0), False otherwise.
-    """
+    """Validate search limit parameter."""
     set_colors(color)
-    if limit <= 0:
-        echo(error(f"Invalid limit: {limit}"))
-        echo(info("Must be a positive integer."))
-        return False
-    return True
+    return _check(limit > 0, f"Invalid limit: {limit}", "Must be a positive integer")

@@ -1,8 +1,8 @@
 import sys
-from typing import Any, TextIO
+from typing import TextIO
 
 
-def echo(text: Any, file: TextIO = sys.stdout) -> None:
+def echo(text: str, file: TextIO = sys.stdout) -> None:
     """Print message to file.
 
     Args:

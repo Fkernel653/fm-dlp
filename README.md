@@ -1,10 +1,10 @@
 # fm-dlp — Download from YouTube, YTMusic, and 1000+ sites
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
-[![PyPI](https://img.shields.io/pypi/v/fm-dlp.svg)](https://pypi.org/project/fm-dlp/)
+[![PyPI](https://img.shields.io/pypi/v/fm-dlp.svg)](https://pypi.org/project/fm-dlp)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey)]()
-[![Ruff](https://img.shields.io/badge/code%20style-ruff-261230?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
+[![Ruff](https://img.shields.io/badge/code%20style-ruff-261230?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff)
 
 CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms
 
@@ -44,13 +44,13 @@ fm-dlp download <urls> [--codec CODEC] [--kbps 256] [--jobs 5] [--quiet] [--no-m
 
 | Option | Description |
 |--------|-------------|
-| `--codec` | Audio: `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`<br>Video: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
+| `--codec` | Audio: `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac` <br>Video: `mp4`, `mkv`, `webm`, `mov`, `avi`, `flv` |
 | `--kbps` | Audio bitrate 64–320 (default: 256) |
 | `--jobs` | Number of parallel downloads (default: 5) |
 | `--quiet` | Suppress yt-dlp output messages |
 | `--no-metadata` | Skip metadata and thumbnail embedding |
 | `--path` | Override download directory |
-| `--cookies` | Browser name (`chrome`, `firefox`, `edge`, `safari`, `brave`, `opera`) or path to cookies file |
+| `--cookies` | Browser name (`brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`) or path to cookies file |
 | `--no-color` | Disable colored output in download messages |
 
 ### `config`
@@ -78,4 +78,4 @@ MIT License — Built with:
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 
-**Project:** [GitHub](https://github.com/Fkernel653/fm-dlp) • [PyPI](https://pypi.org/project/fm-dlp/)
+**Project:** [GitHub](https://github.com/Fkernel653/fm-dlp) • [PyPI](https://pypi.org/project/fm-dlp)

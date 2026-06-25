@@ -8,6 +8,7 @@ from fm_dlp.utils.colors import (
     RESET,
     error,
     set_colors,
+    styled,
 )
 
 
@@ -96,9 +97,6 @@ class Search:
         **kwargs,
     ) -> str:
         """Format a single search result with optional metadata."""
-        if self.only_url:
-            return url
-
         c = self._c
         w = c["white"]
         g = c["gray"]
@@ -147,7 +145,7 @@ class Search:
             "cachedir": False,
             "extractor_args": {
                 "youtube": {
-                    "player_client": ["web"],
+                    "player_client": ["web", "ios"],
                     "player_skip": ["configs", "js", "webpage", "authcheck"],
                 }
             },
@@ -176,19 +174,24 @@ class Search:
 
             for num, v in enumerate(entries, 1):
                 if v_id := v.get("id"):
-                    yield self._format_result(
-                        num,
-                        title=v.get("title", "N/A"),
-                        artist=v.get("channel", "N/A"),
-                        url="https://youtu.be/" + v_id,
-                        views=self._fmt_views(v["view_count"]),
-                        duration=self._fmt_duration(v["duration"]),
-                    )
+                    url = "https://youtu.be/" + v_id
+
+                    if self.only_url:
+                        yield url
+                    else:
+                        yield self._format_result(
+                            num,
+                            title=v.get("title", "Unknown Video"),
+                            artist=v.get("channel", "Unknown Channel"),
+                            url=url,
+                            views=self._fmt_views(v["view_count"]),
+                            duration=self._fmt_duration(v["duration"]),
+                        )
 
         except KeyboardInterrupt:
             return
         except Exception as e:
-            yield f"\n{self._c['bold_red']}Youtube-Video ERROR:{self._c['reset']} {e}\n"
+            yield styled(f"\nYoutube-Video ERROR: {e}\n", BOLD_RED)
 
     def search_yt_music(self) -> Generator[str, None, None]:
         """Search YouTube Music for tracks or albums."""
@@ -215,28 +218,38 @@ class Search:
 
             for num, t in enumerate(islice(tracks, self.limit), 1):
                 if self._is_track and (t_id := t.get("videoId")):
-                    yield self._format_result(
-                        num,
-                        title=t.get("title", "Unknown Track"),
-                        artist=self._extract_artist(t),
-                        album=t.get("album", {}).get("name", "Unknown Album"),
-                        url="https://music.youtube.com/watch?v=" + t_id,
-                        views=self._fmt_views(t["views"]),
-                        duration=self._fmt_duration(t["duration"]),
-                    )
+                    url = "https://music.youtube.com/watch?v=" + t_id
+
+                    if self.only_url:
+                        yield url
+                    else:
+                        yield self._format_result(
+                            num,
+                            title=t.get("title", "Unknown Track"),
+                            artist=self._extract_artist(t),
+                            album=t.get("album", {}).get("name", "Unknown Album"),
+                            url=url,
+                            views=self._fmt_views(t["views"]),
+                            duration=self._fmt_duration(t["duration"]),
+                        )
                 elif pl_id := t.get("playlistId"):
-                    yield self._format_result(
-                        num,
-                        title=t.get("title", "Unknown Album"),
-                        artist=self._extract_artist(t),
-                        year=t.get("year", "N/A"),
-                        url="https://music.youtube.com/playlist?list=" + pl_id,
-                    )
+                    url = "https://music.youtube.com/playlist?list=" + pl_id
+
+                    if self.only_url:
+                        yield url
+                    else:
+                        yield self._format_result(
+                            num,
+                            title=t.get("title", "Unknown Album"),
+                            artist=self._extract_artist(t),
+                            year=t.get("year", "N/A"),
+                            url=url,
+                        )
 
         except KeyboardInterrupt:
             return
         except Exception as e:
-            yield f"\n{self._c['bold_red']}Youtube-Music ERROR:{self._c['reset']} {e}\n"
+            yield styled(f"\nYoutube-Music ERROR: {e}\n", BOLD_RED)
 
 
 def search(

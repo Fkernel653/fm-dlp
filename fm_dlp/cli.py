@@ -51,7 +51,7 @@ def main():
     cli = Argss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.1.4",
+        version="4.1.5",
     )
 
     @cli.command()
@@ -100,7 +100,7 @@ def main():
         Args:
             urls: Single URL or comma/space-separated list of URLs. Can also be a path to a text file containing URLs (one per line).
             codec: Audio codec or video container. Default depends on platform.
-                  For audio: mp3, aac, flac, m4a, opus, vorbis, wav.
+                  For audio: mp3, aac, flac, m4a, opus, vorbis, wav, alac.
                   For video: mp4, mov, mkv, webm, avi, flv.
             kbps: Audio bitrate in kbps (64–320). Higher bitrate = better quality but larger file size.
             jobs: Maximum number of concurrent downloads. Increase for faster batch downloads.
@@ -108,7 +108,7 @@ def main():
             metadata: Embed metadata (title, artist, album) and thumbnail into audio files.
             path: Custom download directory path. Uses configured default if not specified.
             cookies: Path to cookies file (e.g., 'cookies.txt') for authenticated downloads,
-                    or browser name ('chrome', 'firefox', 'edge', 'safari', 'brave', 'opera')
+                    or browser name ('brave', 'chrome', 'chromium', 'edge', 'opera', 'vivaldi', 'whale', 'firefox', 'safari')
                     to extract cookies from browser.
             color: Colored output in download progress and status messages.
         """
@@ -116,7 +116,7 @@ def main():
         codec = codec or default_codec
         path = path or get_path(color)
 
-        if not validate_download(urls, codec, kbps, jobs, path, color):
+        if not validate_download(urls, codec, kbps, jobs, path, color, cookies):
             return
 
         if not validate_ffmpeg(color):
@@ -149,7 +149,3 @@ def main():
         sys.exit(0)
     except SystemExit as e:
         sys.exit(e.code if e.code is not None else 0)
-
-
-if __name__ == "__main__":
-    main()

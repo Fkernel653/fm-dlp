@@ -75,7 +75,6 @@ class Download:
 
         self._green = BOLD_GREEN if color else ""
         self._yellow = BOLD_YELLOW if color else ""
-        self._bold = "\033[1m" if color else ""
 
     def _parse_urls(self) -> list[str]:
         """Parse URLs from string or file path."""
@@ -147,48 +146,55 @@ class Download:
         base_opts: dict[str, Any] = {
             "quiet": self.quiet,
             "no_warnings": self.quiet,
-            "outtmpl": f"{self.path}/%(title)s.%(ext)s",
+            "outtmpl": str(Path(self.path) / "%(title)s.%(ext)s"),
+            "concurrent_downloads": self.jobs,
             "concurrent_fragment_downloads": self.jobs,
             "extractor_retries": 3,
+            "postprocessors": [],
         }
 
         if not self.color:
-            base_opts["color"] = "never"
+            base_opts["color"] = "no_color"
 
         if self.codec in AUDIO_CODECS:
-            base_opts.update(
-                format="bestaudio/best",
-                postprocessors=[
-                    {
-                        "key": "FFmpegExtractAudio",
-                        "preferredcodec": self.codec,
-                        "preferredquality": str(self.kbps),
-                    }
-                ],
+            base_opts["format"] = "bestaudio/best"
+            base_opts["postprocessors"].append(
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": self.codec,
+                    "preferredquality": str(self.kbps),
+                }
             )
+
             if self.metadata:
-                base_opts.setdefault("postprocessors", []).extend(
+                base_opts["postprocessors"].extend(
                     [
                         {"key": "FFmpegMetadata"},
                         {"key": "EmbedThumbnail"},
                     ]
                 )
-                base_opts.update(embedmetadata=True, writethumbnail=True)
+                base_opts["embedmetadata"] = True
+                base_opts["writethumbnail"] = True
         else:
             audio_ext = VIDEO_CONTAINER_AUDIO_MAP[self.codec]
-            format_str = (
-                f"bestvideo[ext=mp4]+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
-                if self.codec == "mp4"
-                else f"bestvideo+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
-            )
-            base_opts.update(format=format_str, merge_output_format=self.codec)
 
+            if self.codec == "mp4":
+                format_str = f"bestvideo[ext=mp4]+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
+            else:
+                format_str = (
+                    f"bestvideo+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
+                )
+
+            base_opts["format"] = format_str
+            base_opts["merge_output_format"] = self.codec
+
+        # Cookies
         if self.cookies:
             cookie_path = Path(self.cookies)
             if cookie_path.is_file():
                 base_opts["cookiefile"] = str(cookie_path)
             else:
-                base_opts["cookiesfrombrowser"] = self.cookies
+                base_opts["cookiesfrombrowser"] = (self.cookies,)
 
         return base_opts
 
@@ -209,16 +215,15 @@ class Download:
             self.metadata = False
             echo(info("WAV format doesn't support metadata embedding"))
 
-        url_prefix = self._bold + url + RESET
-        echo(f"\n{self._yellow}STARTING:{RESET} {url_prefix}\n")
+        echo(f"\n{BOLD_YELLOW}Starting:{RESET} {url}\n")
 
         try:
             await asyncio.to_thread(self._sync_download, url)
-            return success(url_prefix)
+            return "\n" + success(url)
         except DownloadError:
             return None
         except RequestError:
-            echo("\n" + error(f"Invalid URL: {url_prefix}"))
+            echo("\n" + error(f"Invalid URL: {url}"))
             echo(info("Enter a valid URL"))
             return None
 

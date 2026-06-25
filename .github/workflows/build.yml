@@ -47,7 +47,7 @@ jobs:
             --collect-all ytmusicapi \
             --collect-all mutagen \
             --name fm-dlp \
-            fm_dlp/cli.py
+            fm_dlp/__main__.py
 
       - name: Rename executable for each OS
         shell: bash
@@ -61,7 +61,7 @@ jobs:
           fi
 
       - name: Upload executables to Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: github.event_name == 'release'
         with:
           files: |

@@ -17,6 +17,28 @@ def is_colors_enabled() -> bool:
     return _COLORS_ENABLED
 
 
+def styled(text: str, color: str) -> str:
+    """Apply ANSI color codes to text if color output is enabled.
+
+    Wraps the input text with the specified ANSI color code and reset sequence.
+    If color output is disabled (e.g., non-interactive terminal or --no-color flag),
+    returns the original text unchanged.
+
+    Args:
+        text: The text string to colorize.
+        color: ANSI color code string (e.g., RED, BOLD_GREEN, YELLOW).
+               Must be defined in the module (e.g., from colors import RED).
+
+    Returns:
+        The colorized text with ANSI escape sequences if colors are enabled,
+        otherwise the original text unchanged.
+    """
+    if is_colors_enabled():
+        return color + text + RESET
+    else:
+        return text
+
+
 def success(text: str) -> str:
     """Format text as a success message.
 
@@ -28,7 +50,7 @@ def success(text: str) -> str:
     Returns:
         str: Formatted success message.
     """
-    prefix = "SUCCESS: "
+    prefix = "Success: "
     if is_colors_enabled():
         return BOLD_GREEN + prefix + RESET + text
     else:
@@ -46,7 +68,7 @@ def error(text: str) -> str:
     Returns:
         str: Formatted error message.
     """
-    prefix = "ERROR: "
+    prefix = "Error: "
     if is_colors_enabled():
         return BOLD_RED + prefix + RESET + text
     else:
@@ -64,7 +86,7 @@ def info(text: str) -> str:
     Returns:
         str: Formatted info message.
     """
-    prefix = "INFO: "
+    prefix = "Info: "
     if is_colors_enabled():
         return BOLD_CYAN + prefix + RESET + text
     else:
