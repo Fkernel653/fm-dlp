@@ -13,7 +13,7 @@ The CLI is built using the argss library and offers three primary commands:
 Features:
     - Search YouTube Music and YouTube with customizable result limits
     - Download from 1000+ platforms using yt-dlp backend
-    - Multiple audio codec support (mp3, aac, flac, m4a, opus, vorbis, wav)
+    - Multiple audio codec support (mp3, aac, flac, m4a, opus, vorbis, wav, alac)
     - Video format support (mp4, mov, mkv, webm, avi, flv)
     - Concurrent downloads with configurable job limits
     - Metadata embedding with thumbnails for audio files
