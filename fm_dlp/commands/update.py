@@ -141,7 +141,7 @@ def update(color: bool):
                 cmd = ["pip", "install"]
 
             result = subprocess.run(
-                [sys.executable, "-m", *cmd, "install", "--upgrade", repo],
+                [sys.executable, "-m", *cmd, "--upgrade", repo],
                 capture_output=True,
                 text=True,
             )
