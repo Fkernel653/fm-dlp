@@ -106,6 +106,7 @@ MIT License — Built with:
 | [mutagen](https://github.com/quodlibet/mutagen) | Metadata tagging |
 | [platformdirs](https://github.com/platformdirs/platformdirs) | Config paths |
 | [argss](https://github.com/Fkernel653/argss) | CLI framework |
+| [fake-useragent](https://github.com/fake-useragent/fake-useragent) | Generation of fake user agents |
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 

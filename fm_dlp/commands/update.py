@@ -83,6 +83,8 @@ def update(color: bool):
     import urllib.error
     import urllib.request
 
+    from fake_useragent import UserAgent
+
     from fm_dlp.utils.colors import error, set_colors, success
 
     set_colors(color)
@@ -91,7 +93,12 @@ def update(color: bool):
         repo = "fm-dlp"
         url = f"https://api.github.com/repos/Fkernel653/{repo}/releases/latest"
 
-        with urllib.request.urlopen(url) as response:
+        req = urllib.request.Request(
+            url,
+            headers={"User-Agent": UserAgent().random},
+        )
+
+        with urllib.request.urlopen(req) as response:
             r = json.loads(response.read())
 
         latest = r["tag_name"].lstrip("v")
