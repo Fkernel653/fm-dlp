@@ -51,7 +51,7 @@ def main():
     cli = Argss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.1.6",
+        version="4.1.7",
     )
 
     @cli.command()
@@ -142,6 +142,31 @@ def main():
             color: Colored output in configuration messages.
         """
         echo(set_path(path, color))
+
+    @cli.command()
+    def update():
+        """Update fm-dlp to the latest version.
+
+        This command automatically detects whether you're running:
+        - A PyInstaller binary (.exe on Windows, no extension on macOS/Linux):
+            Downloads the appropriate binary from GitHub Releases and replaces itself.
+        - A Python script (source installation):
+            Updates the package via pip or uv (whichever is available).
+
+        The update process:
+            1. Checks GitHub for the latest release tag
+            2. If running as binary, downloads the matching executable for your OS
+            3. If running as script, runs 'pip install --upgrade fm-dlp' or 'uv pip install --upgrade fm-dlp'
+            4. Returns a success message with the new version number
+
+        Note:
+            - The binary update replaces the currently running executable
+            - You may need to restart the application after updating
+            - For script mode, uv is preferred if available (faster than pip)
+        """
+        from fm_dlp.commands.update import update
+
+        echo(update())
 
     try:
         cli.run()
