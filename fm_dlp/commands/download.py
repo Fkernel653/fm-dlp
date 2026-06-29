@@ -43,7 +43,7 @@ class Download:
         metadata: bool,
         path: str,
         color: bool,
-        cookies: str | None = None,
+        cookies: str | None,
     ):
         """Initialize downloader with configuration.
 

@@ -51,7 +51,7 @@ def main():
     cli = Argss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.1.5",
+        version="4.1.6",
     )
 
     @cli.command()
@@ -116,7 +116,7 @@ def main():
         codec = codec or default_codec
         path = path or get_path(color)
 
-        if not validate_download(urls, codec, kbps, jobs, path, color, cookies):
+        if not validate_download(urls, codec, kbps, jobs, path, cookies, color):
             return
 
         if not validate_ffmpeg(color):

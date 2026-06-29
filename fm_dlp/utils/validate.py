@@ -123,8 +123,8 @@ def validate_download(
     kbps: int,
     jobs: int,
     path: str,
+    cookies: str | None,
     color: bool,
-    cookies: str | None = None,
 ) -> bool:
     """Validate all CLI download parameters."""
     set_colors(color)
