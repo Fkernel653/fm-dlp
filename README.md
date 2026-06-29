@@ -64,37 +64,6 @@ fm-dlp config <path> [--no-color]
 | `path` | Default download directory |
 | `--no-color` | Disable colored output in configuration messages |
 
-### `update`
-
-```bash
-fm-dlp update [--no-color]
-```
-
-Self-update to the latest version from GitHub with automatic OS detection.
-
-| Option | Description |
-|--------|-------------|
-| `--no-color` | Disable colored output in update messages |
-
-| Behavior | Description |
-|----------|-------------|
-| **Binary mode** (PyInstaller) | Downloads the appropriate executable for your OS (`.exe` on Windows, no extension on macOS/Linux) and replaces the current binary |
-| **Script mode** (pip install) | Updates the package via `pip` or `uv` (whichever is available, `uv` preferred for faster installation) |
-
-**Features:**
-- Automatic OS detection (Windows, macOS, Linux)
-- Always updates to the latest GitHub release (no version checking)
-- Cross-platform support
-- Fallback to pip if uv is not installed
-- Preserves executable permissions on Unix systems
-- Error handling with user-friendly messages:
-  - GitHub API connection failures
-  - Missing assets for current OS
-  - Permission denied (with admin/sudo suggestion)
-  - Package installation errors (with detailed output)
-
-**Note:** The application may need to be restarted after updating, especially when running as a binary.
-
 ## 📄 License & Acknowledgments
 
 MIT License — Built with:
@@ -106,7 +75,6 @@ MIT License — Built with:
 | [mutagen](https://github.com/quodlibet/mutagen) | Metadata tagging |
 | [platformdirs](https://github.com/platformdirs/platformdirs) | Config paths |
 | [argss](https://github.com/Fkernel653/argss) | CLI framework |
-| [fake-useragent](https://github.com/fake-useragent/fake-useragent) | Generation of fake user agents |
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 
