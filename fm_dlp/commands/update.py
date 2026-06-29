@@ -135,20 +135,26 @@ def update(color: bool):
             except (subprocess.CalledProcessError, FileNotFoundError):
                 has_uv = False
 
-            cmd = "uv" if has_uv else "pip"
+            if has_uv:
+                cmd = ["uv", "pip", "install"]
+            else:
+                cmd = ["pip", "install"]
+
             result = subprocess.run(
-                [sys.executable, "-m", cmd, "install", "--upgrade", repo],
+                [sys.executable, "-m", *cmd, "install", "--upgrade", repo],
                 capture_output=True,
                 text=True,
             )
 
             if result.returncode != 0:
                 return error(
-                    f"Package update failed via {cmd}.\n"
+                    f"Package update failed via {'uv' if has_uv else 'pip'}.\n"
                     f"{result.stderr.strip() or result.stdout.strip()}"
                 )
 
-            return success(f"Updated package to {latest} via {cmd}")
+            return success(
+                f"Updated package to {latest} via {'uv' if has_uv else 'pip'}"
+            )
 
     except PermissionError:
         return error(
