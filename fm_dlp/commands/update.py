@@ -124,12 +124,16 @@ def update(color: bool):
             return success(f"Updated binary to {latest}")
 
         else:
-            has_uv = (
+            try:
                 subprocess.run(
-                    ["uv", "--version"], capture_output=True, shell=False
-                ).returncode
-                == 0
-            )
+                    [sys.executable, "-m", "uv", "--version"],
+                    capture_output=True,
+                    shell=False,
+                    check=True,
+                )
+                has_uv = True
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                has_uv = False
 
             cmd = "uv" if has_uv else "pip"
             result = subprocess.run(
@@ -139,9 +143,9 @@ def update(color: bool):
             )
 
             if result.returncode != 0:
-                return error(
-                    f"Package update failed via {cmd}.\n"
-                    f"{result.stderr.strip() or result.stdout.strip()}"
+                return (
+                    error(f"Package update failed via {cmd}.\n"),
+                    error(result.stderr.strip() or result.stdout.strip()),
                 )
 
             return success(f"Updated package to {latest} via {cmd}")
