@@ -141,7 +141,7 @@ def update(color: bool):
             if result.returncode != 0:
                 return error(
                     f"Package update failed via {cmd}.\n"
-                    f"Error: {result.stderr.strip() or result.stdout.strip()}"
+                    f"{result.stderr.strip() or result.stdout.strip()}"
                 )
 
             return success(f"Updated package to {latest} via {cmd}")
