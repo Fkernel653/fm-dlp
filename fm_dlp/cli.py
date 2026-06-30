@@ -51,7 +51,7 @@ def main():
     cli = Argss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
-        version="4.2.5",
+        version="4.2.6",
     )
 
     @cli.command()
