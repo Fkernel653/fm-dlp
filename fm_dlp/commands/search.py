@@ -5,6 +5,7 @@ from typing import Generator
 from fm_dlp.utils.colors import (
     BOLD_CYAN,
     BOLD_RED,
+    GRAY,
     RESET,
     error,
     set_colors,
@@ -50,7 +51,7 @@ class Search:
             "bold_cyan": BOLD_CYAN if color else "",
             "bold_red": BOLD_RED if color else "",
             "bold_white": "\033[37m" if color else "",
-            "gray": "\033[90m" if color else "",
+            "gray": GRAY if color else "",
             "white": "\033[0;37m" if color else "",
             "reset": RESET if color else "",
         }

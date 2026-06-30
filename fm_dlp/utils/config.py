@@ -7,7 +7,16 @@ from pathlib import Path
 
 from platformdirs import user_config_dir
 
-from fm_dlp.utils.colors import error, set_colors, success
+from fm_dlp.utils.colors import (
+    BOLD_CYAN,
+    BOLD_YELLOW,
+    GRAY,
+    error,
+    info,
+    set_colors,
+    styled,
+    success,
+)
 from fm_dlp.utils.functions import echo
 
 CONFIG_DIR = Path(user_config_dir("fm-dlp"))
@@ -73,9 +82,13 @@ def set_path(path: str, color: bool) -> str:
             echo(error("Please enter the correct path!"), file=sys.stderr)
             sys.exit(1)
 
-        _save_config({KEY_NAME: str(input_path)})
+        str_input_path = str(input_path)
+
+        _save_config({KEY_NAME: str_input_path})
         _load_config.cache_clear()
-        return success(f"\nPath: {input_path}\nConfig file: {CONFIG_FILE}")
+        echo("\n" + styled("Path: ", BOLD_YELLOW) + str_input_path)
+        echo(styled("Configuration file path: ", BOLD_CYAN) + str(CONFIG_FILE))
+        return success("Configuration Successful")
     except PermissionError:
         return error(f"Permission denied! Cannot write to {CONFIG_FILE}")
     except OSError as e:
@@ -98,6 +111,11 @@ def get_path(color: bool) -> str:
         SystemExit: If saved path doesn't exist or is not a directory.
     """
     if not CONFIG_FILE.exists():
+        echo(info("Home directory is used!"))
+        echo(
+            styled("Hint: ", GRAY)
+            + "Run the 'config' command to configure the download path\n"
+        )
         return str(Path.home())
     data = _load_config(color)
     download_path = data.get(KEY_NAME)

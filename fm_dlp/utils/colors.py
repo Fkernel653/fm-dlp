@@ -1,5 +1,7 @@
 RESET = "\033[0m"
 
+GRAY = "\033[90m"
+
 BOLD_RED = "\033[1;31m"
 BOLD_GREEN = "\033[1;32m"
 BOLD_YELLOW = "\033[1;33m"
