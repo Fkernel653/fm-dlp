@@ -3,7 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from fm_dlp.utils.colors import error, info, set_colors
+from fm_dlp.utils.colors import error, hint, set_colors
 from fm_dlp.utils.functions import echo
 
 AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav", "alac"}
@@ -23,17 +23,17 @@ SUPPORTED_BROWSERS = {
 COOKIE_EXTENSIONS = {".txt", ".sqlite", ".db", ".cookies"}
 
 
-def _fail(msg: str, hint: str | None = None) -> bool:
+def _fail(msg: str, tip: str | None = None) -> bool:
     """Print error message and return False."""
     echo(error(msg))
-    if hint:
-        echo(info(hint))
+    if tip:
+        echo(hint(tip))
     return False
 
 
-def _check(condition: bool, msg: str, hint: str | None = None) -> bool:
+def _check(condition: bool, msg: str, tip: str | None = None) -> bool:
     """Check condition and return False with error if not met."""
-    return condition or _fail(msg, hint)
+    return condition or _fail(msg, tip)
 
 
 @lru_cache(maxsize=1)

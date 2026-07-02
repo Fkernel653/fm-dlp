@@ -10,8 +10,8 @@ from platformdirs import user_config_dir
 from fm_dlp.utils.colors import (
     BOLD_CYAN,
     BOLD_YELLOW,
-    GRAY,
     error,
+    hint,
     info,
     set_colors,
     styled,
@@ -29,7 +29,7 @@ def _load_config(color: bool) -> dict:
     """Load configuration from JSON file with caching.
 
     Args:
-        no_color: Disable colored output for error messages.
+        color: Colored output for error messages.
 
     Returns:
         Dictionary containing configuration data. Empty dict if file doesn't exist.
@@ -67,7 +67,7 @@ def set_path(path: str, color: bool) -> str:
 
     Args:
         path: Directory path for downloads. Can be absolute or relative.
-        no_color: Disable colored output in success/error messages.
+        color: Colored output in success/error messages.
 
     Returns:
         Success message with the configured path and config file location.
@@ -112,10 +112,7 @@ def get_path(color: bool) -> str:
     """
     if not CONFIG_FILE.exists():
         echo(info("Home directory is used!"))
-        echo(
-            styled("Hint: ", GRAY)
-            + "Run the 'config' command to configure the download path\n"
-        )
+        echo(hint("Run the 'config' command to configure the download path\n"))
         return str(Path.home())
     data = _load_config(color)
     download_path = data.get(KEY_NAME)

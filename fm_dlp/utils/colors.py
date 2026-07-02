@@ -93,3 +93,21 @@ def info(text: str) -> str:
         return BOLD_CYAN + prefix + RESET + text
     else:
         return prefix + text
+
+
+def hint(text: str) -> str:
+    """Format text as a hint message.
+
+    Adds 'Hint: ' prefix and colors everything in gray.
+
+    Args:
+        text (str): The message content.
+
+    Returns:
+        str: Formatted hint message.
+    """
+    prefix = "Hint: "
+    if is_colors_enabled():
+        return GRAY + prefix + RESET + text
+    else:
+        return prefix + text

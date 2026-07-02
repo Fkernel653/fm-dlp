@@ -10,6 +10,7 @@ from fm_dlp.utils.colors import (
     BOLD_YELLOW,
     RESET,
     error,
+    hint,
     info,
     set_colors,
     success,
@@ -188,7 +189,6 @@ class Download:
             base_opts["format"] = format_str
             base_opts["merge_output_format"] = self.codec
 
-        # Cookies
         if self.cookies:
             cookie_path = Path(self.cookies)
             if cookie_path.is_file():
@@ -224,7 +224,7 @@ class Download:
             return None
         except RequestError:
             echo("\n" + error(f"Invalid URL: {url}"))
-            echo(info("Enter a valid URL"))
+            echo(hint("Enter a valid URL"))
             return None
 
     def _sync_download(self, url: str) -> None:
