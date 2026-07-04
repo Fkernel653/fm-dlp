@@ -3,15 +3,6 @@ revision = 3
 requires-python = ">=3.10"
 
 [[package]]
-name = "argss"
-version = "0.2.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b3/36/ff4c4d545f4c253e9c72a73cef6f18db583a0b8f7467539b378c5715461b/argss-0.2.2.tar.gz", hash = "sha256:7692ec6731623a7ecee62ae2dceccca496660efb0c8e924fda5a4ee75b9feda3", size = 7288, upload-time = "2026-06-28T05:15:10.739Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/bb/50/efdac0844c675673e93e526bc67909845f0b1872f933444412783288bf7f/argss-0.2.2-py3-none-any.whl", hash = "sha256:b66671398418e91448e4cdacee2c5f02da57d7f38a7d9ca15b7d0d8022a3b534", size = 8293, upload-time = "2026-06-28T05:15:09.025Z" },
-]
-
-[[package]]
 name = "certifi"
 version = "2026.6.17"
 source = { registry = "https://pypi.org/simple" }
@@ -127,10 +118,9 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "4.2.8"
+version = "4.2.9"
 source = { editable = "." }
 dependencies = [
-    { name = "argss" },
     { name = "mutagen" },
     { name = "platformdirs" },
     { name = "yt-dlp" },
@@ -144,7 +134,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "argss" },
     { name = "mutagen" },
     { name = "platformdirs" },
     { name = "ruff", marker = "extra == 'dev'" },
