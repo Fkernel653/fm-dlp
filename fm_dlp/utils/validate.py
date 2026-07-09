@@ -1,9 +1,9 @@
 """Input validation module for fm-dlp CLI application."""
 
 from functools import lru_cache
-from pathlib import Path
 
 from fm_dlp.utils.colors import error, hint, set_colors
+from fm_dlp.utils.config.path import Path
 from fm_dlp.utils.functions import echo
 
 AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav", "alac"}

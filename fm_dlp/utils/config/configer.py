@@ -1,26 +1,45 @@
 """Persistent download path storage using JSON config file."""
 
 import json
+import os
 import sys
 from functools import lru_cache
-from pathlib import Path
-
-from platformdirs import user_config_dir
 
 from fm_dlp.utils.colors import (
     BOLD_CYAN,
+    BOLD_GREEN,
     BOLD_YELLOW,
     error,
     hint,
     info,
     set_colors,
     styled,
-    success,
 )
+from fm_dlp.utils.config.path import Path
 from fm_dlp.utils.functions import echo
 
-CONFIG_DIR = Path(user_config_dir("fm-dlp"))
-CONFIG_FILE = CONFIG_DIR / "config.json"
+
+def _get_config_dir() -> str:
+    """Get the user config directory based on platform."""
+    home = Path.home()
+
+    if sys.platform == "win32":
+        appdata = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
+        if appdata:
+            d = Path(appdata)
+        else:
+            d = home / "AppData" / "Local"
+    elif sys.platform == "darwin":
+        d = home / "Library" / "Application Support"
+    else:
+        xdg = os.environ.get("XDG_CONFIG_HOME")
+        d = Path(xdg) if xdg else (home / ".config")
+
+    return str(d / "fm-dlp")
+
+
+CONFIG_DIR = _get_config_dir()
+CONFIG_FILE = Path(CONFIG_DIR) / "config.json"
 KEY_NAME = "path"
 
 
@@ -37,7 +56,7 @@ def _load_config(color: bool) -> dict:
     if not CONFIG_FILE.exists():
         return {}
     try:
-        return json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        return json.loads(CONFIG_FILE.read_text("utf-8"))
     except (json.JSONDecodeError, OSError):
         set_colors(color)
         echo(error("Config file is corrupted. Creating new one..."))
@@ -52,11 +71,8 @@ def _save_config(data: dict) -> None:
     Args:
         data: Dictionary containing configuration data to save.
     """
-    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-    CONFIG_FILE.write_text(
-        json.dumps(data, ensure_ascii=False, indent=4),
-        encoding="utf-8",
-    )
+    CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    CONFIG_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=4), "utf-8")
 
 
 def set_path(path: str, color: bool) -> str:
@@ -77,18 +93,19 @@ def set_path(path: str, color: bool) -> str:
     """
     set_colors(color)
     try:
-        input_path = Path(path).expanduser().resolve()
-        if not input_path.is_dir():
+        input_path = str(Path(path).expanduser().resolve())
+
+        if not Path(input_path).is_dir():
             echo(error("Please enter the correct path!"), file=sys.stderr)
             sys.exit(1)
 
-        str_input_path = str(input_path)
-
-        _save_config({KEY_NAME: str_input_path})
+        _save_config({KEY_NAME: input_path})
         _load_config.cache_clear()
-        echo("\n" + styled("Path: ", BOLD_YELLOW) + str_input_path)
-        echo(styled("Configuration file path: ", BOLD_CYAN) + str(CONFIG_FILE))
-        return success("Configuration Successful")
+
+        echo(styled("\nDownload directory set to: ", BOLD_YELLOW) + input_path)
+        echo(styled("Config saved at: ", BOLD_CYAN) + str(CONFIG_FILE))
+        return styled("Configuration saved successfully\n", BOLD_GREEN)
+
     except PermissionError:
         return error(f"Permission denied! Cannot write to {CONFIG_FILE}")
     except OSError as e:
@@ -114,6 +131,7 @@ def get_path(color: bool) -> str:
         echo(info("Home directory is used!"))
         echo(hint("Run the 'config' command to configure the download path\n"))
         return str(Path.home())
+
     data = _load_config(color)
     download_path = data.get(KEY_NAME)
 

@@ -2,7 +2,6 @@
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
 from typing import Any
 
 from fm_dlp.utils.colors import (
@@ -15,6 +14,7 @@ from fm_dlp.utils.colors import (
     set_colors,
     success,
 )
+from fm_dlp.utils.config.path import Path
 from fm_dlp.utils.functions import echo
 from fm_dlp.utils.validate import AUDIO_CODECS
 
