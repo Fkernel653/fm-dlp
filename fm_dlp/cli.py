@@ -36,8 +36,9 @@ For more information, visit: https://github.com/Fkernel653/fm-dlp
 import argparse
 import sys
 
+from fm_dlp import __version__
 from fm_dlp.utils.config.configer import get_path, set_path
-from fm_dlp.utils.functions import echo, get_version
+from fm_dlp.utils.functions import echo
 from fm_dlp.utils.validate import validate_download, validate_ffmpeg, validate_search
 
 
@@ -46,7 +47,7 @@ def main():
         prog="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
     )
-    parser.add_argument("-V", "--version", action="version", version=get_version())
+    parser.add_argument("-V", "--version", action="version", version=__version__)
     parser.add_argument(
         "--no-color", action="store_true", help="Disable colored output globally"
     )

@@ -8,4 +8,4 @@ from fm_dlp.utils.config.path import Path
 
 __all__ = ["Download", "Search", "validate", "configer", "Path", "functions"]
 
-__version__ = "4.3.1"
+__version__ = "4.3.2"

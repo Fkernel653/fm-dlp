@@ -10,6 +10,3 @@ def echo(text: str, file: TextIO = sys.stdout) -> None:
         file: File to write to (default: stdout).
     """
     file.write(text + "\n")
-
-
-__version__ = "4.3.1"
