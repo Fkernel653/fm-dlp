@@ -36,10 +36,10 @@ For more information, visit: https://github.com/Fkernel653/fm-dlp
 import argparse
 import sys
 
-from fm_dlp import __version__
-from fm_dlp.utils.config.configer import get_path, set_path
-from fm_dlp.utils.functions import echo
-from fm_dlp.utils.validate import validate_download, validate_ffmpeg, validate_search
+from . import __version__
+from .utils.config.configer import get_path, set_path
+from .utils.functions import echo
+from .utils.validate import validate_download, validate_ffmpeg, validate_search
 
 
 def main():
@@ -164,7 +164,7 @@ def main():
         if args.command == "search":
             if not validate_search(args.limit, color):
                 return
-            from fm_dlp.commands.search import search
+            from .commands.search import search
 
             for result in search(
                 args.query,
@@ -191,7 +191,7 @@ def main():
 
             import asyncio
 
-            from fm_dlp.commands.download import run_downloader
+            from .commands.download import run_downloader
 
             asyncio.run(
                 run_downloader(

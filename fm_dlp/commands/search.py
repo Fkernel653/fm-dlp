@@ -2,7 +2,7 @@
 
 from typing import Generator
 
-from fm_dlp.utils.colors import (
+from ..utils.colors import (
     BOLD_CYAN,
     BOLD_RED,
     GRAY,

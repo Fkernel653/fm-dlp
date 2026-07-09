@@ -5,7 +5,7 @@ import os
 import sys
 from functools import lru_cache
 
-from fm_dlp.utils.colors import (
+from ..colors import (
     BOLD_CYAN,
     BOLD_GREEN,
     BOLD_YELLOW,
@@ -15,8 +15,8 @@ from fm_dlp.utils.colors import (
     set_colors,
     styled,
 )
-from fm_dlp.utils.config.path import Path
-from fm_dlp.utils.functions import echo
+from ..config.path import Path
+from ..functions import echo
 
 
 def _get_config_dir() -> str:
@@ -63,18 +63,6 @@ def _load_config(color: bool) -> dict:
         return {}
 
 
-def _save_config(data: dict) -> None:
-    """Save configuration data to JSON file.
-
-    Creates the config directory if it doesn't exist.
-
-    Args:
-        data: Dictionary containing configuration data to save.
-    """
-    CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
-    CONFIG_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=4), "utf-8")
-
-
 def set_path(path: str, color: bool) -> str:
     """Set and save the download directory path.
 
@@ -99,7 +87,10 @@ def set_path(path: str, color: bool) -> str:
             echo(error("Please enter the correct path!"), file=sys.stderr)
             sys.exit(1)
 
-        _save_config({KEY_NAME: input_path})
+        CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        CONFIG_FILE.write_text(
+            json.dumps({KEY_NAME: input_path}, ensure_ascii=False, indent=4), "utf-8"
+        )
         _load_config.cache_clear()
 
         echo(styled("\nDownload directory set to: ", BOLD_YELLOW) + input_path)

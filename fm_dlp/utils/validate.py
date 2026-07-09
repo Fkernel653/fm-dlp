@@ -2,9 +2,9 @@
 
 from functools import lru_cache
 
-from fm_dlp.utils.colors import error, hint, set_colors
-from fm_dlp.utils.config.path import Path
-from fm_dlp.utils.functions import echo
+from .colors import error, hint, set_colors
+from .config.path import Path
+from .functions import echo
 
 AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav", "alac"}
 VIDEO_CONTAINERS = {"mp4", "mov", "mkv", "webm", "avi", "flv"}

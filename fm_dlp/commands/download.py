@@ -4,19 +4,18 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
-from fm_dlp.utils.colors import (
+from ..utils.colors import (
     BOLD_GREEN,
     BOLD_YELLOW,
     RESET,
     error,
-    hint,
     info,
     set_colors,
     success,
 )
-from fm_dlp.utils.config.path import Path
-from fm_dlp.utils.functions import echo
-from fm_dlp.utils.validate import AUDIO_CODECS
+from ..utils.config.path import Path
+from ..utils.functions import echo
+from ..utils.validate import AUDIO_CODECS
 
 VIDEO_CONTAINER_AUDIO_MAP = {
     "mp4": "m4a",
@@ -208,8 +207,6 @@ class Download:
 
     async def _download_url(self, url: str) -> str | None:
         """Download a single URL and return status message."""
-        from yt_dlp.networking.exceptions import RequestError
-        from yt_dlp.utils import DownloadError
 
         if self.codec == "wav" and self.metadata:
             self.metadata = False
@@ -217,15 +214,8 @@ class Download:
 
         echo(f"\n{BOLD_YELLOW}Starting:{RESET} {url}\n")
 
-        try:
-            await asyncio.to_thread(self._sync_download, url)
-            return "\n" + success(url)
-        except DownloadError:
-            return None
-        except RequestError:
-            echo("\n" + error(f"Invalid URL: {url}"))
-            echo(hint("Enter a valid URL"))
-            return None
+        await asyncio.to_thread(self._sync_download, url)
+        return "\n" + success(url) + "\n"
 
     def _sync_download(self, url: str) -> None:
         """Synchronous download using yt-dlp (runs in thread pool)."""
