@@ -1,7 +1,7 @@
 """Custom Path implementation mimicking pathlib.Path."""
 
 import os
-from typing import List, Union
+from typing import Union
 
 
 class Path:
@@ -16,16 +16,17 @@ class Path:
         if not args:
             self._path = ""
         else:
-            parts = [str(arg).replace("\\", "/") for arg in args if str(arg)]
-            self._path = self._join_parts(parts)
+            parts = []
+            for arg in args:
+                if isinstance(arg, Path):
+                    parts.append(str(arg))
+                elif hasattr(arg, "__fspath__"):
+                    parts.append(os.fspath(arg))
+                else:
+                    parts.append(str(arg))
 
-    def _join_parts(self, parts: List[str]) -> str:
-        """Join path parts with correct separator."""
-        if not parts:
-            return ""
-        if len(parts) == 1:
-            return parts[0]
-        return "/".join(parts).replace("//", "/")
+            parts = [p for p in parts if p]
+            self._path = os.path.join(*parts) if parts else ""
 
     def __str__(self) -> str:
         return self._path
