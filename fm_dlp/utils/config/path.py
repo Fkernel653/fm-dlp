@@ -1,7 +1,8 @@
 """Custom Path implementation mimicking pathlib.Path."""
 
+from __future__ import annotations
+
 import os
-from typing import Union
 
 
 class Path:
@@ -31,14 +32,11 @@ class Path:
     def __str__(self) -> str:
         return self._path
 
-    def __repr__(self) -> str:
-        return f"Path('{self._path}')"
-
-    def __truediv__(self, other: Union[str, "Path"]) -> "Path":
+    def __truediv__(self, other: str | Path) -> Path:
         return Path(self._path, str(other))
 
     @property
-    def parent(self) -> "Path":
+    def parent(self) -> Path:
         """Return parent directory."""
         parts = self._path.rsplit("/", 1)
         return Path(parts[0] if len(parts) > 1 else "")
@@ -61,12 +59,9 @@ class Path:
         """Check if path is a file."""
         return os.path.isfile(self._path)
 
-    def mkdir(self, parents: bool = False, exist_ok: bool = False) -> None:
+    def mkdir(self, exist_ok: bool) -> None:
         """Create directory."""
-        if parents:
-            os.makedirs(self._path, exist_ok=exist_ok)
-        else:
-            os.mkdir(self._path)
+        os.makedirs(self._path, exist_ok=exist_ok)
 
     def read_text(self, encoding: str = "utf-8") -> str:
         """Read file content as text."""
@@ -78,11 +73,11 @@ class Path:
         with open(self._path, "w", encoding=encoding) as f:
             return f.write(data)
 
-    def resolve(self) -> "Path":
+    def resolve(self) -> Path:
         """Resolve absolute path."""
         return Path(os.path.abspath(self._path))
 
-    def expanduser(self) -> "Path":
+    def expanduser(self) -> Path:
         """Expand ~ to user home."""
         return Path(os.path.expanduser(self._path))
 
@@ -91,6 +86,6 @@ class Path:
         return os.stat(self._path)
 
     @classmethod
-    def home(cls) -> "Path":
+    def home(cls) -> Path:
         """Return user home directory."""
         return cls(os.path.expanduser("~"))

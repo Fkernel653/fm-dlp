@@ -2,25 +2,9 @@
 
 from functools import lru_cache
 
+from ..utils import ALL_CODECS, COOKIE_EXTENSIONS, SUPPORTED_BROWSERS, echo
 from .colors import error, hint, set_colors
 from .config.path import Path
-from .functions import echo
-
-AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav", "alac"}
-VIDEO_CONTAINERS = {"mp4", "mov", "mkv", "webm", "avi", "flv"}
-ALL_CODECS = AUDIO_CODECS | VIDEO_CONTAINERS
-SUPPORTED_BROWSERS = {
-    "brave",
-    "chrome",
-    "chromium",
-    "edge",
-    "opera",
-    "vivaldi",
-    "whale",
-    "firefox",
-    "safari",
-}
-COOKIE_EXTENSIONS = {".txt", ".sqlite", ".db", ".cookies"}
 
 
 def _fail(msg: str, tip: str | None = None) -> bool:

@@ -37,8 +37,8 @@ import argparse
 import sys
 
 from . import __version__
+from .utils import echo
 from .utils.config.configer import get_path, set_path
-from .utils.functions import echo
 from .utils.validate import validate_download, validate_ffmpeg, validate_search
 
 

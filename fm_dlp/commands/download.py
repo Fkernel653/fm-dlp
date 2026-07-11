@@ -4,6 +4,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
+from ..utils import AUDIO_CODECS, echo
 from ..utils.colors import (
     BOLD_GREEN,
     BOLD_YELLOW,
@@ -14,8 +15,6 @@ from ..utils.colors import (
     success,
 )
 from ..utils.config.path import Path
-from ..utils.functions import echo
-from ..utils.validate import AUDIO_CODECS
 
 VIDEO_CONTAINER_AUDIO_MAP = {
     "mp4": "m4a",

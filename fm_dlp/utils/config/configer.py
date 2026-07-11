@@ -5,6 +5,7 @@ import os
 import sys
 from functools import lru_cache
 
+from ...utils import echo
 from ..colors import (
     BOLD_CYAN,
     BOLD_GREEN,
@@ -16,7 +17,6 @@ from ..colors import (
     styled,
 )
 from ..config.path import Path
-from ..functions import echo
 
 
 def _get_config_dir() -> str:
@@ -87,7 +87,7 @@ def set_path(path: str, color: bool) -> str:
             echo(error("Please enter the correct path!"), file=sys.stderr)
             sys.exit(1)
 
-        CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        CONFIG_FILE.parent.mkdir(exist_ok=True)
         CONFIG_FILE.write_text(
             json.dumps({KEY_NAME: input_path}, ensure_ascii=False, indent=4), "utf-8"
         )
