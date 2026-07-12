@@ -1,6 +1,7 @@
 """Async YouTube audio/video downloader using yt-dlp."""
 
 import asyncio
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
@@ -108,11 +109,12 @@ class Download:
         except UnicodeDecodeError:
             echo(
                 error(
-                    f"File '{self.urls}' is not UTF-8 encoded. Please save it as UTF-8."
-                )
+                    f"File '{self.urls}' is not UTF-8 encoded. Please save it as UTF-8.",
+                ),
+                file=sys.stderr,
             )
         except Exception as e:
-            echo(error(f"Error reading URL file: {e}"))
+            echo(error(f"Error reading URL file: {e}"), file=sys.stderr)
 
         return urls_from_file
 
@@ -219,12 +221,15 @@ class Download:
 
         if self.codec == "wav" and self.metadata:
             self.metadata = False
-            echo(info("WAV format doesn't support metadata embedding"))
+            if not self.quiet:
+                echo(info("WAV format doesn't support metadata embedding"))
 
-        echo(f"\n{BOLD_YELLOW}Starting:{RESET} {url}\n")
+        if not self.quiet:
+            echo(f"\n{BOLD_YELLOW}Starting:{RESET} {url}\n")
 
         await asyncio.to_thread(self._sync_download, url)
-        return "\n" + success(url) + "\n"
+
+        return "\n" + success(url) + "\n" if not self.quiet else None
 
     def _sync_download(self, url: str) -> None:
         """Synchronous download using yt-dlp (runs in thread pool)."""

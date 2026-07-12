@@ -1,5 +1,6 @@
 """Input validation module for fm-dlp CLI application."""
 
+import sys
 from functools import lru_cache
 
 from ..utils import ALL_CODECS, COOKIE_EXTENSIONS, SUPPORTED_BROWSERS, echo
@@ -9,7 +10,7 @@ from .config.path import Path
 
 def _fail(msg: str, tip: str | None = None) -> bool:
     """Print error message and return False."""
-    echo(error(msg))
+    echo(error(msg), file=sys.stderr)
     if tip:
         echo(hint(tip))
     return False

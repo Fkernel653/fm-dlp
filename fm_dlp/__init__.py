@@ -5,4 +5,4 @@ from .commands.search import Search
 
 __all__ = ["Download", "Search"]
 
-__version__ = "4.3.6"
+__version__ = "4.3.7"

@@ -56,7 +56,7 @@ def _load_config(color: bool) -> dict:
         return json.loads(CONFIG_FILE.read_text("utf-8"))
     except (json.JSONDecodeError, OSError):
         set_colors(color)
-        echo(error("Config file is corrupted. Creating new one..."))
+        echo(error("Config file is corrupted. Creating new one..."), file=sys.stderr)
         return {}
 
 
