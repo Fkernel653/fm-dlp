@@ -53,7 +53,7 @@ fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url
 Download audio or video content from supported platforms (YouTube, YTMusic, and 1000+ sites).
 
 ```bash
-fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--jobs JOBS] [--quiet] [--no-metadata] [--path PATH] [--cookies COOKIES]
+fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--jobs JOBS] [--quiet] [--no-metadata] [--path PATH] [--only-video] [--cookies COOKIES]
 ```
 
 | Option | Default | Description |
@@ -65,6 +65,7 @@ fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--jobs JOBS] [--quiet] [--
 | `--quiet`, `-q` | `False` | Suppress yt-dlp output messages (errors still shown) |
 | `--no-metadata` | `False` | Disable embedding metadata (title, artist, album) and thumbnail into audio files |
 | `--path`, `-p` | Configured path | Custom download directory (overrides default config) |
+| `--only-video`, `-v` | `False` | Download video file without audio track |
 | `--cookies`, `-C` | `None` | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
 
 **Audio Codec Details:**
@@ -148,4 +149,4 @@ MIT License — Built with:
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 
-**Project:** [GitHub](https://github.com/Fkernel653/fm-dlp) • [PyPI](https://pypi.org/project/fm-dlp)
+**Project:** [GitHub](https://github.com/Fkernel653/fm-dlp) • [PyPI](https://github.com/Fkernel653/fm-dlp)

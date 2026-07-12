@@ -15,6 +15,7 @@ Features:
     - Download from 1000+ platforms using yt-dlp backend
     - Multiple audio codec support (mp3, aac, flac, m4a, opus, vorbis, wav, alac)
     - Video format support (mp4, mov, mkv, webm, avi, flv)
+    - Video-only download mode (without audio track)
     - Concurrent downloads with configurable job limits
     - Metadata embedding with thumbnails for audio files
     - Cookie-based authentication for platform-specific downloads
@@ -140,6 +141,12 @@ def main():
         help="Custom download directory path. Uses configured default if not specified.",
     )
     download_parser.add_argument(
+        "-v",
+        "--only-video",
+        action="store_true",
+        help="Download a video file without audio track (video-only). Useful for editing, re-encoding, or when audio is not needed.",
+    )
+    download_parser.add_argument(
         "-C",
         "--cookies",
         help="Path to cookies file (e.g., 'cookies.txt') for authenticated downloads, or browser name ('brave', 'chrome', 'chromium', 'edge', 'opera', 'vivaldi', 'whale', 'firefox', 'safari') to extract cookies from browser.",
@@ -202,6 +209,7 @@ def main():
                     args.quiet,
                     args.metadata,
                     path,
+                    args.only_video,
                     args.cookies,
                     color,
                 )

@@ -25,10 +25,7 @@ def _get_config_dir() -> str:
 
     if sys.platform == "win32":
         appdata = os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
-        if appdata:
-            d = Path(appdata)
-        else:
-            d = home / "AppData" / "Local"
+        d = Path(appdata) if appdata else (home / "AppData" / "Local")
     elif sys.platform == "darwin":
         d = home / "Library" / "Application Support"
     else:

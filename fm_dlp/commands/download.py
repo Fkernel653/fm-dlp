@@ -41,8 +41,9 @@ class Download:
         quiet: bool,
         metadata: bool,
         path: str,
-        color: bool,
+        only_video: bool,
         cookies: str | None,
+        color: bool,
     ):
         """Initialize downloader with configuration.
 
@@ -55,6 +56,7 @@ class Download:
             quiet: Suppress yt-dlp output.
             metadata: Embed metadata and thumbnail into audio files.
             path: Download directory path.
+            only_video: Download a video file without audio.
             cookies: Path to cookies file or browser name for authentication.
             color: Colored output.
         """
@@ -67,6 +69,7 @@ class Download:
         self.path = path
         self.cookies = cookies
         self.color = color
+        self.only_video = only_video
         self._executor: ThreadPoolExecutor | None = None
         self._url_list = self._parse_urls()
 
@@ -155,6 +158,18 @@ class Download:
         if not self.color:
             base_opts["color"] = "no_color"
 
+        if self.only_video:
+            base_opts["format"] = "bestvideo/bestvideo"
+            if self.codec in VIDEO_CONTAINER_AUDIO_MAP:
+                base_opts["postprocessors"].append(
+                    {
+                        "key": "FFmpegVideoConvertor",
+                        "preferedformat": self.codec,
+                    }
+                )
+
+            return base_opts
+
         if self.codec in AUDIO_CODECS:
             base_opts["format"] = "bestaudio/best"
             base_opts["postprocessors"].append(
@@ -177,14 +192,9 @@ class Download:
         else:
             audio_ext = VIDEO_CONTAINER_AUDIO_MAP[self.codec]
 
-            if self.codec == "mp4":
-                format_str = f"bestvideo[ext=mp4]+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
-            else:
-                format_str = (
-                    f"bestvideo+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
-                )
-
-            base_opts["format"] = format_str
+            base_opts["format"] = (
+                f"bestvideo+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
+            )
             base_opts["merge_output_format"] = self.codec
 
         if self.cookies:
@@ -232,6 +242,7 @@ async def run_downloader(
     quiet: bool,
     metadata: bool,
     path: str,
+    only_video: bool,
     cookies: str | None,
     color: bool,
 ) -> None:
@@ -244,6 +255,7 @@ async def run_downloader(
         quiet=quiet,
         metadata=metadata,
         path=path,
+        only_video=only_video,
         cookies=cookies,
         color=color,
     ) as dl:
