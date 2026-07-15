@@ -26,3 +26,15 @@ def echo(text: str, file: TextIO = sys.stdout) -> None:
         file: File to write to (default: stdout).
     """
     file.write(text + "\n")
+
+
+def get_output(result: str) -> TextIO:
+    """Determine output stream based on result content.
+
+    Args:
+        result: String to check for error indicators.
+
+    Returns:
+        sys.stderr if "Error" is found in result, otherwise sys.stdout.
+    """
+    return sys.stderr if "Error" in result else sys.stdout

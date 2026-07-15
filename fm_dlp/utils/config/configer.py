@@ -4,17 +4,17 @@ import json
 import os
 import sys
 from functools import lru_cache
+from typing import Any
 
 from ...utils import echo
 from ..colors import (
-    BOLD_CYAN,
     BOLD_GREEN,
-    BOLD_YELLOW,
     error,
     hint,
     info,
     set_colors,
     styled,
+    success,
 )
 from ..config.path import Path
 
@@ -38,6 +38,7 @@ def _get_config_dir() -> str:
 CONFIG_DIR = _get_config_dir()
 CONFIG_FILE = Path(CONFIG_DIR) / "config.json"
 KEY_NAME = "path"
+PARAM_KEY = "parameters"
 
 
 @lru_cache(maxsize=1)
@@ -58,6 +59,17 @@ def _load_config(color: bool) -> dict:
         set_colors(color)
         echo(error("Config file is corrupted. Creating new one..."), file=sys.stderr)
         return {}
+
+
+def _save_config(data: dict) -> bool:
+    """Save configuration data to JSON file."""
+    try:
+        CONFIG_FILE.parent.mkdir(exist_ok=True)
+        CONFIG_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=4), "utf-8")
+        _load_config.cache_clear()
+        return True
+    except (PermissionError, OSError):
+        return False
 
 
 def set_path(path: str, color: bool) -> str:
@@ -84,14 +96,12 @@ def set_path(path: str, color: bool) -> str:
             echo(error("Please enter the correct path!"), file=sys.stderr)
             sys.exit(1)
 
-        CONFIG_FILE.parent.mkdir(exist_ok=True)
-        CONFIG_FILE.write_text(
-            json.dumps({KEY_NAME: input_path}, ensure_ascii=False, indent=4), "utf-8"
-        )
-        _load_config.cache_clear()
+        config = _load_config(color)
+        config[KEY_NAME] = input_path
 
-        echo(styled("\nDownload directory set to: ", BOLD_YELLOW) + input_path)
-        echo(styled("Config saved at: ", BOLD_CYAN) + str(CONFIG_FILE))
+        if not _save_config(config):
+            raise PermissionError()
+
         return styled("Configuration saved successfully\n", BOLD_GREEN)
 
     except PermissionError:
@@ -129,3 +139,81 @@ def get_path(color: bool) -> str:
         sys.exit(1)
 
     return download_path
+
+
+def set_parameters(
+    codec: str,
+    kbps: int,
+    jobs: int,
+    quiet: bool,
+    metadata: bool,
+    only_video: bool,
+    cookies: str | None,
+    color: bool,
+) -> bool:
+    """Save download parameters to config file without overwriting other settings.
+
+    Args:
+        codec: Audio codec or video container.
+        kbps: Audio bitrate in kbps.
+        jobs: Maximum concurrent downloads.
+        quiet: Suppress yt-dlp output.
+        metadata: Embed metadata and thumbnail.
+        only_video: Download video only.
+        cookies: Path to cookies file or browser name.
+        color: Colored output.
+
+    Returns:
+        True if parameters saved successfully, False otherwise.
+    """
+    set_colors(color)
+
+    try:
+        config = _load_config(color)
+
+        config[PARAM_KEY] = {
+            "codec": codec,
+            "kbps": kbps,
+            "jobs": jobs,
+            "quiet": quiet,
+            "metadata": metadata,
+            "only_video": only_video,
+            "cookies": cookies,
+        }
+
+        if not _save_config(config):
+            raise PermissionError()
+
+        if not quiet:
+            echo(success("Parameters have been successfully saved"))
+        return True
+
+    except PermissionError:
+        if not quiet:
+            echo(
+                error(f"Permission denied! Cannot write to {CONFIG_FILE}"),
+                file=sys.stderr,
+            )
+        return False
+    except OSError as e:
+        if not quiet:
+            echo(error(f"Error saving configuration: {e}"), file=sys.stderr)
+        return False
+
+
+def get_parameters(color: bool) -> dict[str, Any]:
+    """Retrieve saved parameters from config file.
+
+    Args:
+        color: Colored output for error messages.
+
+    Returns:
+        Dictionary with saved parameters or empty dict if none exist.
+    """
+    set_colors(color)
+
+    if not CONFIG_FILE.exists():
+        return {}
+
+    config = _load_config(color)
+    return config.get(PARAM_KEY, {})

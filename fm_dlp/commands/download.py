@@ -15,6 +15,7 @@ from ..utils.colors import (
     set_colors,
     success,
 )
+from ..utils.config.configer import get_parameters, set_parameters
 from ..utils.config.path import Path
 
 VIDEO_CONTAINER_AUDIO_MAP = {
@@ -28,19 +29,16 @@ VIDEO_CONTAINER_AUDIO_MAP = {
 
 
 class Download:
-    """Asynchronous audio/video downloader using yt-dlp with parallel execution.
-
-    Supports both context manager (``async with``) and async iteration (``async for``).
-    """
-
     def __init__(
         self,
-        urls: str,
+        url: str,
         codec: str,
         kbps: int,
         jobs: int,
         quiet: bool,
         metadata: bool,
+        save: bool,
+        use_config: bool,
         path: str,
         only_video: bool,
         cookies: str | None,
@@ -49,28 +47,49 @@ class Download:
         """Initialize downloader with configuration.
 
         Args:
-            urls: Single URL, comma/space-separated list, or path to file with URLs.
+            url: Single URL, comma/space-separated list, or path to file with URLs.
             codec: Audio codec (mp3, aac, flac, m4a, opus, vorbis, wav)
                    or video container (mp4, mov, mkv, webm, avi, flv).
             kbps: Audio bitrate in kbps (64-320).
             jobs: Maximum concurrent downloads.
             quiet: Suppress yt-dlp output.
             metadata: Embed metadata and thumbnail into audio files.
+            save: Saving settings (except URL).
+            use_config: Use saved parameters from config file as defaults.
             path: Download directory path.
             only_video: Download a video file without audio.
             cookies: Path to cookies file or browser name for authentication.
             color: Colored output.
         """
-        self.urls = urls
-        self.codec = codec
-        self.kbps = kbps
-        self.jobs = jobs
-        self.quiet = quiet
-        self.metadata = metadata
+        self.urls = url
+
+        if use_config:
+            params = get_parameters(color)
+
+            self.codec = params.get("codec", codec)
+            self.kbps = params.get("kbps", kbps)
+            self.jobs = params.get("jobs", jobs)
+            self.quiet = params.get("quiet", quiet)
+            self.metadata = params.get("metadata", metadata)
+            self.only_video = params.get("only_video", only_video)
+            self.cookies = params.get("cookies", cookies)
+        else:
+            self.codec = codec
+            self.kbps = kbps
+            self.jobs = jobs
+            self.quiet = quiet
+            self.metadata = metadata
+            self.only_video = only_video
+            self.cookies =
+
+        if save:
+            if not set_parameters(
+                codec, kbps, jobs, quiet, metadata, only_video, cookies, color
+            ):
+                return
+
         self.path = path
-        self.cookies = cookies
         self.color = color
-        self.only_video = only_video
         self._executor: ThreadPoolExecutor | None = None
         self._url_list = self._parse_urls()
 
@@ -246,6 +265,8 @@ async def run_downloader(
     jobs: int,
     quiet: bool,
     metadata: bool,
+    save: bool,
+    use_config: bool,
     path: str,
     only_video: bool,
     cookies: str | None,
@@ -259,6 +280,8 @@ async def run_downloader(
         jobs=jobs,
         quiet=quiet,
         metadata=metadata,
+        save=save,
+        use_config=use_config,
         path=path,
         only_video=only_video,
         cookies=cookies,

@@ -53,7 +53,7 @@ fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url
 Download audio or video content from supported platforms (YouTube, YTMusic, and 1000+ sites).
 
 ```bash
-fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--jobs JOBS] [--quiet] [--no-metadata] [--path PATH] [--only-video] [--cookies COOKIES]
+fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--jobs JOBS] [--quiet] [--no-metadata] [--save] [--path PATH] [--only-video] [--cookies COOKIES]
 ```
 
 | Option | Default | Description |
@@ -64,6 +64,8 @@ fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--jobs JOBS] [--quiet] [--
 | `--jobs`, `-j` | `5` | Maximum number of concurrent downloads for faster batch processing |
 | `--quiet`, `-q` | `False` | Suppress yt-dlp output messages (errors still shown) |
 | `--no-metadata` | `False` | Disable embedding metadata (title, artist, album) and thumbnail into audio files |
+| `--save`, `-s` | `False` | Saving settings (except URL) |
+| `--use-config`, `-u` | `False` | Use saved parameters from config file as defaults |
 | `--path`, `-p` | Configured path | Custom download directory (overrides default config) |
 | `--only-video`, `-v` | `False` | Download video file without audio track |
 | `--cookies`, `-C` | `None` | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |

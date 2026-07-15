@@ -5,7 +5,7 @@ This module serves as the main entry point for the fm-dlp CLI application, provi
 functionality to search YouTube/YTMusic for tracks and albums, download audio/video
 content from over 1000+ platforms, and configure application settings.
 
-The CLI is built using the argss library and offers three primary commands:
+The CLI is built using the argparse library and offers three primary commands:
 - search: Search for music tracks, albums, or videos on YouTube/YTMusic
 - download: Download audio or video content from various supported platforms
 - config: Configure the default download directory path
@@ -34,16 +34,21 @@ Usage Examples:
 For more information, visit: https://github.com/Fkernel653/fm-dlp
 """
 
-import argparse
-import sys
-
-from . import __version__
-from .utils import echo
-from .utils.config.configer import get_path, set_path
-from .utils.validate import validate_download, validate_ffmpeg, validate_search
-
 
 def main():
+    """Main entry point for fm-dlp CLI."""
+    import argparse
+    import sys
+
+    from . import __version__
+    from .commands.search import search
+    from .parsers.config_parser import create_config_parser
+    from .parsers.download_parser import create_download_parser
+    from .parsers.search_parser import create_search_parser
+    from .utils import echo, get_output
+    from .utils.config.configer import get_path, set_path
+    from .utils.validate import validate_download, validate_ffmpeg, validate_search
+
     parser = argparse.ArgumentParser(
         prog="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
@@ -55,123 +60,17 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    # search
-    search_parser = subparsers.add_parser(
-        "search",
-        help="Search for music tracks or videos on YouTube/YTMusic",
-        description="Search for music tracks or videos on YouTube/YTMusic",
-    )
-    search_parser.add_argument("query", help="Search query string")
-    search_parser.add_argument(
-        "-l",
-        "--limit",
-        type=int,
-        default=10,
-        help="Maximum number of results to return (default: 10)",
-    )
-    search_parser.add_argument(
-        "-v",
-        "--yt-video",
-        action="store_true",
-        help="Search for YouTube videos instead of music tracks",
-    )
-    search_parser.add_argument(
-        "-a",
-        "--album",
-        action="store_true",
-        help="Search for albums instead of individual tracks",
-    )
-    search_parser.add_argument(
-        "-r",
-        "--raw",
-        action="store_true",
-        help="Output results in raw format (Python dict representation)",
-    )
-    search_parser.add_argument(
-        "-u",
-        "--only-url",
-        action="store_true",
-        help="Output only the URLs without any formatting",
-    )
-
-    # download
-    download_parser = subparsers.add_parser(
-        "download",
-        help="Download audio or video content from supported platforms",
-        description="Download audio or video content from supported platforms",
-    )
-    download_parser.add_argument(
-        "urls",
-        help="Single URL or comma/space-separated list of URLs. Can also be a path to a text file containing URLs (one per line).",
-    )
-    download_parser.add_argument(
-        "-c",
-        "--codec",
-        help="Audio codec or video container. Default depends on platform. For audio: mp3, aac, flac, m4a, opus, vorbis, wav, alac. For video: mp4, mov, mkv, webm, avi, flv.",
-    )
-    download_parser.add_argument(
-        "-k",
-        "--kbps",
-        type=int,
-        default=256,
-        help="Audio bitrate in kbps (64–320). Higher bitrate = better quality but larger file size. (default: 256)",
-    )
-    download_parser.add_argument(
-        "-j",
-        "--jobs",
-        type=int,
-        default=5,
-        help="Maximum number of concurrent downloads. Increase for faster batch downloads. (default: 5)",
-    )
-    download_parser.add_argument(
-        "-q",
-        "--quiet",
-        action="store_true",
-        help="Suppress yt-dlp output messages. Errors will still be shown.",
-    )
-    download_parser.add_argument(
-        "--no-metadata",
-        action="store_false",
-        dest="metadata",
-        help="Disable embedding metadata (title, artist, album) and thumbnail into audio files.",
-    )
-    download_parser.add_argument(
-        "-p",
-        "--path",
-        help="Custom download directory path. Uses configured default if not specified.",
-    )
-    download_parser.add_argument(
-        "-v",
-        "--only-video",
-        action="store_true",
-        help="Download a video file without audio track (video-only). Useful for editing, re-encoding, or when audio is not needed.",
-    )
-    download_parser.add_argument(
-        "-C",
-        "--cookies",
-        help="Path to cookies file (e.g., 'cookies.txt') for authenticated downloads, or browser name ('brave', 'chrome', 'chromium', 'edge', 'opera', 'vivaldi', 'whale', 'firefox', 'safari') to extract cookies from browser.",
-    )
-
-    # config
-    config_parser = subparsers.add_parser(
-        "config",
-        help="Configure the application settings",
-        description="Configure the application settings",
-    )
-    config_parser.add_argument(
-        "path",
-        help="Default directory path where downloaded files will be saved. Use absolute path for best results (e.g., '/home/user/Music' or 'C:\\Music').",
-    )
+    create_search_parser(subparsers)
+    create_download_parser(subparsers)
+    create_config_parser(subparsers)
 
     args = parser.parse_args()
-
     color = not args.no_color
 
     try:
         if args.command == "search":
             if not validate_search(args.limit, color):
                 return
-            from .commands.search import search
 
             for result in search(
                 args.query,
@@ -182,17 +81,19 @@ def main():
                 args.only_url,
                 color,
             ):
-                echo(result)
+                echo(result, file=get_output(result))
 
         elif args.command == "download":
-            default_codec = "m4a" if sys.platform == "darwin" else "opus"
-            codec = args.codec or default_codec
             path = args.path or get_path(color)
 
+            if not args.codec:
+                args.codec = "m4a" if sys.platform == "darwin" else "opus"
+
             if not validate_download(
-                args.urls, codec, args.kbps, args.jobs, path, args.cookies, color
+                args.urls, args.codec, args.kbps, args.jobs, path, args.cookies, color
             ):
                 return
+
             if not validate_ffmpeg(color):
                 return
 
@@ -202,21 +103,25 @@ def main():
 
             asyncio.run(
                 run_downloader(
-                    args.urls,
-                    codec,
-                    args.kbps,
-                    args.jobs,
-                    args.quiet,
-                    args.metadata,
-                    path,
-                    args.only_video,
-                    args.cookies,
-                    color,
+                    urls=args.url,
+                    codec=args.codec,
+                    kbps=args.kbps,
+                    jobs=args.jobs,
+                    quiet=args.quiet,
+                    metadata=args.metadata,
+                    save=args.save,
+                    use_config=args.use_config,
+                    path=path,
+                    only_video=args.only_video,
+                    cookies=args.cookies,
+                    color=color,
                 )
             )
 
         elif args.command == "config":
-            echo(set_path(args.path, color))
+            result = set_path(args.path, color)
+
+            echo(result, file=get_output(result))
 
     except KeyboardInterrupt:
         sys.exit(0)
