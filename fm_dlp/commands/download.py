@@ -80,7 +80,7 @@ class Download:
             self.quiet = quiet
             self.metadata = metadata
             self.only_video = only_video
-            self.cookies =
+            self.cookies = cookies
 
         if save:
             if not set_parameters(
