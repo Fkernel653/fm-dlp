@@ -90,7 +90,7 @@ def main():
                 args.codec = "m4a" if sys.platform == "darwin" else "opus"
 
             if not validate_download(
-                args.urls, args.codec, args.kbps, args.jobs, path, args.cookies, color
+                args.url, args.codec, args.kbps, args.jobs, path, args.cookies, color
             ):
                 return
 
