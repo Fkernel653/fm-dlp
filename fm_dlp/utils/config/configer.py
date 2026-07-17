@@ -37,7 +37,7 @@ def _get_config_dir() -> str:
 
 CONFIG_DIR = _get_config_dir()
 CONFIG_FILE = Path(CONFIG_DIR) / "config.json"
-KEY_NAME = "path"
+PATH_KEY = "path"
 PARAM_KEY = "parameters"
 
 
@@ -97,12 +97,12 @@ def set_path(path: str, color: bool) -> str:
             sys.exit(1)
 
         config = _load_config(color)
-        config[KEY_NAME] = input_path
+        config[PATH_KEY] = input_path
 
         if not _save_config(config):
             raise PermissionError()
 
-        return styled("Configuration saved successfully\n", BOLD_GREEN)
+        return styled("Configuration saved successfully", BOLD_GREEN)
 
     except PermissionError:
         return error(f"Permission denied! Cannot write to {CONFIG_FILE}")
@@ -131,7 +131,7 @@ def get_path(color: bool) -> str:
         return str(Path.home())
 
     data = _load_config(color)
-    download_path = data.get(KEY_NAME)
+    download_path = data.get(PATH_KEY)
 
     if not download_path or not Path(download_path).is_dir():
         set_colors(color)

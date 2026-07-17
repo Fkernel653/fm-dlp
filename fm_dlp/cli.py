@@ -103,7 +103,7 @@ def main():
 
             asyncio.run(
                 run_downloader(
-                    urls=args.url,
+                    url=args.url,
                     codec=args.codec,
                     kbps=args.kbps,
                     jobs=args.jobs,

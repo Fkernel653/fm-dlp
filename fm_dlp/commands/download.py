@@ -259,7 +259,7 @@ class Download:
 
 
 async def run_downloader(
-    urls: str,
+    url: str,
     codec: str,
     kbps: int,
     jobs: int,
@@ -274,7 +274,7 @@ async def run_downloader(
 ) -> None:
     """Run downloader with given parameters."""
     async with Download(
-        urls=urls,
+        url=url,
         codec=codec,
         kbps=kbps,
         jobs=jobs,
