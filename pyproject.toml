@@ -4,11 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fm-dlp"
-version = "4.4.0.4"
+version = "4.4.1"
 description = "CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms"
 readme = "README.md"
 requires-python = ">=3.10"
-license = "MIT"
+license = "GPL-3.0-only"
 authors = [
     {name = "Fkernel653"}
 ]
@@ -33,6 +33,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Multimedia :: Sound/Audio",
     "Topic :: Multimedia :: Video",
     "Topic :: Internet :: WWW/HTTP",

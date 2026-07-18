@@ -2,7 +2,7 @@
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
 [![PyPI](https://img.shields.io/pypi/v/fm-dlp.svg)](https://pypi.org/project/fm-dlp)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPLv3-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey)]()
 [![Ruff](https://img.shields.io/badge/code%20style-ruff-261230?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff)
 
@@ -141,7 +141,7 @@ The CLI performs comprehensive validation before executing commands:
 
 ## 📄 License & Acknowledgments
 
-MIT License — Built with:
+GPLv3 License — Built with:
 
 | Library | Purpose |
 |---------|---------|

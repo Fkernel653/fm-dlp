@@ -31,7 +31,7 @@ def validate_ffmpeg(color: bool) -> bool:
     return _check(
         shutil.which("ffmpeg") is not None,
         "FFmpeg is not installed or not found in system PATH!",
-        "Install FFmpeg and ensure it's accessible from the command line.\nTip: Run 'ffmpeg --version' to verify installation.",
+        "Install FFmpeg and ensure it's accessible from the command line.",
     )
 
 
@@ -96,7 +96,7 @@ def _validate_cookies(cookies: str) -> bool:
         if cookies.lower() not in SUPPORTED_BROWSERS:
             return _fail(
                 f"Unsupported browser: '{cookies}'",
-                f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}\nOr provide a path to a cookie file",
+                f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}. Or provide a path to a cookie file",
             )
 
     return True
