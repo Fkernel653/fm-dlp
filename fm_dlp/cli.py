@@ -18,6 +18,7 @@ Features:
     - Video-only download mode (without audio track)
     - Concurrent downloads with configurable job limits
     - Metadata embedding with thumbnails for audio files
+    - Keep original files after conversion
     - Cookie-based authentication for platform-specific downloads
     - Colored terminal output for better user experience
 
@@ -90,7 +91,14 @@ def main():
                 args.codec = "m4a" if sys.platform == "darwin" else "opus"
 
             if not validate_download(
-                args.url, args.codec, args.kbps, args.jobs, path, args.cookies, color
+                args.url,
+                args.codec,
+                args.kbps,
+                args.quality,
+                args.jobs,
+                path,
+                args.cookies,
+                color,
             ):
                 return
 
@@ -106,9 +114,11 @@ def main():
                     url=args.url,
                     codec=args.codec,
                     kbps=args.kbps,
+                    quality=args.quality,
                     jobs=args.jobs,
                     quiet=args.quiet,
                     metadata=args.metadata,
+                    keep=args.keep,
                     save=args.save,
                     use_config=args.use_config,
                     path=path,

@@ -144,9 +144,11 @@ def get_path(color: bool) -> str:
 def set_parameters(
     codec: str,
     kbps: int,
+    quality: str | None,
     jobs: int,
     quiet: bool,
     metadata: bool,
+    keep: bool,
     only_video: bool,
     cookies: str | None,
     color: bool,
@@ -156,9 +158,11 @@ def set_parameters(
     Args:
         codec: Audio codec or video container.
         kbps: Audio bitrate in kbps.
+        quality: Video quality preset (best, 1080p, 720p, 480p, 360p, 2160p, worst).
         jobs: Maximum concurrent downloads.
         quiet: Suppress yt-dlp output.
         metadata: Embed metadata and thumbnail.
+        keep: Keep the original downloaded file after conversion.
         only_video: Download video only.
         cookies: Path to cookies file or browser name.
         color: Colored output.
@@ -174,9 +178,11 @@ def set_parameters(
         config[PARAM_KEY] = {
             "codec": codec,
             "kbps": kbps,
+            "quality": quality,
             "jobs": jobs,
             "quiet": quiet,
             "metadata": metadata,
+            "keep": keep,
             "only_video": only_video,
             "cookies": cookies,
         }

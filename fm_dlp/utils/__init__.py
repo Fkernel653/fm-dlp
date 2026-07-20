@@ -4,6 +4,18 @@ from typing import TextIO
 AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav", "alac"}
 VIDEO_CONTAINERS = {"mp4", "mov", "mkv", "webm", "avi", "flv"}
 ALL_CODECS = AUDIO_CODECS | VIDEO_CONTAINERS
+SUPPORTED_QUALITIES = {
+    "best",
+    "worst",
+    "2160p",
+    "1440p",
+    "1080p",
+    "720p",
+    "480p",
+    "360p",
+    "240p",
+    "144p",
+}
 SUPPORTED_BROWSERS = {
     "brave",
     "chrome",

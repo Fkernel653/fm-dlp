@@ -3,7 +3,13 @@
 import sys
 from functools import lru_cache
 
-from ..utils import ALL_CODECS, COOKIE_EXTENSIONS, SUPPORTED_BROWSERS, echo
+from ..utils import (
+    ALL_CODECS,
+    COOKIE_EXTENSIONS,
+    SUPPORTED_BROWSERS,
+    SUPPORTED_QUALITIES,
+    echo,
+)
 from .colors import error, hint, set_colors
 from .config.path import Path
 
@@ -43,10 +49,15 @@ def _validate_url(url: str) -> bool:
         return _check(path.stat().st_size > 0, f"URL file is empty: '{url}'")
     if path.exists():
         return _fail(f"Path exists but is not a file: '{url}'")
+
+    is_valid_url = url.startswith(("http://", "https://")) and url not in (
+        "http://",
+        "https://",
+    )
     return _check(
-        url.startswith(("http://", "https://")),
+        is_valid_url,
         f"Invalid URL: '{url}'",
-        "Must start with 'http://' or 'https://' or be a path to a file",
+        "Must start with 'http://' or 'https://' and contain a valid address (not just the protocol)",
     )
 
 
@@ -102,10 +113,41 @@ def _validate_cookies(cookies: str) -> bool:
     return True
 
 
+def _validate_quality(quality: str) -> bool:
+    """Validate video quality parameter."""
+    quality_lower = quality.lower().strip()
+
+    if quality_lower in SUPPORTED_QUALITIES:
+        return True
+
+    if quality_lower.isdigit():
+        height = int(quality_lower)
+        return _check(
+            height > 0,
+            f"Invalid height: {height}",
+            "Height must be a positive integer (e.g., 720, 1080, 2160)",
+        )
+
+    if quality_lower.endswith("p") and quality_lower[:-1].isdigit():
+        height = int(quality_lower[:-1])
+        return _check(
+            height > 0,
+            f"Invalid height: {height}",
+            "Height must be a positive integer (e.g., 720p, 1080p, 2160p)",
+        )
+
+    return _check(
+        True,
+        f"Warning: Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
+        "Recommended formats: best, worst, 1080p, 720p, 480p, or custom height like 720",
+    )
+
+
 def validate_download(
     url: str,
     codec: str,
     kbps: int,
+    quality: str,
     jobs: int,
     path: str,
     cookies: str | None,
@@ -126,6 +168,7 @@ def validate_download(
             f"Invalid bitrate: {kbps}",
             "Must be an integer between 64 and 320",
         )
+        and _validate_quality(quality)
         and _check(jobs >= 1, f"Invalid jobs: {jobs}", "Must be an integer >= 1")
         and _validate_path(path)
         and (cookies is None or _validate_cookies(cookies))

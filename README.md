@@ -53,17 +53,19 @@ fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url
 Download audio or video content from supported platforms (YouTube, YTMusic, and 1000+ sites).
 
 ```bash
-fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--jobs JOBS] [--quiet] [--no-metadata] [--save] [--path PATH] [--only-video] [--cookies COOKIES]
+fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs JOBS] [--quiet] [--no-metadata] [--keep] [--save] [--path PATH] [--only-video] [--cookies COOKIES]
 ```
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `urls` | **Required** | Single URL, comma/space-separated list, or path to text file with URLs (one per line, `#` for comments) |
 | `--codec`, `-c` | `m4a` (macOS)<br>`opus` (others) | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv` |
-| `--kbps`, `-k` | `256` | Audio bitrate in kbps (64–320). Higher = better quality, larger file |
+| `--kbps`, `-K` | `256` | Audio bitrate in kbps (64–320). Higher = better quality, larger file |
+| `--quality`, `-Q` | `best` | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`) |
 | `--jobs`, `-j` | `5` | Maximum number of concurrent downloads for faster batch processing |
 | `--quiet`, `-q` | `False` | Suppress yt-dlp output messages (errors still shown) |
 | `--no-metadata` | `False` | Disable embedding metadata (title, artist, album) and thumbnail into audio files |
+| `--keep` | `False` | Keep the original downloaded file after conversion/post-processing. Useful when you want to retain both the original and converted versions (e.g., keep source video when extracting audio). |
 | `--save`, `-s` | `False` | Saving settings (except URL) |
 | `--use-config`, `-u` | `False` | Use saved parameters from config file as defaults |
 | `--path`, `-p` | Configured path | Custom download directory (overrides default config) |
@@ -111,33 +113,6 @@ fm-dlp config <path>
   - **macOS:** `brew install ffmpeg`
   - **Linux:** `sudo apt install ffmpeg` (Debian) or `sudo dnf install ffmpeg` (Fedora)
   - **Windows:** Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH
-
-Verify installation: `ffmpeg --version`
-
----
-
-## 🔧 Validation & Error Handling
-
-The CLI performs comprehensive validation before executing commands:
-
-**Search:**
-- Validates that `--limit` is a positive integer
-
-**Download:**
-- Validates URLs (must start with `http://` or `https://` or be a valid file)
-- Validates codec against supported list
-- Validates bitrate range (64–320 kbps)
-- Validates job count (must be >= 1)
-- Validates download path (must exist and be a directory)
-- Validates cookies (browser name or valid file path with correct extension)
-- Checks FFmpeg installation
-
-**Config:**
-- Validates path exists and is a directory
-- Creates config directory if it doesn't exist
-- Handles permission errors gracefully
-
----
 
 ## 📄 License & Acknowledgments
 

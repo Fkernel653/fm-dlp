@@ -2,12 +2,11 @@
 
 import asyncio
 import sys
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from typing import Any
 
-from ..utils import AUDIO_CODECS, echo
+from ..utils import AUDIO_CODECS, VIDEO_CONTAINERS, echo
 from ..utils.colors import (
-    BOLD_GREEN,
     BOLD_YELLOW,
     RESET,
     error,
@@ -34,9 +33,11 @@ class Download:
         url: str,
         codec: str,
         kbps: int,
+        quality: str,
         jobs: int,
         quiet: bool,
         metadata: bool,
+        keep: bool,
         save: bool,
         use_config: bool,
         path: str,
@@ -51,9 +52,11 @@ class Download:
             codec: Audio codec (mp3, aac, flac, m4a, opus, vorbis, wav)
                    or video container (mp4, mov, mkv, webm, avi, flv).
             kbps: Audio bitrate in kbps (64-320).
+            quality: Video quality preset (best, 1080p, 720p, 480p, 360p, 2160p, worst).
             jobs: Maximum concurrent downloads.
             quiet: Suppress yt-dlp output.
             metadata: Embed metadata and thumbnail into audio files.
+            keep: Keep the original downloaded file (e.g., keep source video/audio before conversion).
             save: Saving settings (except URL).
             use_config: Use saved parameters from config file as defaults.
             path: Download directory path.
@@ -68,35 +71,57 @@ class Download:
 
             self.codec = params.get("codec", codec)
             self.kbps = params.get("kbps", kbps)
+            self.quality = params.get("quality", quality)
             self.jobs = params.get("jobs", jobs)
             self.quiet = params.get("quiet", quiet)
             self.metadata = params.get("metadata", metadata)
+            self.keep = params.get("keep", keep)
             self.only_video = params.get("only_video", only_video)
             self.cookies = params.get("cookies", cookies)
         else:
             self.codec = codec
             self.kbps = kbps
+            self.quality = quality
             self.jobs = jobs
             self.quiet = quiet
             self.metadata = metadata
+            self.keep = keep
             self.only_video = only_video
             self.cookies = cookies
 
         if save:
             if not set_parameters(
-                codec, kbps, jobs, quiet, metadata, only_video, cookies, color
+                codec,
+                kbps,
+                quality,
+                jobs,
+                quiet,
+                metadata,
+                keep,
+                only_video,
+                cookies,
+                color,
             ):
                 return
 
         self.path = path
         self.color = color
-        self._executor: ThreadPoolExecutor | None = None
+        self._executor = self._get_executor()
         self._url_list = self._parse_urls()
 
         set_colors(color)
 
-        self._green = BOLD_GREEN if color else ""
-        self._yellow = BOLD_YELLOW if color else ""
+        self.c = {
+            "reset": RESET if color else "",
+            "bold_yellow": BOLD_YELLOW if color else "",
+        }
+
+    def _get_executor(self):
+        """Choose executor based on task type."""
+        if self.only_video or self.codec in VIDEO_CONTAINERS:
+            return ProcessPoolExecutor(max_workers=self.jobs)
+        else:
+            return ThreadPoolExecutor(max_workers=self.jobs)
 
     def _parse_urls(self) -> list[str]:
         """Parse URLs from string or file path."""
@@ -132,20 +157,22 @@ class Download:
                 ),
                 file=sys.stderr,
             )
+            sys.exit(1)
+
         except Exception as e:
             echo(error(f"Error reading URL file: {e}"), file=sys.stderr)
+            sys.exit(1)
 
         return urls_from_file
 
     async def __aenter__(self):
         """Setup thread pool executor on context enter."""
-        self._executor = ThreadPoolExecutor(max_workers=self.jobs)
+        self._executor = self._get_executor()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Cleanup thread pool executor on context exit."""
-        if self._executor:
-            self._executor.shutdown(wait=True, cancel_futures=False)
+        self._executor.shutdown(wait=True, cancel_futures=False)
         return False
 
     def __aiter__(self):
@@ -164,9 +191,21 @@ class Download:
         for task in asyncio.as_completed(tasks):
             yield await task
 
+    def _parse_quality(self) -> str:
+        """Parse quality string into yt-dlp format filter."""
+        if self.quality == "best":
+            return "bestvideo"
+        if self.quality == "worst":
+            return "worstvideo"
+
+        if height := self.quality[:-1]:
+            return f"bestvideo[height<={height}]"
+
+        return self.quality
+
     def _get_opts(self) -> dict[str, Any]:
         """Build yt-dlp options dictionary."""
-        base_opts: dict[str, Any] = {
+        base_opts = {
             "quiet": self.quiet,
             "no_warnings": self.quiet,
             "outtmpl": str(Path(self.path) / "%(title)s.%(ext)s"),
@@ -174,14 +213,24 @@ class Download:
             "concurrent_fragment_downloads": self.jobs,
             "extractor_retries": 3,
             "postprocessors": [],
+            "keepvideo": self.keep,
         }
 
         if not self.color:
-            base_opts["color"] = "no_color"
+            base_opts["color"] = "never"
+
+        if self.cookies:
+            cookie_path = Path(self.cookies)
+            if cookie_path.is_file():
+                base_opts["cookiefile"] = str(cookie_path)
+            else:
+                base_opts["cookiesfrombrowser"] = (self.cookies,)
 
         if self.only_video:
-            base_opts["format"] = "bestvideo/bestvideo"
-            if self.codec in VIDEO_CONTAINER_AUDIO_MAP:
+            quality_fmt = self._parse_quality()
+            base_opts["format"] = quality_fmt
+
+            if self.codec in VIDEO_CONTAINERS:
                 base_opts["postprocessors"].append(
                     {
                         "key": "FFmpegVideoConvertor",
@@ -210,22 +259,23 @@ class Download:
                 )
                 base_opts["embedmetadata"] = True
                 base_opts["writethumbnail"] = True
-        else:
+
+            return base_opts
+
+        if self.codec in VIDEO_CONTAINERS:
             audio_ext = VIDEO_CONTAINER_AUDIO_MAP[self.codec]
+            quality_fmt = self._parse_quality()
 
-            base_opts["format"] = (
-                f"bestvideo+bestaudio[ext={audio_ext}]/bestvideo+bestaudio/best"
+            base_opts["format"] = f"{quality_fmt}+bestaudio[ext={audio_ext}]/best"
+
+            base_opts["postprocessors"].append(
+                {
+                    "key": "FFmpegVideoConvertor",
+                    "preferedformat": self.codec,
+                }
             )
-            base_opts["merge_output_format"] = self.codec
 
-        if self.cookies:
-            cookie_path = Path(self.cookies)
-            if cookie_path.is_file():
-                base_opts["cookiefile"] = str(cookie_path)
-            else:
-                base_opts["cookiesfrombrowser"] = (self.cookies,)
-
-        return base_opts
+            return base_opts
 
     async def download_all(self) -> None:
         """Download all URLs and echo results as they complete."""
@@ -237,14 +287,13 @@ class Download:
 
     async def _download_url(self, url: str) -> str | None:
         """Download a single URL and return status message."""
-
         if self.codec == "wav" and self.metadata:
             self.metadata = False
             if not self.quiet:
                 echo(info("WAV format doesn't support metadata embedding"))
 
         if not self.quiet:
-            echo(f"\n{BOLD_YELLOW}Starting:{RESET} {url}\n")
+            echo(f"\n{self.c['bold_yellow']}Starting:{self.c['reset']} {url}\n")
 
         await asyncio.to_thread(self._sync_download, url)
 
@@ -262,9 +311,11 @@ async def run_downloader(
     url: str,
     codec: str,
     kbps: int,
+    quality: str,
     jobs: int,
     quiet: bool,
     metadata: bool,
+    keep: bool,
     save: bool,
     use_config: bool,
     path: str,
@@ -273,13 +324,18 @@ async def run_downloader(
     color: bool,
 ) -> None:
     """Run downloader with given parameters."""
+    from yt_dlp.networking.exceptions import HTTPError
+    from yt_dlp.utils import DownloadError
+
     async with Download(
         url=url,
         codec=codec,
         kbps=kbps,
+        quality=quality or "best",
         jobs=jobs,
         quiet=quiet,
         metadata=metadata,
+        keep=keep,
         save=save,
         use_config=use_config,
         path=path,
@@ -287,4 +343,9 @@ async def run_downloader(
         cookies=cookies,
         color=color,
     ) as dl:
-        await dl.download_all()
+        try:
+            await dl.download_all()
+        except HTTPError as e:
+            echo(str(e), file=sys.stderr)
+        except DownloadError as e:
+            echo(str(e), file=sys.stderr)

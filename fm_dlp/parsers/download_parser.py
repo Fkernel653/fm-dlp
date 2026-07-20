@@ -20,11 +20,18 @@ def create_download_parser(subparsers) -> None:
         help="Audio codec or video container. Default depends on platform. For audio: mp3, aac, flac, m4a, opus, vorbis, wav, alac. For video: mp4, mov, mkv, webm, avi, flv.",
     )
     download_parser.add_argument(
-        "-k",
+        "-K",
         "--kbps",
         type=int,
         default=256,
         help="Audio bitrate in kbps (64–320). Higher bitrate = better quality but larger file size. (default: 256)",
+    )
+    download_parser.add_argument(
+        "-Q",
+        "--quality",
+        type=str,
+        default="best",
+        help="Video quality preset: best, worst, 2160p, 1440p, 1080p, 720p, 480p, 360p, 240p, 144p, or custom height (e.g., 720). (default: best)",
     )
     download_parser.add_argument(
         "-j",
@@ -44,6 +51,12 @@ def create_download_parser(subparsers) -> None:
         action="store_false",
         dest="metadata",
         help="Disable embedding metadata (title, artist, album) and thumbnail into audio files.",
+    )
+    download_parser.add_argument(
+        "-k",
+        "--keep",
+        action="store_true",
+        help="Keep the original downloaded file after conversion/post-processing. Useful when you want to retain both the original and converted versions.",
     )
     download_parser.add_argument(
         "-s", "--save", action="store_true", help="Saving settings (except URL)"

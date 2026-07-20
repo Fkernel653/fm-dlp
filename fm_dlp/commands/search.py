@@ -193,6 +193,7 @@ class Search:
             return
         except Exception as e:
             yield styled(f"\nYoutube-Video Error: {e}\n", BOLD_RED)
+            return
 
     def search_yt_music(self) -> Generator[str, None, None]:
         """Search YouTube Music for tracks or albums."""
@@ -251,6 +252,7 @@ class Search:
             return
         except Exception as e:
             yield styled(f"\nYoutube-Music Error: {e}\n", BOLD_RED)
+            return
 
 
 def search(
