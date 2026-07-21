@@ -4,6 +4,14 @@ from typing import TextIO
 AUDIO_CODECS = {"mp3", "aac", "flac", "m4a", "opus", "vorbis", "wav", "alac"}
 VIDEO_CONTAINERS = {"mp4", "mov", "mkv", "webm", "avi", "flv"}
 ALL_CODECS = AUDIO_CODECS | VIDEO_CONTAINERS
+VIDEO_CONTAINER_AUDIO_MAP = {
+    "mp4": "m4a",
+    "mov": "m4a",
+    "mkv": "opus",
+    "webm": "opus",
+    "avi": "mp3",
+    "flv": "aac",
+}
 SUPPORTED_QUALITIES = {
     "best",
     "worst",

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fm-dlp"
-version = "4.4.2"
+version = "4.4.3"
 description = "CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -14,15 +14,17 @@ authors = [
 ]
 keywords = [
     "cli",
-    "audio",
-    "video",
+    "command-line",
     "youtube",
     "ytmusic",
     "youtube-music",
     "yt-dlp",
-    "downloader"
+    "yt-dlp-wrapper",
+    "ffmpeg",
+    "gplv3",
 ]
 classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Environment :: Console",
     "Intended Audience :: End Users/Desktop",
     "Intended Audience :: Developers",

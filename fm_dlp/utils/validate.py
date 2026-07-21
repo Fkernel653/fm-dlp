@@ -14,130 +14,140 @@ from .colors import error, hint, set_colors
 from .config.path import Path
 
 
-def _fail(msg: str, tip: str | None = None) -> bool:
-    """Print error message and return False."""
+def _fail(msg: str, tip: str | None = None) -> None:
+    """Print error message and exit."""
     echo(error(msg), file=sys.stderr)
     if tip:
         echo(hint(tip))
-    return False
+    sys.exit(1)
 
 
-def _check(condition: bool, msg: str, tip: str | None = None) -> bool:
-    """Check condition and return False with error if not met."""
-    return condition or _fail(msg, tip)
+def _check(condition: bool, msg: str, tip: str | None = None) -> None:
+    """Check condition and exit with error if not met."""
+    if not condition:
+        _fail(msg, tip)
 
 
 @lru_cache(maxsize=1)
-def validate_ffmpeg(color: bool) -> bool:
+def validate_ffmpeg(color: bool) -> None:
     """Verify FFmpeg is installed."""
     import shutil
 
     set_colors(color)
 
-    return _check(
+    _check(
         shutil.which("ffmpeg") is not None,
         "FFmpeg is not installed or not found in system PATH!",
         "Install FFmpeg and ensure it's accessible from the command line.",
     )
 
 
-def _validate_url(url: str) -> bool:
+def _validate_url(url: str) -> None:
     """Validate URL or file path."""
     path = Path(url)
 
     if path.is_file():
-        return _check(path.stat().st_size > 0, f"URL file is empty: '{url}'")
-    if path.exists():
-        return _fail(f"Path exists but is not a file: '{url}'")
+        _check(path.stat().st_size > 0, f"URL file is empty: '{url}'")
+        return
+
+    _check(
+        not path.exists(),
+        f"Path exists but is not a file: '{url}'",
+    )
 
     is_valid_url = url.startswith(("http://", "https://")) and url not in (
         "http://",
         "https://",
     )
-    return _check(
+    _check(
         is_valid_url,
         f"Invalid URL: '{url}'",
         "Must start with 'http://' or 'https://' and contain a valid address (not just the protocol)",
     )
 
 
-def _validate_path(path: str) -> bool:
+def _validate_path(path: str) -> None:
     """Validate download directory path."""
     real_path = Path(path)
 
-    if real_path.is_file():
-        return _fail("The path must not be a file", "Enter the path to the folder")
-    if real_path.exists() and not real_path.is_dir():
-        return _fail(
-            f"Path exists but is not a directory: '{path}'",
-            "Enter a valid directory path",
-        )
+    _check(
+        not real_path.is_file(),
+        "The path must not be a file",
+        "Enter the path to the folder",
+    )
+
+    _check(
+        not (real_path.exists() and not real_path.is_dir()),
+        f"Path exists but is not a directory: '{path}'",
+        "Enter a valid directory path",
+    )
 
     parent = real_path.parent
-    if parent.exists() and not parent.is_dir():
-        return _fail(f"Parent path is not a directory: '{parent}'")
+    _check(
+        not (parent.exists() and not parent.is_dir()),
+        f"Parent path is not a directory: '{parent}'",
+    )
 
-    return True
 
-
-def _validate_cookies(cookies: str) -> bool:
+def _validate_cookies(cookies: str) -> None:
     """Validate cookies parameter (browser name or file path)."""
-    if not cookies:
-        return _fail(
-            "Cookies parameter cannot be empty",
-            "Provide a browser name or path to cookie file",
-        )
+    _check(
+        bool(cookies),
+        "Cookies parameter cannot be empty",
+        "Provide a browser name or path to cookie file",
+    )
 
     cookies_path = Path(cookies)
 
     if cookies_path.exists():
-        if not cookies_path.is_file():
-            return _fail(
-                f"Path exists but is not a file: '{cookies}'",
-                "Must be a path to a cookie file",
-            )
-        if cookies_path.stat().st_size == 0:
-            return _fail(f"Cookie file is empty: '{cookies}'")
-        if cookies_path.suffix.lower() not in COOKIE_EXTENSIONS:
-            return _fail(
-                f"Cookie file has unusual extension: '{cookies_path.suffix}'",
-                "Expected .txt (Netscape format), .sqlite, .db, or .cookies",
-            )
+        _check(
+            cookies_path.is_file(),
+            f"Path exists but is not a file: '{cookies}'",
+            "Must be a path to a cookie file",
+        )
+        _check(
+            cookies_path.stat().st_size > 0,
+            f"Cookie file is empty: '{cookies}'",
+        )
+        _check(
+            cookies_path.suffix.lower() in COOKIE_EXTENSIONS,
+            f"Cookie file has unusual extension: '{cookies_path.suffix}'",
+            "Expected .txt (Netscape format), .sqlite, .db, or .cookies",
+        )
     else:
-        if cookies.lower() not in SUPPORTED_BROWSERS:
-            return _fail(
-                f"Unsupported browser: '{cookies}'",
-                f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}. Or provide a path to a cookie file",
-            )
-
-    return True
+        _check(
+            cookies.lower() in SUPPORTED_BROWSERS,
+            f"Unsupported browser: '{cookies}'",
+            f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}. Or provide a path to a cookie file",
+        )
 
 
-def _validate_quality(quality: str) -> bool:
+def _validate_quality(quality: str) -> None:
     """Validate video quality parameter."""
     quality_lower = quality.lower().strip()
 
     if quality_lower in SUPPORTED_QUALITIES:
-        return True
+        return
 
     if quality_lower.isdigit():
         height = int(quality_lower)
-        return _check(
+        _check(
             height > 0,
             f"Invalid height: {height}",
             "Height must be a positive integer (e.g., 720, 1080, 2160)",
         )
+        return
 
     if quality_lower.endswith("p") and quality_lower[:-1].isdigit():
         height = int(quality_lower[:-1])
-        return _check(
+        _check(
             height > 0,
             f"Invalid height: {height}",
             "Height must be a positive integer (e.g., 720p, 1080p, 2160p)",
         )
+        return
 
-    return _check(
-        True,
+    _fail(
         f"Warning: Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
         "Recommended formats: best, worst, 1080p, 720p, 480p, or custom height like 720",
     )
@@ -152,30 +162,37 @@ def validate_download(
     path: str,
     cookies: str | None,
     color: bool,
-) -> bool:
+) -> None:
     """Validate all CLI download parameters."""
     set_colors(color)
 
-    return (
-        _validate_url(url)
-        and _check(
-            codec in ALL_CODECS,
-            f"Invalid codec: '{codec}'",
-            f"Allowed values: {', '.join(ALL_CODECS)}",
-        )
-        and _check(
-            64 <= kbps <= 320,
-            f"Invalid bitrate: {kbps}",
-            "Must be an integer between 64 and 320",
-        )
-        and _validate_quality(quality)
-        and _check(jobs >= 1, f"Invalid jobs: {jobs}", "Must be an integer >= 1")
-        and _validate_path(path)
-        and (cookies is None or _validate_cookies(cookies))
+    _validate_url(url)
+    _check(
+        codec in ALL_CODECS,
+        f"Invalid codec: '{codec}'",
+        f"Allowed values: {', '.join(ALL_CODECS)}",
     )
+    _check(
+        64 <= kbps <= 320,
+        f"Invalid bitrate: {kbps}",
+        "Must be an integer between 64 and 320",
+    )
+    _validate_quality(quality)
+    _check(
+        jobs >= 1,
+        f"Invalid jobs: {jobs}",
+        "Must be an integer >= 1",
+    )
+    _validate_path(path)
+    if cookies is not None:
+        _validate_cookies(cookies)
 
 
-def validate_search(limit: int, color: bool) -> bool:
+def validate_search(limit: int, color: bool) -> None:
     """Validate search limit parameter."""
     set_colors(color)
-    return _check(limit > 0, f"Invalid limit: {limit}", "Must be a positive integer")
+    _check(
+        limit > 0,
+        f"Invalid limit: {limit}",
+        "Must be a positive integer",
+    )

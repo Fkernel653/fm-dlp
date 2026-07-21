@@ -42,7 +42,6 @@ def main():
     import sys
 
     from . import __version__
-    from .commands.search import search
     from .parsers.config_parser import create_config_parser
     from .parsers.download_parser import create_download_parser
     from .parsers.search_parser import create_search_parser
@@ -70,8 +69,9 @@ def main():
 
     try:
         if args.command == "search":
-            if not validate_search(args.limit, color):
-                return
+            validate_search(args.limit, color)
+
+            from .commands.search import search
 
             for result in search(
                 args.query,
@@ -90,7 +90,7 @@ def main():
             if not args.codec:
                 args.codec = "m4a" if sys.platform == "darwin" else "opus"
 
-            if not validate_download(
+            validate_download(
                 args.url,
                 args.codec,
                 args.kbps,
@@ -99,15 +99,13 @@ def main():
                 path,
                 args.cookies,
                 color,
-            ):
-                return
+            )
 
-            if not validate_ffmpeg(color):
-                return
+            validate_ffmpeg(color)
 
             import asyncio
 
-            from .commands.download import run_downloader
+            from .commands.downloader import run_downloader
 
             asyncio.run(
                 run_downloader(
