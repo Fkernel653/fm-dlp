@@ -49,9 +49,11 @@ jobs:
             --hidden-import=yt_dlp \
             --hidden-import=ytmusicapi \
             --hidden-import=mutagen \
+            --hidden-import=argss \
             --collect-all yt_dlp \
             --collect-all ytmusicapi \
             --collect-all mutagen \
+            --collect-all argss \
             --name fm-dlp \
             fm_dlp/__main__.py
 
