@@ -1,7 +1,6 @@
 """URL parsing utilities."""
 
 import sys
-from typing import List
 
 from ...utils import echo
 from ...utils.colors import error, info
@@ -15,7 +14,7 @@ class URLParser:
         self.urls = urls
         self.quiet = quiet
 
-    def parse(self) -> List[str]:
+    def parse(self) -> list[str]:
         """Parse URLs from string or file path."""
         if not self.urls:
             return []
@@ -26,7 +25,7 @@ class URLParser:
 
         return [u.strip() for u in self.urls.replace(",", " ").split() if u.strip()]
 
-    def _parse_url_file(self, file_path: Path) -> List[str]:
+    def _parse_url_file(self, file_path: Path) -> list[str]:
         """Read and parse URLs from a text file (one URL per line)."""
         urls_from_file = []
 
@@ -49,6 +48,10 @@ class URLParser:
                 ),
                 file=sys.stderr,
             )
+            sys.exit(1)
+
+        except OSError as e:
+            echo(error(f"Error reading URL file: {e}"), file=sys.stderr)
             sys.exit(1)
 
         except Exception as e:

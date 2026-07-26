@@ -3,10 +3,10 @@ from .providers import BaseProvider, YouTubeMusicProvider, YouTubeProvider
 from .search import Search, search
 
 __all__ = [
-    "ResultFormatter",
     "BaseProvider",
+    "ResultFormatter",
+    "Search",
     "YouTubeMusicProvider",
     "YouTubeProvider",
-    "Search",
     "search",
 ]

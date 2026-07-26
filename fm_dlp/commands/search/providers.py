@@ -1,8 +1,9 @@
 """Search providers for YouTube and YouTube Music."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Generator
 from itertools import islice
-from typing import Any, Dict, Generator, Optional
+from typing import Any
 
 from fm_dlp.commands.search.formatters import ResultFormatter
 
@@ -14,31 +15,22 @@ class BaseProvider(ABC):
         self.formatter = formatter
 
     @abstractmethod
-    def _build_search_query(self, query: str, limit: int, is_track: bool) -> str:
-        """Build provider-specific search query."""
-        pass
-
-    @abstractmethod
     def _extract_results(self, query: str, limit: int, is_track: bool) -> list:
         """Extract search results from provider."""
-        pass
 
     @abstractmethod
     def _format_entry(
-        self, entry: Dict[str, Any], num: int, is_track: bool
-    ) -> Optional[str]:
+        self, entry: dict[str, Any], num: int, is_track: bool
+    ) -> str | None:
         """Format a single search entry."""
-        pass
 
     @abstractmethod
-    def _extract_url(self, entry: Dict[str, Any], is_track: bool) -> Optional[str]:
+    def _extract_url(self, entry: dict[str, Any], is_track: bool) -> str | None:
         """Extract URL from search entry."""
-        pass
 
     @abstractmethod
     def _get_empty_message(self, query: str, is_track: bool) -> str:
         """Get message when no results found."""
-        pass
 
     def search(
         self,
@@ -62,8 +54,7 @@ class BaseProvider(ABC):
             results = self._extract_results(query, limit, is_track)
 
             if not results:
-                if not only_url:
-                    yield self._get_empty_message(query, is_track)
+                yield self._get_empty_message(query, is_track)
                 return
 
             if raw:
@@ -95,7 +86,7 @@ class YouTubeProvider(BaseProvider):
     """Search provider for YouTube videos and playlists."""
 
     @staticmethod
-    def _ytdl_opts() -> dict:
+    def _ytdl_opts() -> dict[str, Any]:
         """Get yt-dlp options for YouTube extraction."""
         return {
             "quiet": True,
@@ -122,19 +113,19 @@ class YouTubeProvider(BaseProvider):
             )
             return info.get("entries", [])
 
-    def _extract_url(self, entry: Dict[str, Any], is_track: bool) -> Optional[str]:
+    def _extract_url(self, entry: dict[str, Any], is_track: bool) -> str | None:
         if v_id := entry.get("id"):
             return "https://youtu.be/" + v_id
         return None
 
     def _format_entry(
-        self, entry: Dict[str, Any], num: int, is_track: bool
-    ) -> Optional[str]:
+        self, entry: dict[str, Any], num: int, is_track: bool
+    ) -> str | None:
         return self.formatter.format_result(
             num,
             title=entry.get("title", "Unknown Video"),
             artist=entry.get("channel", "Unknown Channel"),
-            url="https://youtu.be/" + entry.get("id", ""),
+            url=self._extract_url(entry, is_track),
             is_yt_video=True,
             is_track=is_track,
             views=self.formatter.fmt_views(entry.get("view_count")),
@@ -148,16 +139,13 @@ class YouTubeProvider(BaseProvider):
 class YouTubeMusicProvider(BaseProvider):
     """Search provider for YouTube Music tracks and albums."""
 
-    def _build_search_query(self, query: str, limit: int, is_track: bool) -> str:
-        return query
-
     def _extract_results(self, query: str, limit: int, is_track: bool) -> list:
         from ytmusicapi import YTMusic
 
         search_type = "songs" if is_track else "albums"
         return YTMusic().search(query=query, limit=limit, filter=search_type)
 
-    def _extract_url(self, entry: Dict[str, Any], is_track: bool) -> Optional[str]:
+    def _extract_url(self, entry: dict[str, Any], is_track: bool) -> str | None:
         if is_track:
             if t_id := entry.get("videoId"):
                 return "https://music.youtube.com/watch?v=" + t_id
@@ -167,15 +155,15 @@ class YouTubeMusicProvider(BaseProvider):
         return None
 
     def _format_entry(
-        self, entry: Dict[str, Any], num: int, is_track: bool
-    ) -> Optional[str]:
+        self, entry: dict[str, Any], num: int, is_track: bool
+    ) -> str | None:
         if is_track:
             return self.formatter.format_result(
                 num,
                 title=entry.get("title", "Unknown Track"),
                 artist=self.formatter.extract_artist(entry),
                 album=entry.get("album", {}).get("name", "Unknown Album"),
-                url="https://music.youtube.com/watch?v=" + entry.get("videoId", ""),
+                url=self._extract_url(entry, is_track),
                 is_yt_video=False,
                 is_track=True,
                 views=self.formatter.fmt_views(entry.get("views")),
@@ -186,8 +174,7 @@ class YouTubeMusicProvider(BaseProvider):
                 num,
                 title=entry.get("title", "Unknown Album"),
                 artist=self.formatter.extract_artist(entry),
-                url="https://music.youtube.com/playlist?list="
-                + entry.get("playlistId", ""),
+                url=self._extract_url(entry, is_track),
                 is_yt_video=False,
                 is_track=False,
                 year=entry.get("year", "N/A"),

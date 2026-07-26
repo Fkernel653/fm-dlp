@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from ...utils.config.configer import get_parameters, set_parameters
+from ...utils.config.configer.parametrs import get_parameters, set_parameters
 
 
 class DownloadConfig:

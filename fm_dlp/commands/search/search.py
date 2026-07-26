@@ -1,6 +1,6 @@
 """YouTube search handlers."""
 
-from typing import Generator
+from collections.abc import Generator
 
 from ...utils.colors import set_colors
 from .formatters import ResultFormatter

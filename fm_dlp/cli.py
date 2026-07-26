@@ -29,8 +29,8 @@ Environment:
 
 Usage Examples:
     fm-dlp config /path/to/download/folder
-    fm-dlp search "Sewerslvt" --limit 5
-    fm-dlp download https://music.youtube.com/watch?v=y55fzyXZDSE --codec mp3 --kbps 320
+    fm-dlp search "Sewerslvt"
+    fm-dlp download https://music.youtube.com/watch?v=y55fzyXZDSE
 
 For more information, visit: https://github.com/Fkernel653/fm-dlp
 """
@@ -40,18 +40,18 @@ def main():
     """Main entry point for fm-dlp CLI."""
     import sys
 
-    from argss import Argss
+    from arg_kiss import Argkiss
 
     from fm_dlp import __version__
     from fm_dlp.utils import echo, get_output
-    from fm_dlp.utils.config.configer import get_path, set_path
+    from fm_dlp.utils.config.configer.path import get_path, set_path
     from fm_dlp.utils.validate import (
         validate_download,
         validate_ffmpeg,
         validate_search,
     )
 
-    cli = Argss(
+    cli = Argkiss(
         name="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
         version=__version__,

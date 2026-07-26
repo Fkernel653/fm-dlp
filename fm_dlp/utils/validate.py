@@ -46,23 +46,23 @@ def _validate_url(url: str) -> None:
     """Validate URL or file path."""
     path = Path(url)
 
-    if path.is_file():
-        _check(path.stat().st_size > 0, f"URL file is empty: '{url}'")
+    if path.exists():
+        _check(
+            path.is_file(),
+            f"Path exists but is not a file: '{url}'",
+            "Must be a URL (http:// or https://) or a path to a text file containing URLs",
+        )
+        _check(
+            path.stat().st_size > 0,
+            f"URL file is empty: '{url}'",
+        )
         return
 
-    _check(
-        not path.exists(),
-        f"Path exists but is not a file: '{url}'",
-    )
-
-    is_valid_url = url.startswith(("http://", "https://")) and url not in (
-        "http://",
-        "https://",
-    )
+    is_valid_url = url.startswith(("http://", "https://")) and len(url) > 7
     _check(
         is_valid_url,
-        f"Invalid URL: '{url}'",
-        "Must start with 'http://' or 'https://' and contain a valid address (not just the protocol)",
+        f"Invalid URL or file: '{url}'",
+        "Must start with 'http://' or 'https://' and contain a valid address",
     )
 
 
@@ -124,32 +124,16 @@ def _validate_cookies(cookies: str) -> None:
 
 def _validate_quality(quality: str) -> None:
     """Validate video quality parameter."""
-    quality_lower = quality.lower().strip()
+    normalized_quality = quality
+    if quality.isdigit():
+        normalized_quality = f"{quality}p"
 
-    if quality_lower in SUPPORTED_QUALITIES:
-        return
-
-    if quality_lower.isdigit():
-        height = int(quality_lower)
-        _check(
-            height > 0,
-            f"Invalid height: {height}",
-            "Height must be a positive integer (e.g., 720, 1080, 2160)",
-        )
-        return
-
-    if quality_lower.endswith("p") and quality_lower[:-1].isdigit():
-        height = int(quality_lower[:-1])
-        _check(
-            height > 0,
-            f"Invalid height: {height}",
-            "Height must be a positive integer (e.g., 720p, 1080p, 2160p)",
-        )
+    if quality in SUPPORTED_QUALITIES or normalized_quality in SUPPORTED_QUALITIES:
         return
 
     _fail(
         f"Warning: Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
-        "Recommended formats: best, worst, 1080p, 720p, 480p, or custom height like 720",
+        f"Allowed formats: {', '.join(SUPPORTED_QUALITIES)}",
     )
 
 

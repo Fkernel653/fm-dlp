@@ -2,8 +2,8 @@
 
 import asyncio
 import sys
+from collections.abc import AsyncIterator
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from typing import AsyncIterator
 
 from yt_dlp import YoutubeDL
 

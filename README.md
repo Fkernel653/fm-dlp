@@ -123,7 +123,7 @@ GPLv3 License — Built with:
 | [yt-dlp](https://github.com/yt-dlp/yt-dlp) | Download engine supporting 1000+ sites |
 | [ytmusicapi](https://github.com/sigma67/ytmusicapi) | YouTube Music search API |
 | [mutagen](https://github.com/quodlibet/mutagen) | Metadata tagging for audio files |
-| [argss](https://github.com/Fkernel653/argss) | CLI Framework |
+| [arg-kiss](https://github.com/Fkernel653/arg-kiss) | CLI Framework |
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 

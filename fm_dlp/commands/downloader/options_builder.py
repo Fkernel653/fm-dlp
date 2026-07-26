@@ -42,7 +42,13 @@ class OptionsBuilder:
         if self.quality == "worst":
             return "worstvideo"
 
-        if height := self.quality[:-1]:
+        quality_str = self.quality
+        if quality_str.isdigit():
+            height = quality_str
+            return f"bestvideo[height<={height}]"
+
+        elif quality_str.endswith("p") and quality_str[:-1].isdigit():
+            height = quality_str[:-1]
             return f"bestvideo[height<={height}]"
 
         return self.quality

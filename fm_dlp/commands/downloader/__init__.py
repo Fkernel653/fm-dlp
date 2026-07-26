@@ -4,9 +4,9 @@ from .options_builder import OptionsBuilder
 from .url_parser import URLParser
 
 __all__ = [
+    "Download",
     "DownloadConfig",
     "OptionsBuilder",
     "URLParser",
-    "Download",
     "run_downloader",
 ]
