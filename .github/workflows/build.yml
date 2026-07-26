@@ -13,7 +13,6 @@ jobs:
     name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.14"]
@@ -49,7 +48,7 @@ jobs:
             --hidden-import=yt_dlp \
             --hidden-import=ytmusicapi \
             --hidden-import=mutagen \
-            --hidden-import=argss \
+            --hidden-import=arg-kiss \
             --collect-all yt_dlp \
             --collect-all ytmusicapi \
             --collect-all mutagen \
