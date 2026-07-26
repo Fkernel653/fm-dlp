@@ -127,7 +127,7 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "4.4.5"
+version = "4.4.5.1"
 source = { editable = "." }
 dependencies = [
     { name = "arg-kiss" },

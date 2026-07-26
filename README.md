@@ -65,7 +65,7 @@ fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs
 | `--jobs`, `-j` | `5` | Maximum number of concurrent downloads for faster batch processing |
 | `--quiet`, `-q` | `False` | Suppress yt-dlp output messages (errors still shown) |
 | `--no-metadata` | `False` | Disable embedding metadata (title, artist, album) and thumbnail into audio files |
-| `--keep` | `False` | Keep the original downloaded file after conversion/post-processing. Useful when you want to retain both the original and converted versions (e.g., keep source video when extracting audio). |
+| `--keep`, `-k` | `False` | Keep the original downloaded file after conversion/post-processing. Useful when you want to retain both the original and converted versions (e.g., keep source video when extracting audio). |
 | `--save`, `-s` | `False` | Saving settings (except URL) |
 | `--use-config`, `-u` | `False` | Use saved parameters from config file as defaults |
 | `--path`, `-p` | Configured path | Custom download directory (overrides default config) |
