@@ -3,12 +3,12 @@ revision = 3
 requires-python = ">=3.10"
 
 [[package]]
-name = "argss"
-version = "0.2.6"
+name = "arg-kiss"
+version = "0.3.5"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/b4/ed/b265e3cd68978ab2f18a4a4983780fc50b5f4003081a9c3f3b99d19fb5d2/argss-0.2.6.tar.gz", hash = "sha256:dbecfeb203a9cde7c3d72ff3620bc6af48cda815de974406d9c8143a50fa1023", size = 7680, upload-time = "2026-07-22T04:07:22.745Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/15/2f/9836da3028e5222eed3c7e74a3047bc6463ed015ad1f130b8c53fdb0daf5/arg_kiss-0.3.5.tar.gz", hash = "sha256:0f4163dae7bd8dc59cc07d5927df60b9aa68e3192304010c7d2e669e358654ce", size = 9218, upload-time = "2026-07-26T04:52:02.797Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/83/7e/07ab522c68064158bdf74c587e41381bd1b703f2ac3477d33b0c0c08ab42/argss-0.2.6-py3-none-any.whl", hash = "sha256:a65b3b8a5f274e72c34feda702f8e7fb18a177ed1be778157059b0602be433c8", size = 8802, upload-time = "2026-07-22T04:07:21.965Z" },
+    { url = "https://files.pythonhosted.org/packages/ed/59/73e36cb90d25434103a1b20188fb2dc796762fc32108d61abe2c39569d68/arg_kiss-0.3.5-py3-none-any.whl", hash = "sha256:f128bc0d03c3d892f4a3ebef28ad183bb2c99eb0e05f446098de7e91c6172a8c", size = 12676, upload-time = "2026-07-26T04:52:01.871Z" },
 ]
 
 [[package]]
@@ -127,10 +127,10 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "4.4.4"
+version = "4.4.5"
 source = { editable = "." }
 dependencies = [
-    { name = "argss" },
+    { name = "arg-kiss" },
     { name = "mutagen" },
     { name = "yt-dlp" },
     { name = "ytmusicapi" },
@@ -143,7 +143,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "argss" },
+    { name = "arg-kiss" },
     { name = "mutagen" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "yt-dlp" },
