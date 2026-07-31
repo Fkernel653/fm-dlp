@@ -45,13 +45,8 @@ jobs:
         shell: bash
         run: |
           uv run pyinstaller --onefile \
-            --hidden-import=yt_dlp \
-            --hidden-import=ytmusicapi \
-            --hidden-import=mutagen \
-            --hidden-import=arg-kiss \
-            --collect-all yt_dlp \
-            --collect-all ytmusicapi \
-            --collect-all mutagen \
+            --hidden-import=fm_dlp_core \
+            --collect-all fm_dlp_core \
             --name fm-dlp \
             fm_dlp/__main__.py
 

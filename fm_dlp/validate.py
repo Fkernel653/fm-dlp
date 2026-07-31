@@ -2,16 +2,46 @@
 
 import sys
 from functools import lru_cache
+from pathlib import Path
 
-from ..utils import (
+from fm_dlp_core.utils import (
     ALL_CODECS,
-    COOKIE_EXTENSIONS,
-    SUPPORTED_BROWSERS,
-    SUPPORTED_QUALITIES,
     echo,
 )
-from .colors import error, hint, set_colors
-from .config.path import Path
+from fm_dlp_core.utils.colors import error, hint, set_colors
+
+SUPPORTED_QUALITIES = {
+    "best",
+    "worst",
+    "2160p",
+    "1440p",
+    "1080p",
+    "720p",
+    "480p",
+    "360p",
+    "240p",
+    "144p",
+    "2160",
+    "1440",
+    "1080",
+    "720",
+    "480",
+    "360",
+    "240",
+    "144",
+}
+SUPPORTED_BROWSERS = {
+    "brave",
+    "chrome",
+    "chromium",
+    "edge",
+    "opera",
+    "vivaldi",
+    "whale",
+    "firefox",
+    "safari",
+}
+COOKIE_EXTENSIONS = {".txt", ".sqlite", ".db", ".cookies"}
 
 
 def _fail(msg: str, tip: str | None = None) -> None:

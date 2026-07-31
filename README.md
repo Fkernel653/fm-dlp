@@ -6,7 +6,7 @@
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey)]()
 [![Ruff](https://img.shields.io/badge/code%20style-ruff-261230?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff)
 
-CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms
+CLI tool for searching YouTube/YTMusic and downloading audio/video from [1000+ sites](https://github.com/yt-dlp/yt-dlp/supportedsites.md) 
 
 ## 🚀 Quick Start
 
@@ -120,10 +120,7 @@ GPLv3 License — Built with:
 
 | Library | Purpose |
 |---------|---------|
-| [yt-dlp](https://github.com/yt-dlp/yt-dlp) | Download engine supporting 1000+ sites |
-| [ytmusicapi](https://github.com/sigma67/ytmusicapi) | YouTube Music search API |
-| [mutagen](https://github.com/quodlibet/mutagen) | Metadata tagging for audio files |
-| [arg-kiss](https://github.com/Fkernel653/arg-kiss) | CLI Framework |
+| [fm-dlp-core](https://github.com/Fkernel653/fm-dlp-core) | Main core |
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 

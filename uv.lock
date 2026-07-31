@@ -3,15 +3,6 @@ revision = 3
 requires-python = ">=3.10"
 
 [[package]]
-name = "arg-kiss"
-version = "0.3.5"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/15/2f/9836da3028e5222eed3c7e74a3047bc6463ed015ad1f130b8c53fdb0daf5/arg_kiss-0.3.5.tar.gz", hash = "sha256:0f4163dae7bd8dc59cc07d5927df60b9aa68e3192304010c7d2e669e358654ce", size = 9218, upload-time = "2026-07-26T04:52:02.797Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ed/59/73e36cb90d25434103a1b20188fb2dc796762fc32108d61abe2c39569d68/arg_kiss-0.3.5-py3-none-any.whl", hash = "sha256:f128bc0d03c3d892f4a3ebef28ad183bb2c99eb0e05f446098de7e91c6172a8c", size = 12676, upload-time = "2026-07-26T04:52:01.871Z" },
-]
-
-[[package]]
 name = "certifi"
 version = "2026.6.17"
 source = { registry = "https://pypi.org/simple" }
@@ -127,13 +118,10 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "4.4.5.1"
+version = "4.4.6"
 source = { editable = "." }
 dependencies = [
-    { name = "arg-kiss" },
-    { name = "mutagen" },
-    { name = "yt-dlp" },
-    { name = "ytmusicapi" },
+    { name = "fm-dlp-core" },
 ]
 
 [package.optional-dependencies]
@@ -143,13 +131,24 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "arg-kiss" },
-    { name = "mutagen" },
+    { name = "fm-dlp-core" },
     { name = "ruff", marker = "extra == 'dev'" },
+]
+provides-extras = ["dev"]
+
+[[package]]
+name = "fm-dlp-core"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mutagen" },
     { name = "yt-dlp" },
     { name = "ytmusicapi" },
 ]
-provides-extras = ["dev"]
+sdist = { url = "https://files.pythonhosted.org/packages/1f/42/3d3e5cd88d72cdda833d814da0b5c02128784745382bc4fcc0c1a3d34e7f/fm_dlp_core-0.1.0.tar.gz", hash = "sha256:98c33b98c17215d419ed4a2ad7bcee314e9c608f17983f9407a34b7b26093da5", size = 26207, upload-time = "2026-07-31T06:35:07.575Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9b/ae/fd90b967192b5ace13489ec6128bfec100899b0810927bcc6e00746b1f3b/fm_dlp_core-0.1.0-py3-none-any.whl", hash = "sha256:8a553d0116ae3ef3e33d66cd59649f657e1f8941fb1b60a43c20beaf902a328c", size = 31696, upload-time = "2026-07-31T06:35:06.27Z" },
+]
 
 [[package]]
 name = "idna"
