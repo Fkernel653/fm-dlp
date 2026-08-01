@@ -1,13 +1,9 @@
 """Input validation module for fm-dlp CLI application."""
 
-import sys
 from functools import lru_cache
 from pathlib import Path
 
-from fm_dlp_core.utils import (
-    ALL_CODECS,
-    echo,
-)
+from fm_dlp_core.utils import ALL_CODECS, echo, sys
 from fm_dlp_core.utils.colors import error, hint, set_colors
 
 SUPPORTED_QUALITIES = {

@@ -29,8 +29,8 @@ Environment:
 
 Usage Examples:
     fm-dlp config /path/to/download/folder
-    fm-dlp search "Sewerslvt" --limit 5
-    fm-dlp download https://music.youtube.com/watch?v=y55fzyXZDSE --codec mp3 --kbps 320
+    fm-dlp search "Sewerslvt"
+    fm-dlp download https://music.youtube.com/watch?v=y55fzyXZDSE
 
 For more information, visit: https://github.com/Fkernel653/fm-dlp
 """
@@ -39,7 +39,6 @@ For more information, visit: https://github.com/Fkernel653/fm-dlp
 def main():
     """Main entry point for fm-dlp CLI."""
     import argparse
-    import sys
 
     from fm_dlp_core import echo, run_downloader, search
     from fm_dlp_core.utils.config.path import get_path, set_path
@@ -50,7 +49,7 @@ def main():
         create_download_parser,
         create_search_parser,
     )
-    from .validate import validate_download, validate_ffmpeg, validate_search
+    from .validate import sys, validate_download, validate_ffmpeg, validate_search
 
     parser = argparse.ArgumentParser(
         prog="fm-dlp",
