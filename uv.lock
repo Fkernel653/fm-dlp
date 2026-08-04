@@ -100,7 +100,7 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "4.5.0.1"
+version = "4.5.0.2"
 source = { editable = "." }
 dependencies = [
     { name = "fm-dlp-core" },
@@ -120,16 +120,16 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "fm-dlp-core"
-version = "0.1.1"
+version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "mutagen" },
     { name = "yt-dlp" },
     { name = "ytmusicapi" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1b/5a/e29224a0467822ba7788c43271f17847a55b0eafa59381f0299df1a24241/fm_dlp_core-0.1.1.tar.gz", hash = "sha256:236ded17765e86bd107c53cada136224cf22c92ad40602024a5bc83b58056a07", size = 28993, upload-time = "2026-08-03T05:42:05.144Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/67/84/582033a57fb339171cc5039a711c6b614dd480af9182612f3dee9ddbcf1d/fm_dlp_core-0.1.2.tar.gz", hash = "sha256:779e6d2659cdc075d36da8813d219e52c32489c1000c1eb2f14a84e506ac2c04", size = 29169, upload-time = "2026-08-04T05:54:15.174Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/fc/8c727a342139ab8c73dff3897263654949d8337ee1375cb3bc46bbdd6aca/fm_dlp_core-0.1.1-py3-none-any.whl", hash = "sha256:196300fab386f1ebab5273ca9b6b7931ff97d36f1e2212573a003073dfc9d0dc", size = 34459, upload-time = "2026-08-03T05:42:04.282Z" },
+    { url = "https://files.pythonhosted.org/packages/7e/1a/6991b5035b6c8cff2fb5c6b3dec6a376e2a022af911e364ab90ca0558210/fm_dlp_core-0.1.2-py3-none-any.whl", hash = "sha256:3ef897253922cef6aaf17cca1a6e29a2c89d2085c7c2e3989b73db38641c5df6", size = 34640, upload-time = "2026-08-04T05:54:14.288Z" },
 ]
 
 [[package]]

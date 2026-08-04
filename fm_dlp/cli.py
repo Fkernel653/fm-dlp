@@ -53,7 +53,7 @@ def main():
 
     parser = argparse.ArgumentParser(
         prog="fm-dlp",
-        description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ platforms",
+        description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
     )
     parser.add_argument("-V", "--version", action="version", version=__version__)
     parser.add_argument(
