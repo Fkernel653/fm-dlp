@@ -216,6 +216,7 @@ Examples of formatting search results from different sources.
         ├─ Sewerslvt
         ├─ 2020
         └─ https://music.youtube.com/playlist?list=OLAK5uy_lwWVcID2Sw8o6Jfa9vz8-a2hqEFffKb-g
+           ──────────────────────────────────────────────────
 
     N. Title
         ├─ Artist
@@ -229,6 +230,7 @@ Examples of formatting search results from different sources.
         ├─ Sewerslvt
         ├─ 2,405,647 │ 17:01
         └─ https://youtu.be/ABBpsy6rlVU
+           ──────────────────────────────────────────────────
 
     N. Title
         ├─ Artist
