@@ -1,6 +1,10 @@
 # Python-generated files
 __pycache__/
 *.pyc
+<<<<<<< HEAD
+=======
+build/
+>>>>>>> 6ac826a (Update .gitignore)
 dist/
 
 # Virtual environments
