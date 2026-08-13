@@ -84,9 +84,8 @@ def _validate_url(url: str) -> None:
         )
         return
 
-    is_valid_url = url.startswith(("http://", "https://")) and len(url) > 7
     _check(
-        is_valid_url,
+        url.startswith(("http://", "https://")) and len(url) > 7,
         f"Invalid URL or file: '{url}'",
         "Must start with 'http://' or 'https://' and contain a valid address",
     )
@@ -132,13 +131,13 @@ def _validate_cookies(cookies: str) -> None:
             "Must be a path to a cookie file",
         )
         _check(
-            cookies_path.stat().st_size > 0,
-            f"Cookie file is empty: '{cookies}'",
-        )
-        _check(
             cookies_path.suffix.lower() in COOKIE_EXTENSIONS,
             f"Cookie file has unusual extension: '{cookies_path.suffix}'",
-            "Expected .txt (Netscape format), .sqlite, .db, or .cookies",
+            f"Supported extensions: {', '.join(COOKIE_EXTENSIONS)}",
+        )
+        _check(
+            cookies_path.stat().st_size > 0,
+            f"Cookie file is empty: '{cookies}'",
         )
     else:
         _check(
@@ -150,15 +149,14 @@ def _validate_cookies(cookies: str) -> None:
 
 def _validate_quality(quality: str) -> None:
     """Validate video quality parameter."""
-    normalized_quality = quality
     if quality.isdigit():
-        normalized_quality = f"{quality}p"
+        quality = f"{quality}p"
 
-    if quality in SUPPORTED_QUALITIES or normalized_quality in SUPPORTED_QUALITIES:
+    if quality in SUPPORTED_QUALITIES:
         return
 
     _fail(
-        f"Warning: Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
+        f"Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
         f"Allowed formats: {', '.join(SUPPORTED_QUALITIES)}",
     )
 
