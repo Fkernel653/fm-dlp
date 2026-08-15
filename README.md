@@ -2,8 +2,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=fff&style=for-the-badge)](https://python.org)
 [![PyPI](https://img.shields.io/pypi/v/fm-dlp?style=for-the-badge&logo=pypi&logoColor=fff&label=PyPI&color=007ec6)](https://pypi.org/project/fm-dlp)
-[![License](https://img.shields.io/badge/License-GPLv3-00b96b?style=for-the-badge)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-9cf?style=for-the-badge)]()
+[![License](https://img.shields.io/badge/License-AGPLv3-00b96b?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-9cf?style=for-the-badge)](<>)
 [![Ruff](https://img.shields.io/badge/Code%20Style-Ruff-ff69b4?logo=ruff&logoColor=fff&style=for-the-badge)](https://docs.astral.sh/ruff)
 
 CLI tool for searching YouTube/YTMusic and downloading audio/video from [1000+ sites](https://github.com/yt-dlp/yt-dlp/supportedsites.md)
@@ -11,6 +11,7 @@ CLI tool for searching YouTube/YTMusic and downloading audio/video from [1000+ s
 ---
 
 ## 📑 Table of Contents
+
 - [🚀 Quick Start](#-quick-start)
 - [⚙️ Requirements](#️-requirements)
 - [🌈 Color Output](#-color-output)
@@ -69,14 +70,14 @@ Search for music tracks, albums, or videos on YouTube/YTMusic.
 fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url]
 ```
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `query` | **Required** | Search query string |
-| `--limit N`, `-l` | `10` | Maximum number of results to return |
-| `--yt-video`, `-v` | `False` | Search for YouTube videos instead of music tracks |
-| `--album`, `-a` | `False` | Search for albums instead of individual tracks |
-| `--raw`, `-r` | `False` | Output results in raw format (Python dict representation) |
-| `--only-url`, `-u` | `False` | Output only the URLs without any formatting |
+| Option             | Default      | Description                                               |
+| ------------------ | ------------ | --------------------------------------------------------- |
+| `query`            | **Required** | Search query string                                       |
+| `--limit N`, `-l`  | `10`         | Maximum number of results to return                       |
+| `--yt-video`, `-v` | `False`      | Search for YouTube videos instead of music tracks         |
+| `--album`, `-a`    | `False`      | Search for albums instead of individual tracks            |
+| `--raw`, `-r`      | `False`      | Output results in raw format (Python dict representation) |
+| `--only-url`, `-u` | `False`      | Output only the URLs without any formatting               |
 
 ---
 
@@ -88,28 +89,30 @@ Download audio or video content from supported platforms (YouTube, YTMusic, and 
 fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs JOBS] [--quiet] [--no-metadata] [--keep] [--save] [--path PATH] [--only-video] [--cookies COOKIES]
 ```
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `urls` | **Required** | Single URL, comma/space-separated list, or path to text file with URLs (one per line, `#` for comments) |
-| `--codec`, `-c` | `m4a` (macOS)<br>`opus` (others) | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv` |
-| `--kbps`, `-K` | `256` | Audio bitrate in kbps (64–320). Higher = better quality, larger file |
-| `--quality`, `-Q` | `best` | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`) |
-| `--jobs`, `-j` | `5` | Maximum number of concurrent downloads for faster batch processing |
-| `--quiet`, `-q` | `False` | Suppress yt-dlp output messages (errors still shown) |
-| `--no-metadata` | `False` | Disable embedding metadata (title, artist, album) and thumbnail into audio files |
-| `--keep`, `-k` | `False` | Keep the original downloaded file after conversion/post-processing |
-| `--save`, `-s` | `False` | Save settings (except URL) to config file |
-| `--use-config`, `-u` | `False` | Use saved parameters from config file as defaults |
-| `--path`, `-p` | Configured path | Custom download directory (overrides default config) |
-| `--only-video`, `-v` | `False` | Download video file without audio track |
-| `--cookies`, `-C` | `None` | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
+| Option               | Default                          | Description                                                                                                                                                             |
+| -------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `urls`               | **Required**                     | Single URL, comma/space-separated list, or path to text file with URLs (one per line, `#` for comments)                                                                 |
+| `--codec`, `-c`      | `m4a` (macOS)<br>`opus` (others) | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv`                                         |
+| `--kbps`, `-K`       | `256`                            | Audio bitrate in kbps (64–320). Higher = better quality, larger file                                                                                                    |
+| `--quality`, `-Q`    | `best`                           | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`)                                |
+| `--jobs`, `-j`       | `5`                              | Maximum number of concurrent downloads for faster batch processing                                                                                                      |
+| `--quiet`, `-q`      | `False`                          | Suppress yt-dlp output messages (errors still shown)                                                                                                                    |
+| `--no-metadata`      | `False`                          | Disable embedding metadata (title, artist, album) and thumbnail into audio files                                                                                        |
+| `--keep`, `-k`       | `False`                          | Keep the original downloaded file after conversion/post-processing                                                                                                      |
+| `--save`, `-s`       | `False`                          | Save settings (except URL) to config file                                                                                                                               |
+| `--use-config`, `-u` | `False`                          | Use saved parameters from config file as defaults                                                                                                                       |
+| `--path`, `-p`       | Configured path                  | Custom download directory (overrides default config)                                                                                                                    |
+| `--only-video`, `-v` | `False`                          | Download video file without audio track                                                                                                                                 |
+| `--cookies`, `-C`    | `None`                           | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
 
 **Audio Codec Details:**
+
 - **Lossy:** `mp3` (universal), `aac` (Apple), `m4a` (Apple), `opus` (modern web) - smaller files
 - **Lossless:** `flac` (high quality), `wav` (uncompressed), `alac` (Apple lossless) - larger files
 - **Recommended:** `opus` for best quality/size ratio, `flac` for archival
 
 **Video Container Details:**
+
 - **`mp4`** - Most compatible, uses `m4a` audio
 - **`mkv`** - Open format, uses `opus` audio
 - **`webm`** - Web optimized, uses `opus` audio
@@ -127,11 +130,12 @@ Configure the default download directory path.
 fm-dlp config <path>
 ```
 
-| Option | Default | Description |
-|--------|---------|-------------|
+| Option | Default      | Description                                                                                                       |
+| ------ | ------------ | ----------------------------------------------------------------------------------------------------------------- |
 | `path` | **Required** | Default directory path for downloads. Use absolute path for best results (e.g., `/home/user/Music` or `C:\Music`) |
 
 **Config Location:**
+
 - **Windows:** `%LOCALAPPDATA%/fm-dlp/config.json`
 - **macOS:** `~/Library/Application Support/fm-dlp/config.json`
 - **Linux:** `~/.config/fm-dlp/config.json`
@@ -242,24 +246,24 @@ Examples of formatting search results from different sources.
 
 ### 🧩 Formatting Legend
 
-| Element | Description |
-|---------|-------------|
-| `N.` | Sequential number of search result |
-| `Title` | Track, album, or video title |
-| `Artist` | Artist or channel name |
-| `├─└─│` | Tree branch characters |
+| Element            | Description                               |
+| ------------------ | ----------------------------------------- |
+| `N.`               | Sequential number of search result        |
+| `Title`            | Track, album, or video title              |
+| `Artist`           | Artist or channel name                    |
+| `├─└─│`            | Tree branch characters                    |
 | `Views │ Duration` | View count and length (MM:SS or HH:MM:SS) |
-| `URL` | Direct link to content |
-| `───` | Visual separator line |
+| `URL`              | Direct link to content                    |
+| `───`              | Visual separator line                     |
 
 ---
 
 ## 📄 License & Acknowledgments
 
-GPLv3 License — Built with:
+AGPLv3 License — Built with:
 
-| Library | Purpose |
-|---------|---------|
+| Library                                                  | Purpose   |
+| -------------------------------------------------------- | --------- |
 | [fm-dlp-core](https://github.com/Fkernel653/fm-dlp-core) | Main core |
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
