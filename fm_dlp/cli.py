@@ -25,10 +25,10 @@ Features:
 Environment:
     - Platform-agnostic (Windows, macOS, Linux)
     - Requires ffmpeg for audio/video processing
-    - Python 3.10+ with asyncio support
+    - Python 3.11+ with asyncio support
 
 Usage Examples:
-    fm-dlp config /path/to/download/folder
+    fm-dlp config ~/Music
     fm-dlp search "Sewerslvt"
     fm-dlp download https://music.youtube.com/watch?v=y55fzyXZDSE
 
@@ -39,6 +39,7 @@ For more information, visit: https://github.com/Fkernel653/fm-dlp
 def main():
     """Main entry point for fm-dlp CLI."""
     import argparse
+    import sys
 
     from fm_dlp_core import echo, run_downloader, search
     from fm_dlp_core.utils.config.path import get_path, set_path
@@ -49,14 +50,14 @@ def main():
         create_download_parser,
         create_search_parser,
     )
-    from .validate import sys, validate_download, validate_ffmpeg, validate_search
+    from .validate import validate_download, validate_ffmpeg, validate_search
 
     parser = argparse.ArgumentParser(
         prog="fm-dlp",
         description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
     )
-    parser.add_argument("-V", "--version", action="version", version=__version__)
-    parser.add_argument(
+    _ = parser.add_argument("-V", "--version", action="version", version=__version__)
+    _ = parser.add_argument(
         "--no-color", action="store_true", help="Disable colored output globally"
     )
 

@@ -1,6 +1,6 @@
 # fm-dlp — Download from YouTube, YTMusic, and 1000+ sites
 
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=fff&style=for-the-badge)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=fff&style=for-the-badge)](https://python.org)
 [![PyPI](https://img.shields.io/pypi/v/fm-dlp?style=for-the-badge&logo=pypi&logoColor=fff&label=PyPI&color=007ec6)](https://pypi.org/project/fm-dlp)
 [![License](https://img.shields.io/badge/License-AGPLv3-00b96b?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-9cf?style=for-the-badge)](<>)
@@ -32,7 +32,7 @@ CLI tool for searching YouTube/YTMusic and downloading audio/video from [1000+ s
 ```bash
 pip install fm-dlp                    # Python 3.10+ & FFmpeg required
 fm-dlp config ~/Music                 # Set download directory
-fm-dlp search "artist"                # Search tracks
+fm-dlp search "Sewerslvt"                # Search tracks
 fm-dlp download "URL"                 # Download audio
 ```
 
@@ -40,7 +40,7 @@ fm-dlp download "URL"                 # Download audio
 
 ## ⚙️ Requirements
 
-- **Python 3.10+** - Asyncio support required
+- **Python 3.11+** - Asyncio support required
 - **FFmpeg** - Required for audio/video processing. Install via:
   - **macOS:** `brew install ffmpeg`
   - **Linux:** `sudo apt install ffmpeg` (Debian) or `sudo dnf install ffmpeg` (Fedora)
@@ -136,9 +136,9 @@ fm-dlp config <path>
 
 **Config Location:**
 
-- **Windows:** `%LOCALAPPDATA%/fm-dlp/config.json`
-- **macOS:** `~/Library/Application Support/fm-dlp/config.json`
-- **Linux:** `~/.config/fm-dlp/config.json`
+- **Windows:** `%LOCALAPPDATA%/fm-dlp/config.toml`
+- **macOS:** `~/Library/Application Support/fm-dlp/config.toml`
+- **Linux:** `~/.config/fm-dlp/config.toml`
 
 ---
 

@@ -4,10 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fm-dlp"
-version = "4.5.1.4"
+version = "4.5.2"
 description = "CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "AGPL-3.0-only"
 authors = [
     {name = "Fkernel653"}
