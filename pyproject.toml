@@ -43,8 +43,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "fm-dlp-core",
-    "yt-dlp>=2026.8.19",
+    "fm-dlp-core"
 ]
 
 [project.optional-dependencies]
