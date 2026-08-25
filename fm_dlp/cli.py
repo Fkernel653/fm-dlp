@@ -39,10 +39,6 @@ For more information, visit: https://github.com/Fkernel653/fm-dlp
 def main():
     """Main entry point for fm-dlp CLI."""
     import argparse
-    import sys
-
-    from fm_dlp_core import echo, run_downloader, search
-    from fm_dlp_core.utils.config.path import get_path, set_path
 
     from . import __version__
     from .parsers import (
@@ -50,7 +46,6 @@ def main():
         create_download_parser,
         create_search_parser,
     )
-    from .validate import validate_download, validate_ffmpeg, validate_search
 
     parser = argparse.ArgumentParser(
         prog="fm-dlp",
@@ -72,7 +67,11 @@ def main():
 
     try:
         if args.command == "search":
+            from .validate import validate_search
+
             validate_search(args.limit, color)
+
+            from fm_dlp_core import echo, search
 
             for result in search(
                 args.query,
@@ -86,9 +85,15 @@ def main():
                 echo(result)
 
         elif args.command == "download":
+            from fm_dlp_core.utils.config.path import get_path
+
+            from .validate import validate_download, validate_ffmpeg
+
             path = args.path or get_path(color)
 
             if not args.codec:
+                import sys
+
                 args.codec = "m4a" if sys.platform == "darwin" else "opus"
 
             validate_download(
@@ -105,6 +110,8 @@ def main():
             validate_ffmpeg(color)
 
             import asyncio
+
+            from fm_dlp_core import run_downloader
 
             asyncio.run(
                 run_downloader(
@@ -126,9 +133,11 @@ def main():
             )
 
         elif args.command == "config":
+            from fm_dlp_core.utils.config.path import echo, set_path
+
             result = set_path(args.path, color)
 
             echo(result)
 
     except KeyboardInterrupt:
-        sys.exit(0)
+        return
