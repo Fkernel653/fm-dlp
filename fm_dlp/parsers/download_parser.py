@@ -83,3 +83,9 @@ def create_download_parser(subparsers) -> None:
         "--cookies",
         help="Path to cookies file (e.g., 'cookies.txt') for authenticated downloads, or browser name ('brave', 'chrome', 'chromium', 'edge', 'opera', 'vivaldi', 'whale', 'firefox', 'safari') to extract cookies from browser.",
     )
+    download_parser.add_argument(
+        "-r",
+        "--remote",
+        choices=["ejs:github", "ejs:npm"],
+        help="Download external JavaScript components for bypassing anti-bot protections (e.g., JS challenges).\n'ejs:github' - download from yt-dlp GitHub repository,\n'ejs:npm' - download from NPM package registry.",
+    )

@@ -38,34 +38,36 @@ For more information, visit: https://github.com/Fkernel653/fm-dlp
 
 def main():
     """Main entry point for fm-dlp CLI."""
-    import argparse
-
-    from . import __version__
-    from .parsers import (
-        create_config_parser,
-        create_download_parser,
-        create_search_parser,
-    )
-
-    parser = argparse.ArgumentParser(
-        prog="fm-dlp",
-        description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
-    )
-    _ = parser.add_argument("-V", "--version", action="version", version=__version__)
-    _ = parser.add_argument(
-        "--no-color", action="store_true", help="Disable colored output globally"
-    )
-
-    subparsers = parser.add_subparsers(dest="command", required=True)
-
-    create_search_parser(subparsers)
-    create_download_parser(subparsers)
-    create_config_parser(subparsers)
-
-    args = parser.parse_args()
-    color = not args.no_color
-
     try:
+        import argparse
+
+        from . import __version__
+        from .parsers import (
+            create_config_parser,
+            create_download_parser,
+            create_search_parser,
+        )
+
+        parser = argparse.ArgumentParser(
+            prog="fm-dlp",
+            description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
+        )
+        _ = parser.add_argument(
+            "-V", "--version", action="version", version=__version__
+        )
+        _ = parser.add_argument(
+            "--no-color", action="store_true", help="Disable colored output globally"
+        )
+
+        subparsers = parser.add_subparsers(dest="command", required=True)
+
+        create_search_parser(subparsers)
+        create_download_parser(subparsers)
+        create_config_parser(subparsers)
+
+        args = parser.parse_args()
+        color = not args.no_color
+
         if args.command == "search":
             from .validate import validate_search
 
@@ -128,6 +130,7 @@ def main():
                     path=path,
                     only_video=args.only_video,
                     cookies=args.cookies,
+                    remote=args.remote,
                     color=color,
                 )
             )

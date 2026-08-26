@@ -86,7 +86,7 @@ fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url
 Download audio or video content from supported platforms (YouTube, YTMusic, and 1000+ sites).
 
 ```bash
-fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs JOBS] [--quiet] [--no-metadata] [--keep] [--save] [--path PATH] [--only-video] [--cookies COOKIES]
+fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs JOBS] [--quiet] [--no-metadata] [--keep] [--save] [--path PATH] [--only-video] [--cookies COOKIES] [--remote SOURCE]
 ```
 
 | Option               | Default                          | Description                                                                                                                                                             |
@@ -104,6 +104,7 @@ fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs
 | `--path`, `-p`       | Configured path                  | Custom download directory (overrides default config)                                                                                                                    |
 | `--only-video`, `-v` | `False`                          | Download video file without audio track                                                                                                                                 |
 | `--cookies`, `-C`    | `None`                           | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
+| `--remote`, `-r`     | `None`                           | Download external JavaScript components for bypassing anti-bot protections (JS challenges).<br>**Options:** `ejs:github` (yt-dlp repo) or `ejs:npm` (NPM registry)      |
 
 **Audio Codec Details:**
 
