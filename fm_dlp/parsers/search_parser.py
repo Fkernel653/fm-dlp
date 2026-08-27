@@ -15,7 +15,9 @@ def create_search_parser(subparsers) -> None:
         "-l",
         "--limit",
         type=int,
+        choices=range(1, 101),
         default=10,
+        metavar="1-100",
         help="Maximum number of results to return (default: 10)",
     )
     search_parser.add_argument(

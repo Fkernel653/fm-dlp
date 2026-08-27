@@ -25,7 +25,7 @@ Features:
 Environment:
     - Platform-agnostic (Windows, macOS, Linux)
     - Requires ffmpeg for audio/video processing
-    - Python 3.11+ with asyncio support
+    - Python 3.11+ with toml support
 
 Usage Examples:
     fm-dlp config ~/Music
@@ -69,10 +69,6 @@ def main():
         color = not args.no_color
 
         if args.command == "search":
-            from .validate import validate_search
-
-            validate_search(args.limit, color)
-
             from fm_dlp_core import echo, search
 
             for result in search(
@@ -89,25 +85,17 @@ def main():
         elif args.command == "download":
             from fm_dlp_core.utils.config.path import get_path
 
-            from .validate import validate_download, validate_ffmpeg
+            from .validate import ValidateDownload, validate_ffmpeg
 
             path = args.path or get_path(color)
 
-            if not args.codec:
-                import sys
-
-                args.codec = "m4a" if sys.platform == "darwin" else "opus"
-
-            validate_download(
+            ValidateDownload(
                 args.url,
-                args.codec,
-                args.kbps,
                 args.quality,
-                args.jobs,
                 path,
                 args.cookies,
                 color,
-            )
+            ).validate()
 
             validate_ffmpeg(color)
 
@@ -138,9 +126,7 @@ def main():
         elif args.command == "config":
             from fm_dlp_core.utils.config.path import echo, set_path
 
-            result = set_path(args.path, color)
-
-            echo(result)
+            echo(set_path(args.path, color))
 
     except KeyboardInterrupt:
         return

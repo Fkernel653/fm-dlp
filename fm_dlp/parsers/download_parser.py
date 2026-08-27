@@ -1,3 +1,8 @@
+from fm_dlp_core.utils import ALL_CODECS, sys
+
+codec = "m4a" if sys.platform == "darwin" else "opus"
+
+
 def create_download_parser(subparsers) -> None:
     """Create and configure the download command parser.
 
@@ -17,12 +22,16 @@ def create_download_parser(subparsers) -> None:
     download_parser.add_argument(
         "-c",
         "--codec",
+        type=str,
+        choices=ALL_CODECS,
+        default=codec,
         help="Audio codec or video container. Default depends on platform. For audio: mp3, aac, flac, m4a, opus, vorbis, wav, alac. For video: mp4, mov, mkv, webm, avi, flv.",
     )
     download_parser.add_argument(
         "-K",
         "--kbps",
         type=int,
+        choices=range(64, 321, 64),
         default=256,
         help="Audio bitrate in kbps (64–320). Higher bitrate = better quality but larger file size. (default: 256)",
     )
@@ -37,7 +46,9 @@ def create_download_parser(subparsers) -> None:
         "-j",
         "--jobs",
         type=int,
+        choices=range(1, 25),
         default=5,
+        metavar="1-24",
         help="Maximum number of concurrent downloads. Increase for faster batch downloads. (default: 5)",
     )
     download_parser.add_argument(
@@ -86,6 +97,6 @@ def create_download_parser(subparsers) -> None:
     download_parser.add_argument(
         "-r",
         "--remote",
-        choices=["ejs:github", "ejs:npm"],
+        choices={"ejs:github", "ejs:npm"},
         help="Download external JavaScript components for bypassing anti-bot protections (e.g., JS challenges).\n'ejs:github' - download from yt-dlp GitHub repository,\n'ejs:npm' - download from NPM package registry.",
     )

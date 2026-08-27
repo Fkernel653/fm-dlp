@@ -3,7 +3,7 @@
 from functools import lru_cache
 from pathlib import Path
 
-from fm_dlp_core.utils import ALL_CODECS, echo, sys
+from fm_dlp_core.utils import echo, sys
 from fm_dlp_core.utils.colors import error, hint, set_colors
 
 SUPPORTED_QUALITIES = {
@@ -68,139 +68,122 @@ def validate_ffmpeg(color: bool) -> None:
     )
 
 
-def _validate_url(url: str) -> None:
-    """Validate URL or file path."""
-    path = Path(url)
+class ValidateDownload:
+    """Validator for download parameters."""
 
-    if path.exists():
+    def __init__(
+        self,
+        url: str,
+        quality: str,
+        path: str,
+        cookies: str | None = None,
+        color: bool = True,
+    ) -> None:
+        """Initialize validator with all download parameters."""
+        self.url = url
+        self.quality = quality
+        self.path = path
+        self.cookies = cookies
+        self.color = color
+
+        set_colors(color)
+
+    def _validate_url(self) -> None:
+        """Validate URL or file path."""
+        path = Path(self.url)
+
+        if path.exists():
+            _check(
+                path.is_file(),
+                f"Path exists but is not a file: '{self.url}'",
+                "Must be a URL (http:// or https://) or a path to a text file containing URLs",
+            )
+            _check(
+                path.stat().st_size > 0,
+                f"URL file is empty: '{self.url}'",
+            )
+            return
+
         _check(
-            path.is_file(),
-            f"Path exists but is not a file: '{url}'",
-            "Must be a URL (http:// or https://) or a path to a text file containing URLs",
-        )
-        _check(
-            path.stat().st_size > 0,
-            f"URL file is empty: '{url}'",
-        )
-        return
-
-    _check(
-        url.startswith(("http://", "https://")) and len(url) > 7,
-        f"Invalid URL or file: '{url}'",
-        "Must start with 'http://' or 'https://' and contain a valid address",
-    )
-
-
-def _validate_path(path: str) -> None:
-    """Validate download directory path."""
-    real_path = Path(path)
-
-    _check(
-        not real_path.is_file(),
-        "The path must not be a file",
-        "Enter the path to the folder",
-    )
-
-    _check(
-        not (real_path.exists() and not real_path.is_dir()),
-        f"Path exists but is not a directory: '{path}'",
-        "Enter a valid directory path",
-    )
-
-    parent = real_path.parent
-    _check(
-        not (parent.exists() and not parent.is_dir()),
-        f"Parent path is not a directory: '{parent}'",
-    )
-
-
-def _validate_cookies(cookies: str) -> None:
-    """Validate cookies parameter (browser name or file path)."""
-    _check(
-        bool(cookies),
-        "Cookies parameter cannot be empty",
-        "Provide a browser name or path to cookie file",
-    )
-
-    cookies_path = Path(cookies)
-
-    if cookies_path.exists():
-        _check(
-            cookies_path.is_file(),
-            f"Path exists but is not a file: '{cookies}'",
-            "Must be a path to a cookie file",
-        )
-        _check(
-            cookies_path.suffix.lower() in COOKIE_EXTENSIONS,
-            f"Cookie file has unusual extension: '{cookies_path.suffix}'",
-            f"Supported extensions: {', '.join(COOKIE_EXTENSIONS)}",
-        )
-        _check(
-            cookies_path.stat().st_size > 0,
-            f"Cookie file is empty: '{cookies}'",
-        )
-    else:
-        _check(
-            cookies.lower() in SUPPORTED_BROWSERS,
-            f"Unsupported browser: '{cookies}'",
-            f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}. Or provide a path to a cookie file",
+            self.url.startswith(("http://", "https://")) and len(self.url) > 7,
+            f"Invalid URL or file: '{self.url}'",
+            "Must start with 'http://' or 'https://' and contain a valid address",
         )
 
+    def _validate_path(self) -> None:
+        """Validate download directory path."""
+        real_path = Path(self.path)
 
-def _validate_quality(quality: str) -> None:
-    """Validate video quality parameter."""
-    if quality.isdigit():
-        quality = f"{quality}p"
+        _check(
+            not real_path.is_file(),
+            "The path must not be a file",
+            "Enter the path to the folder",
+        )
 
-    if quality in SUPPORTED_QUALITIES:
-        return
+        _check(
+            not (real_path.exists() and not real_path.is_dir()),
+            f"Path exists but is not a directory: '{self.path}'",
+            "Enter a valid directory path",
+        )
 
-    _fail(
-        f"Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
-        f"Allowed formats: {', '.join(SUPPORTED_QUALITIES)}",
-    )
+        parent = real_path.parent
+        _check(
+            not (parent.exists() and not parent.is_dir()),
+            f"Parent path is not a directory: '{parent}'",
+        )
 
+    def _validate_cookies(self) -> None:
+        """Validate cookies parameter (browser name or file path)."""
+        if self.cookies is None:
+            return
 
-def validate_download(
-    url: str,
-    codec: str,
-    kbps: int,
-    quality: str,
-    jobs: int,
-    path: str,
-    cookies: str | None,
-    color: bool,
-) -> None:
-    """Validate all CLI download parameters."""
-    set_colors(color)
+        _check(
+            bool(self.cookies),
+            "Cookies parameter cannot be empty",
+            "Provide a browser name or path to cookie file",
+        )
 
-    _validate_url(url)
-    _check(
-        codec in ALL_CODECS,
-        f"Invalid codec: '{codec}'",
-        f"Allowed values: {', '.join(ALL_CODECS)}",
-    )
-    _check(
-        64 <= kbps <= 320,
-        f"Invalid bitrate: {kbps}",
-        "Must be an integer between 64 and 320",
-    )
-    _validate_quality(quality)
-    _check(
-        jobs >= 1,
-        f"Invalid jobs: {jobs}",
-        "Must be an integer >= 1",
-    )
-    _validate_path(path)
-    if cookies is not None:
-        _validate_cookies(cookies)
+        cookies_path = Path(self.cookies)
 
+        if cookies_path.exists():
+            _check(
+                cookies_path.is_file(),
+                f"Path exists but is not a file: '{self.cookies}'",
+                "Must be a path to a cookie file",
+            )
+            _check(
+                cookies_path.suffix.lower() in COOKIE_EXTENSIONS,
+                f"Cookie file has unusual extension: '{cookies_path.suffix}'",
+                f"Supported extensions: {', '.join(COOKIE_EXTENSIONS)}",
+            )
+            _check(
+                cookies_path.stat().st_size > 0,
+                f"Cookie file is empty: '{self.cookies}'",
+            )
+        else:
+            _check(
+                self.cookies.lower() in SUPPORTED_BROWSERS,
+                f"Unsupported browser: '{self.cookies}'",
+                f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}. Or provide a path to a cookie file",
+            )
 
-def validate_search(limit: int, color: bool) -> None:
-    """Validate search limit parameter."""
-    set_colors(color)
-    _check(
-        limit > 0,
-        f"Invalid limit: {limit}",
-        "Must be a positive integer",
-    )
+    def _validate_quality(self) -> None:
+        """Validate video quality parameter."""
+        quality = self.quality
+        if quality.isdigit():
+            quality = f"{quality}p"
+
+        if quality in SUPPORTED_QUALITIES:
+            return
+
+        _fail(
+            f"Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
+            f"Allowed formats: {', '.join(SUPPORTED_QUALITIES)}",
+        )
+
+    def validate(self) -> None:
+        """Validate all download parameters."""
+        self._validate_url()
+        self._validate_quality()
+        self._validate_path()
+        self._validate_cookies()

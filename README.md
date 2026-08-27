@@ -30,9 +30,9 @@ CLI tool for searching YouTube/YTMusic and downloading audio/video from [1000+ s
 ## 🚀 Quick Start
 
 ```bash
-pip install fm-dlp                    # Python 3.10+ & FFmpeg required
+pip install fm-dlp                    # Python 3.11+ & FFmpeg required
 fm-dlp config ~/Music                 # Set download directory
-fm-dlp search "Sewerslvt"                # Search tracks
+fm-dlp search "Sewerslvt"             # Search tracks
 fm-dlp download "URL"                 # Download audio
 ```
 
@@ -70,14 +70,14 @@ Search for music tracks, albums, or videos on YouTube/YTMusic.
 fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url]
 ```
 
-| Option             | Default      | Description                                               |
-| ------------------ | ------------ | --------------------------------------------------------- |
-| `query`            | **Required** | Search query string                                       |
-| `--limit N`, `-l`  | `10`         | Maximum number of results to return                       |
-| `--yt-video`, `-v` | `False`      | Search for YouTube videos instead of music tracks         |
-| `--album`, `-a`    | `False`      | Search for albums instead of individual tracks            |
-| `--raw`, `-r`      | `False`      | Output results in raw format (Python dict representation) |
-| `--only-url`, `-u` | `False`      | Output only the URLs without any formatting               |
+| Option             | Default | Description                                               |
+| ------------------ | ------- | --------------------------------------------------------- |
+| `query`            | **Req** | Search query string                                       |
+| `--limit N`, `-l`  | `10`    | Maximum number of results to return (1-100)               |
+| `--yt-video`, `-v` | `False` | Search for YouTube videos instead of music tracks         |
+| `--album`, `-a`    | `False` | Search for albums instead of individual tracks            |
+| `--raw`, `-r`      | `False` | Output results in raw format (Python dict representation) |
+| `--only-url`, `-u` | `False` | Output only the URLs without any formatting               |
 
 ---
 
@@ -86,25 +86,25 @@ fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url
 Download audio or video content from supported platforms (YouTube, YTMusic, and 1000+ sites).
 
 ```bash
-fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs JOBS] [--quiet] [--no-metadata] [--keep] [--save] [--path PATH] [--only-video] [--cookies COOKIES] [--remote SOURCE]
+fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs JOBS] [--quiet] [--no-metadata] [--keep] [--save] [--use-config] [--path PATH] [--only-video] [--cookies COOKIES] [--remote SOURCE]
 ```
 
-| Option               | Default                          | Description                                                                                                                                                             |
-| -------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `urls`               | **Required**                     | Single URL, comma/space-separated list, or path to text file with URLs (one per line, `#` for comments)                                                                 |
-| `--codec`, `-c`      | `m4a` (macOS)<br>`opus` (others) | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv`                                         |
-| `--kbps`, `-K`       | `256`                            | Audio bitrate in kbps (64–320). Higher = better quality, larger file                                                                                                    |
-| `--quality`, `-Q`    | `best`                           | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`)                                |
-| `--jobs`, `-j`       | `5`                              | Maximum number of concurrent downloads for faster batch processing                                                                                                      |
-| `--quiet`, `-q`      | `False`                          | Suppress yt-dlp output messages (errors still shown)                                                                                                                    |
-| `--no-metadata`      | `False`                          | Disable embedding metadata (title, artist, album) and thumbnail into audio files                                                                                        |
-| `--keep`, `-k`       | `False`                          | Keep the original downloaded file after conversion/post-processing                                                                                                      |
-| `--save`, `-s`       | `False`                          | Save settings (except URL) to config file                                                                                                                               |
-| `--use-config`, `-u` | `False`                          | Use saved parameters from config file as defaults                                                                                                                       |
-| `--path`, `-p`       | Configured path                  | Custom download directory (overrides default config)                                                                                                                    |
-| `--only-video`, `-v` | `False`                          | Download video file without audio track                                                                                                                                 |
-| `--cookies`, `-C`    | `None`                           | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
-| `--remote`, `-r`     | `None`                           | Download external JavaScript components for bypassing anti-bot protections (JS challenges).<br>**Options:** `ejs:github` (yt-dlp repo) or `ejs:npm` (NPM registry)      |
+| Option               | Default          | Description                                                                                                                                                             |
+| -------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `urls`               | **Required**     | Single URL, comma/space-separated list, or path to text file with URLs (one per line)                                                                                   |
+| `--codec`, `-c`      | Platform default | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv`                                         |
+| `--kbps`, `-K`       | `256`            | Audio bitrate in kbps (64, 128, 192, 256, 320). Higher = better quality, larger file                                                                                    |
+| `--quality`, `-Q`    | `best`           | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`)                                |
+| `--jobs`, `-j`       | `5`              | Maximum number of concurrent downloads (1-24) for faster batch processing                                                                                               |
+| `--quiet`, `-q`      | `False`          | Suppress yt-dlp output messages (errors still shown)                                                                                                                    |
+| `--no-metadata`      | `False`          | Disable embedding metadata (title, artist, album) and thumbnail into audio files                                                                                        |
+| `--keep`, `-k`       | `False`          | Keep the original downloaded file after conversion/post-processing                                                                                                      |
+| `--save`, `-s`       | `False`          | Save settings (except URL) to config file                                                                                                                               |
+| `--use-config`, `-u` | `False`          | Use saved parameters from config file as defaults                                                                                                                       |
+| `--path`, `-p`       | Configured path  | Custom download directory (overrides default config)                                                                                                                    |
+| `--only-video`, `-v` | `False`          | Download video file without audio track                                                                                                                                 |
+| `--cookies`, `-C`    | `None`           | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
+| `--remote`, `-r`     | `None`           | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `ejs:github` (yt-dlp repo) or `ejs:npm` (NPM registry)                      |
 
 **Audio Codec Details:**
 
@@ -147,18 +147,37 @@ fm-dlp config <path>
 
 ### Basic Download
 
-Example of downloading a track from YouTube Music:
+Download a track from YouTube Music:
 
 ```bash
 fm-dlp download https://music.youtube.com/watch?v=0KNxOBerr_8
+```
+
+**With custom settings:**
+
+```bash
+# Download as high-quality MP3 with metadata
+fm-dlp download "URL" --codec mp3 --kbps 320 --path ~/Music/Downloads
+
+# Download video in 1080p
+fm-dlp download "URL" --quality 1080p --codec mp4
+
+# Batch download from file
+fm-dlp download urls.txt --jobs 3 --quiet
+
+# Use saved config and cookies from browser
+fm-dlp download "URL" --use-config --cookies chrome
+
+# Download video-only and keep original file
+fm-dlp download "URL" --only-video --keep
 ```
 
 <details>
 <summary>📦 Example Output</summary>
 
 ```text
-Starting: https://music.youtube.com/watch?v=0KNxOBerr_8
 
+Starting: https://music.youtube.com/watch?v=0KNxOBerr_8
 [youtube] Extracting URL: https://music.youtube.com/watch?v=0KNxOBerr_8
 [youtube] 0KNxOBerr_8: Downloading webpage
 [youtube] 0KNxOBerr_8: Downloading android vr player API JSON
@@ -172,8 +191,8 @@ Deleting original file /home/user/Music/Lexapro Delirium.webm (pass -k to keep)
 [Metadata] Adding metadata to "/home/user/Music/Lexapro Delirium.opus"
 [ThumbnailsConvertor] Converting thumbnail "/home/user/Music/Lexapro Delirium.webp" to png
 [EmbedThumbnail] mutagen: Adding thumbnail to "/home/user/Music/Lexapro Delirium.opus"
-
 Success: https://music.youtube.com/watch?v=0KNxOBerr_8
+
 ```
 
 </details>
@@ -184,13 +203,19 @@ Search for tracks, albums, and videos:
 
 ```bash
 # Search for tracks on YouTube Music
-fm-dlp search "Sewerslvt" --limit 1
+fm-dlp search "Sewerslvt" --limit 5
 
 # Search for albums
-fm-dlp search "Draining Love Story" --album -l 1
+fm-dlp search "Draining Love Story" --album --limit 1
 
 # Search for videos on YouTube
-fm-dlp search "Sewerslvt goodbye" --yt-video -l 1
+fm-dlp search "Sewerslvt goodbye" --yt-video --limit 1
+
+# Get raw data for scripting
+fm-dlp search "artist" --raw
+
+# Get only URLs for batch processing
+fm-dlp search "artist" --only-url > urls.txt
 ```
 
 ---
@@ -201,6 +226,7 @@ Examples of formatting search results from different sources.
 
 ### 🎵 YTMusic (Track)
 
+```
     1. Mr. Kill Myself
         ├─ Sewerslvt
         ├─ Draining Love Story
@@ -214,9 +240,11 @@ Examples of formatting search results from different sources.
         ├─ Views │ Duration
         └─ URL
            ──────────────────────────────────────────────────
+```
 
 ### 💿 YTMusic (Album)
 
+```
     1. Draining Love Story
         ├─ Sewerslvt
         ├─ 2020
@@ -228,9 +256,11 @@ Examples of formatting search results from different sources.
         ├─ Year
         └─ URL
            ──────────────────────────────────────────────────
+```
 
 ### ▶️ YouTube (Video)
 
+```
     1. Sewerslvt - goodbye
         ├─ Sewerslvt
         ├─ 2,405,647 │ 17:01
@@ -242,6 +272,7 @@ Examples of formatting search results from different sources.
         ├─ Views │ Duration
         └─ URL
            ──────────────────────────────────────────────────
+```
 
 ---
 
