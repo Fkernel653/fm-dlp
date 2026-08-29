@@ -1,43 +1,10 @@
-"""Input validation module for fm-dlp CLI application."""
+"""Provide input validation for the 'download' command in the fm-dlp CLI application."""
 
 from functools import lru_cache
 from pathlib import Path
 
 from fm_dlp_core.utils import echo, sys
 from fm_dlp_core.utils.colors import error, hint, set_colors
-
-SUPPORTED_QUALITIES = {
-    "best",
-    "worst",
-    "2160p",
-    "1440p",
-    "1080p",
-    "720p",
-    "480p",
-    "360p",
-    "240p",
-    "144p",
-    "2160",
-    "1440",
-    "1080",
-    "720",
-    "480",
-    "360",
-    "240",
-    "144",
-}
-SUPPORTED_BROWSERS = {
-    "brave",
-    "chrome",
-    "chromium",
-    "edge",
-    "opera",
-    "vivaldi",
-    "whale",
-    "firefox",
-    "safari",
-}
-COOKIE_EXTENSIONS = {".txt", ".sqlite", ".db", ".cookies"}
 
 
 def _fail(msg: str, tip: str | None = None) -> None:
@@ -52,20 +19,6 @@ def _check(condition: bool, msg: str, tip: str | None = None) -> None:
     """Check condition and exit with error if not met."""
     if not condition:
         _fail(msg, tip)
-
-
-@lru_cache(maxsize=1)
-def validate_ffmpeg(color: bool) -> None:
-    """Verify FFmpeg is installed."""
-    import shutil
-
-    set_colors(color)
-
-    _check(
-        shutil.which("ffmpeg") is not None,
-        "FFmpeg is not installed or not found in system PATH!",
-        "Install FFmpeg and ensure it's accessible from the command line.",
-    )
 
 
 class ValidateDownload:
@@ -110,6 +63,41 @@ class ValidateDownload:
             "Must start with 'http://' or 'https://' and contain a valid address",
         )
 
+    def _validate_quality(self) -> None:
+        """Validate video quality parameter."""
+        quality = self.quality
+        if quality.isdigit():
+            quality = f"{quality}p"
+
+        SUPPORTED_QUALITES = {
+            "best",
+            "worst",
+            "2160p",
+            "1440p",
+            "1080p",
+            "720p",
+            "480p",
+            "360p",
+            "240p",
+            "144p",
+            "2160",
+            "1440",
+            "1080",
+            "720",
+            "480",
+            "360",
+            "240",
+            "144",
+        }
+
+        if quality in SUPPORTED_QUALITES:
+            return
+
+        _fail(
+            f"Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
+            f"Allowed formats: {', '.join(SUPPORTED_QUALITES)}",
+        )
+
     def _validate_path(self) -> None:
         """Validate download directory path."""
         real_path = Path(self.path)
@@ -151,6 +139,7 @@ class ValidateDownload:
                 f"Path exists but is not a file: '{self.cookies}'",
                 "Must be a path to a cookie file",
             )
+            COOKIE_EXTENSIONS = {".txt", ".sqlite", ".db", ".cookies"}
             _check(
                 cookies_path.suffix.lower() in COOKIE_EXTENSIONS,
                 f"Cookie file has unusual extension: '{cookies_path.suffix}'",
@@ -161,24 +150,34 @@ class ValidateDownload:
                 f"Cookie file is empty: '{self.cookies}'",
             )
         else:
+            SUPPORTED_BROWSERS = {
+                "brave",
+                "chrome",
+                "chromium",
+                "edge",
+                "opera",
+                "vivaldi",
+                "whale",
+                "firefox",
+                "safari",
+            }
+
             _check(
                 self.cookies.lower() in SUPPORTED_BROWSERS,
                 f"Unsupported browser: '{self.cookies}'",
                 f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}. Or provide a path to a cookie file",
             )
 
-    def _validate_quality(self) -> None:
-        """Validate video quality parameter."""
-        quality = self.quality
-        if quality.isdigit():
-            quality = f"{quality}p"
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def _validate_ffmpeg() -> None:
+        """Verify FFmpeg is installed."""
+        import shutil
 
-        if quality in SUPPORTED_QUALITIES:
-            return
-
-        _fail(
-            f"Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
-            f"Allowed formats: {', '.join(SUPPORTED_QUALITIES)}",
+        _check(
+            shutil.which("ffmpeg") is not None,
+            "FFmpeg is not installed or not found in system PATH!",
+            "Install FFmpeg and ensure it's accessible from the command line.",
         )
 
     def validate(self) -> None:
@@ -187,3 +186,4 @@ class ValidateDownload:
         self._validate_quality()
         self._validate_path()
         self._validate_cookies()
+        self._validate_ffmpeg()

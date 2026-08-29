@@ -41,7 +41,6 @@ def main():
     try:
         import argparse
 
-        from . import __version__
         from .parsers import (
             create_config_parser,
             create_download_parser,
@@ -52,11 +51,11 @@ def main():
             prog="fm-dlp",
             description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
         )
+        _ = parser.add_argument("-V", "--version", action="version", version="4.5.5")
         _ = parser.add_argument(
-            "-V", "--version", action="version", version=__version__
-        )
-        _ = parser.add_argument(
-            "--no-color", action="store_true", help="Disable colored output globally"
+            "--no-color",
+            action="store_true",
+            help="Disable colored output globally",
         )
 
         subparsers = parser.add_subparsers(dest="command", required=True)
@@ -85,7 +84,7 @@ def main():
         elif args.command == "download":
             from fm_dlp_core.utils.config.path import get_path
 
-            from .validate import ValidateDownload, validate_ffmpeg
+            from .validate_download import ValidateDownload
 
             path = args.path or get_path(color)
 
@@ -96,8 +95,6 @@ def main():
                 args.cookies,
                 color,
             ).validate()
-
-            validate_ffmpeg(color)
 
             import asyncio
 
