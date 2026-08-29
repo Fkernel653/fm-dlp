@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -31,8 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv pip install --system .
-          uv pip install --system pyinstaller
+          uv pip install --system . pyinstaller
 
       - name: Get version from pyproject.toml
         id: get_version
@@ -46,7 +45,7 @@ jobs:
         run: |
           uv run pyinstaller --onefile \
             --hidden-import=fm_dlp_core \
-            --collect-all fm_dlp_core \
+            --collect-submodules fm_dlp_core \
             --name fm-dlp \
             fm_dlp/__main__.py
 
