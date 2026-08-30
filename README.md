@@ -2,7 +2,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=fff&style=for-the-badge)](https://python.org)
 [![PyPI](https://img.shields.io/pypi/v/fm-dlp?style=for-the-badge&logo=pypi&logoColor=fff&label=PyPI&color=007ec6)](https://pypi.org/project/fm-dlp)
-[![License](https://img.shields.io/badge/License-AGPLv3-00b96b?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-AGPLv3-00b96b?style=for-the-badge&logo=gnu&logoColor=white)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-9cf?style=for-the-badge)](<>)
 [![Ruff](https://img.shields.io/badge/Code%20Style-Ruff-ff69b4?logo=ruff&logoColor=fff&style=for-the-badge)](https://docs.astral.sh/ruff)
 
@@ -40,7 +40,7 @@ fm-dlp download "URL"                 # Download audio
 
 ## ⚙️ Requirements
 
-- **Python 3.11+** - Asyncio support required
+- **Python 3.11+** - TOML support required
 - **FFmpeg** - Required for audio/video processing. Install via:
   - **macOS:** `brew install ffmpeg`
   - **Linux:** `sudo apt install ffmpeg` (Debian) or `sudo dnf install ffmpeg` (Fedora)
@@ -145,7 +145,8 @@ fm-dlp config <path>
 
 ## 💡 Examples
 
-### Basic Download
+<details>
+<summary>Basic Download</summary>
 
 Download a track from YouTube Music:
 
@@ -191,13 +192,16 @@ Deleting original file /home/user/Music/Lexapro Delirium.webm (pass -k to keep)
 [Metadata] Adding metadata to "/home/user/Music/Lexapro Delirium.opus"
 [ThumbnailsConvertor] Converting thumbnail "/home/user/Music/Lexapro Delirium.webp" to png
 [EmbedThumbnail] mutagen: Adding thumbnail to "/home/user/Music/Lexapro Delirium.opus"
+
 Success: https://music.youtube.com/watch?v=0KNxOBerr_8
 
 ```
 
 </details>
+</details>
 
-### Search Examples
+<details>
+<summary>Search Examples</summary>
 
 Search for tracks, albums, and videos:
 
@@ -218,13 +222,16 @@ fm-dlp search "artist" --raw
 fm-dlp search "artist" --only-url > urls.txt
 ```
 
+</details>
+
 ---
 
 ## 📊 Search Output Examples
 
-Examples of formatting search results from different sources.
+Examples of formatting search results from different sources. Click each example to expand.
 
-### 🎵 YTMusic (Track)
+<details>
+<summary>🎵 YTMusic (Track)</summary>
 
 ```
     1. Mr. Kill Myself
@@ -242,7 +249,10 @@ Examples of formatting search results from different sources.
            ──────────────────────────────────────────────────
 ```
 
-### 💿 YTMusic (Album)
+</details>
+
+<details>
+<summary>💿 YTMusic (Album)</summary>
 
 ```
     1. Draining Love Story
@@ -258,7 +268,10 @@ Examples of formatting search results from different sources.
            ──────────────────────────────────────────────────
 ```
 
-### ▶️ YouTube (Video)
+</details>
+
+<details>
+<summary>▶️ YouTube (Video)</summary>
 
 ```
     1. Sewerslvt - goodbye
@@ -273,6 +286,8 @@ Examples of formatting search results from different sources.
         └─ URL
            ──────────────────────────────────────────────────
 ```
+
+</details>
 
 ---
 

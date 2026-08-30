@@ -139,7 +139,9 @@ class ValidateDownload:
                 f"Path exists but is not a file: '{self.cookies}'",
                 "Must be a path to a cookie file",
             )
+
             COOKIE_EXTENSIONS = {".txt", ".sqlite", ".db", ".cookies"}
+
             _check(
                 cookies_path.suffix.lower() in COOKIE_EXTENSIONS,
                 f"Cookie file has unusual extension: '{cookies_path.suffix}'",

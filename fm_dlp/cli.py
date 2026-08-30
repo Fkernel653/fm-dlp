@@ -36,7 +36,7 @@ For more information, visit: https://github.com/Fkernel653/fm-dlp
 """
 
 
-def main():
+def main() -> None:
     """Main entry point for fm-dlp CLI."""
     try:
         import argparse
