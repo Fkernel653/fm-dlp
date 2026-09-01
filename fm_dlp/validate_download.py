@@ -1,10 +1,10 @@
 """Provide input validation for the 'download' command in the fm-dlp CLI application."""
 
+import sys
 from functools import lru_cache
 from pathlib import Path
 
-from fm_dlp_core.utils import echo, sys
-from fm_dlp_core.utils.colors import error, hint, set_colors
+from fm_dlp_core.utils import echo, error, hint, set_colors
 
 
 def _fail(msg: str, tip: str | None = None) -> None:

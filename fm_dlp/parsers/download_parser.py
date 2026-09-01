@@ -1,4 +1,6 @@
-from fm_dlp_core.utils import ALL_CODECS, sys
+import sys
+
+from fm_dlp_core.utils import ALL_CODECS
 
 codec = "m4a" if sys.platform == "darwin" else "opus"
 
