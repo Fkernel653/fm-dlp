@@ -44,7 +44,6 @@ jobs:
         shell: bash
         run: |
           uv run pyinstaller --onefile \
-            --hidden-import=fm_dlp_core \
             --collect-data ytmusicapi \
             --name fm-dlp \
             fm_dlp/__main__.py
