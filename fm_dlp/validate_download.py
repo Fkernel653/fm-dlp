@@ -69,7 +69,7 @@ class ValidateDownload:
         if quality.isdigit():
             quality = f"{quality}p"
 
-        SUPPORTED_QUALITES = {
+        SUPPORTED_QUALITES = (
             "best",
             "worst",
             "2160p",
@@ -88,7 +88,7 @@ class ValidateDownload:
             "360",
             "240",
             "144",
-        }
+        )
 
         if quality in SUPPORTED_QUALITES:
             return
@@ -140,7 +140,7 @@ class ValidateDownload:
                 "Must be a path to a cookie file",
             )
 
-            COOKIE_EXTENSIONS = {".txt", ".sqlite", ".db", ".cookies"}
+            COOKIE_EXTENSIONS = (".txt", ".sqlite", ".db", ".cookies")
 
             _check(
                 cookies_path.suffix.lower() in COOKIE_EXTENSIONS,
@@ -152,7 +152,7 @@ class ValidateDownload:
                 f"Cookie file is empty: '{self.cookies}'",
             )
         else:
-            SUPPORTED_BROWSERS = {
+            SUPPORTED_BROWSERS = (
                 "brave",
                 "chrome",
                 "chromium",
@@ -162,7 +162,7 @@ class ValidateDownload:
                 "whale",
                 "firefox",
                 "safari",
-            }
+            )
 
             _check(
                 self.cookies.lower() in SUPPORTED_BROWSERS,
