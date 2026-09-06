@@ -1,8 +1,11 @@
-import sys
+import os
 
-from fm_dlp_core.utils import ALL_CODECS
+from fm_dlp_core.utils import ALL_CODECS, echo_error
 
-codec = "m4a" if sys.platform == "darwin" else "opus"
+if cpu_count := os.cpu_count():
+    default_cpu_count = cpu_count
+else:
+    echo_error("No CPU kernels are found on your device")
 
 
 def create_download_parser(subparsers) -> None:
@@ -26,8 +29,8 @@ def create_download_parser(subparsers) -> None:
         "--codec",
         type=str,
         choices=ALL_CODECS,
-        default=codec,
-        help="Audio codec or video container. Default depends on platform. For audio: mp3, aac, flac, m4a, opus, vorbis, wav, alac. For video: mp4, mov, mkv, webm, avi, flv.",
+        default="opus",
+        help="Audio codec or video container. Default depends on platform. For audio: mp3, aac, flac, m4a, opus, vorbis, wav, alac. For video: mp4, mov, mkv, webm, avi, flv. (default: opus)",
     )
     download_parser.add_argument(
         "-K",
@@ -48,9 +51,9 @@ def create_download_parser(subparsers) -> None:
         "-j",
         "--jobs",
         type=int,
-        choices=range(1, 25),
+        choices=range(1, default_cpu_count + 1),
         default=5,
-        metavar="1-24",
+        metavar=f"1-{default_cpu_count}",
         help="Maximum number of concurrent downloads. Increase for faster batch downloads. (default: 5)",
     )
     download_parser.add_argument(
