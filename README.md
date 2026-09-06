@@ -89,22 +89,24 @@ Download audio or video content from supported platforms (YouTube, YTMusic, and 
 fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs JOBS] [--quiet] [--no-metadata] [--keep] [--save] [--use-config] [--path PATH] [--only-video] [--cookies COOKIES] [--remote SOURCE]
 ```
 
-| Option               | Default          | Description                                                                                                                                                             |
-| -------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `urls`               | **Required**     | Single URL, comma/space-separated list, or path to text file with URLs (one per line)                                                                                   |
-| `--codec`, `-c`      | Platform default | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv`                                         |
-| `--kbps`, `-K`       | `256`            | Audio bitrate in kbps (64, 128, 192, 256, 320). Higher = better quality, larger file                                                                                    |
-| `--quality`, `-Q`    | `best`           | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`)                                |
-| `--jobs`, `-j`       | `5`              | Maximum number of concurrent downloads (1-24) for faster batch processing                                                                                               |
-| `--quiet`, `-q`      | `False`          | Suppress yt-dlp output messages (errors still shown)                                                                                                                    |
-| `--no-metadata`      | `False`          | Disable embedding metadata (title, artist, album) and thumbnail into audio files                                                                                        |
-| `--keep`, `-k`       | `False`          | Keep the original downloaded file after conversion/post-processing                                                                                                      |
-| `--save`, `-s`       | `False`          | Save settings (except URL) to config file                                                                                                                               |
-| `--use-config`, `-u` | `False`          | Use saved parameters from config file as defaults                                                                                                                       |
-| `--path`, `-p`       | Configured path  | Custom download directory (overrides default config)                                                                                                                    |
-| `--only-video`, `-v` | `False`          | Download video file without audio track                                                                                                                                 |
-| `--cookies`, `-C`    | `None`           | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
-| `--remote`, `-r`     | `None`           | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `ejs:github` (yt-dlp repo) or `ejs:npm` (NPM registry)                      |
+| Option               | Default         | Description                                                                                                                                                             |
+| -------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `urls`               | **Required**    | Single URL, comma/space-separated list, or path to text file with URLs (one per line)                                                                                   |
+| `--codec`, `-c`      | `opus`          | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv`                                         |
+| `--kbps`, `-K`       | `256`           | Audio bitrate in kbps (64, 128, 192, 256, 320). Higher = better quality, larger file                                                                                    |
+| `--quality`, `-Q`    | `best`          | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`)                                |
+| `--jobs`, `-j`       | `5`             | Maximum number of concurrent downloads (1-24) for faster batch processing. The upper limit is automatically capped at your CPU core count (detected at runtime)         |
+| `--quiet`, `-q`      | `False`         | Suppress yt-dlp output messages (errors still shown)                                                                                                                    |
+| `--no-metadata`      | `False`         | Disable embedding metadata (title, artist, album) and thumbnail into audio files                                                                                        |
+| `--keep`, `-k`       | `False`         | Keep the original downloaded file after conversion/post-processing                                                                                                      |
+| `--save`, `-s`       | `False`         | Save settings (except URL) to config file                                                                                                                               |
+| `--use-config`, `-u` | `False`         | Use saved parameters from config file as defaults                                                                                                                       |
+| `--path`, `-p`       | Configured path | Custom download directory (overrides default config)                                                                                                                    |
+| `--only-video`, `-v` | `False`         | Download video file without audio track                                                                                                                                 |
+| `--cookies`, `-C`    | `None`          | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
+| `--remote`, `-r`     | `None`          | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `ejs:github` (yt-dlp repo) or `ejs:npm` (NPM registry)                      |
+
+> **ℹ️ CPU Detection:** When parsing the `download` command, fm-dlp automatically detects the number of CPU cores on your system. The `--jobs` option is capped at this value to prevent overloading your system. If detection fails, an error message will be displayed.
 
 **Audio Codec Details:**
 
