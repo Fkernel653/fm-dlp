@@ -29,8 +29,8 @@ class ValidateDownload:
         url: str,
         quality: str,
         path: str,
-        cookies: str | None = None,
-        color: bool = True,
+        cookies: str | None,
+        color: bool,
     ) -> None:
         """Initialize validator with all download parameters."""
         self.url = url
