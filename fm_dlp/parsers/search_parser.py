@@ -10,8 +10,10 @@ def create_search_parser(subparsers) -> None:
         help="Search for music tracks or videos on YouTube/YTMusic",
         description="Search for music tracks or videos on YouTube/YTMusic",
     )
-    search_parser.add_argument("query", help="Search query string")
-    search_parser.add_argument(
+    add_arg = search_parser.add_argument
+
+    add_arg("query", help="Search query string")
+    add_arg(
         "-l",
         "--limit",
         type=int,
@@ -20,25 +22,25 @@ def create_search_parser(subparsers) -> None:
         metavar="1-100",
         help="Maximum number of results to return (default: 10)",
     )
-    search_parser.add_argument(
+    add_arg(
         "-v",
         "--yt-video",
         action="store_true",
         help="Search for YouTube videos instead of music tracks",
     )
-    search_parser.add_argument(
+    add_arg(
         "-a",
         "--album",
         action="store_true",
         help="Search for albums instead of individual tracks",
     )
-    search_parser.add_argument(
+    add_arg(
         "-r",
         "--raw",
         action="store_true",
         help="Output results in raw format (Python dict representation)",
     )
-    search_parser.add_argument(
+    add_arg(
         "-u",
         "--only-url",
         action="store_true",
