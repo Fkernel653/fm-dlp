@@ -43,7 +43,10 @@ fm-dlp download "URL"                 # Download audio
 - **Python 3.11+** - TOML support required
 - **FFmpeg** - Required for audio/video processing. Install via:
   - **macOS:** `brew install ffmpeg`
-  - **Linux:** `sudo apt install ffmpeg` (Debian) or `sudo dnf install ffmpeg` (Fedora)
+  - **Linux:**
+    - **Debian:** `sudo apt install ffmpeg`
+    - **Fedora:** `sudo dnf install ffmpeg`
+    - **Arch Linux:** `sudo pacman -S ffmpeg`
   - **Windows:** Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH
 
 ---
@@ -106,7 +109,7 @@ fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs
 | `--cookies`, `-C`    | `None`          | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
 | `--remote`, `-r`     | `None`          | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `ejs:github` (yt-dlp repo) or `ejs:npm` (NPM registry)                      |
 
-> **ℹ️ CPU Detection:** When parsing the `download` command, fm-dlp automatically detects the number of CPU cores on your system. The `--jobs` option is capped at this value to prevent overloading your system. If detection fails, an error message will be displayed.
+> **ℹ️ CPU Detection:** When parsing the `download` command, fm-dlp automatically detects the number of CPU cores on your system. The `--jobs` option is capped at this value to prevent overloading your system. If detection fails, a fallback value is used instead.
 
 **Audio Codec Details:**
 
