@@ -6,24 +6,24 @@
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-9cf?style=for-the-badge)](<>)
 [![Ruff](https://img.shields.io/badge/Code%20Style-Ruff-ff69b4?logo=ruff&logoColor=fff&style=for-the-badge)](https://docs.astral.sh/ruff)
 
-CLI tool for searching YouTube/YTMusic and downloading audio/video from [1000+ sites](https://github.com/yt-dlp/yt-dlp/supportedsites.md)
+**fm-dlp** is a CLI tool for searching YouTube/YTMusic and downloading audio/video from [1000+ sites](https://github.com/yt-dlp/yt-dlp/supportedsites.md)
 
 ---
 
-## 📑 Table of Contents
+## 📋 Table of Contents
 
-- [🚀 Quick Start](#-quick-start)
-- [⚙️ Requirements](#️-requirements)
-- [🌈 Color Output](#-color-output)
-- [📋 Commands](#-commands)
+- [Quick Start](#-quick-start)
+- [Requirements](#️-requirements)
+- [Color Output](#-color-output)
+- [Commands](#-commands)
   - [`search`](#search)
   - [`download`](#download)
   - [`config`](#config)
-- [💡 Examples](#-examples)
+- [Examples](#-examples)
   - [Basic Download](#basic-download)
   - [Search Examples](#search-examples)
-- [📊 Search Output Examples](#-search-output-examples)
-- [📄 License & Acknowledgments](#-license--acknowledgments)
+- [Search Output Examples](#-search-output-examples)
+- [License & Acknowledgments](#-license--acknowledgments)
 
 ---
 
@@ -296,7 +296,7 @@ Examples of formatting search results from different sources. Click each example
 
 ---
 
-### 🧩 Formatting Legend
+### Format Elements
 
 | Element            | Description                               |
 | ------------------ | ----------------------------------------- |
