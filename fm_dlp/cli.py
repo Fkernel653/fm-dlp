@@ -36,7 +36,7 @@ For more information, visit: https://github.com/Fkernel653/fm-dlp
 """
 
 
-def main() -> None:
+def main():
     """Main entry point for fm-dlp CLI."""
     try:
         import argparse
@@ -51,7 +51,7 @@ def main() -> None:
             prog="fm-dlp",
             description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
         )
-        parser.add_argument("-V", "--version", action="version", version="4.6.3")
+        parser.add_argument("-V", "--version", action="version", version="4.6.4")
         parser.add_argument(
             "--no-color",
             action="store_true",
