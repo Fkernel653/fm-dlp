@@ -1,9 +1,7 @@
-"""Provide input validation for the 'download' command in the fm-dlp CLI application."""
-
+import os
 import sys
-from pathlib import Path
 
-from fm_dlp_core.utils import echo, error, hint, set_colors
+from fm_dlp_core.utils import echo, echo_error, info, set_colors
 
 
 class ValidateDownload:
@@ -17,7 +15,6 @@ class ValidateDownload:
         cookies: str | None,
         color: bool,
     ) -> None:
-        """Initialize validator with all download parameters."""
         self.url = url
         self.quality = quality
         self.path = path
@@ -28,22 +25,27 @@ class ValidateDownload:
 
     def _validate_url(self) -> None:
         """Validate URL or file path."""
-        path = Path(self.url)
-
-        if path.exists():
+        if self.url.startswith(("http://", "https://")):
             self._check(
-                path.is_file(),
+                len(self.url) > 7,
+                f"Invalid URL: '{self.url}'",
+                "Must start with 'http://' or 'https://' and contain a valid address",
+            )
+            return
+
+        if os.path.exists(self.url):
+            self._check(
+                os.path.isfile(self.url),
                 f"Path exists but is not a file: '{self.url}'",
                 "Must be a URL (http:// or https://) or a path to a text file containing URLs",
             )
             self._check(
-                path.stat().st_size > 0,
+                os.path.getsize(self.url) > 0,
                 f"URL file is empty: '{self.url}'",
             )
             return
 
-        self._check(
-            self.url.startswith(("http://", "https://")) and len(self.url) > 7,
+        self._fail(
             f"Invalid URL or file: '{self.url}'",
             "Must start with 'http://' or 'https://' and contain a valid address",
         )
@@ -54,7 +56,7 @@ class ValidateDownload:
         if quality.isdigit():
             quality = f"{quality}p"
 
-        SUPPORTED_QUALITES = (
+        SUPPORTED_QUALITIES = (
             "best",
             "worst",
             "2160p",
@@ -65,95 +67,81 @@ class ValidateDownload:
             "360p",
             "240p",
             "144p",
-            "2160",
-            "1440",
-            "1080",
-            "720",
-            "480",
-            "360",
-            "240",
-            "144",
         )
 
-        if quality in SUPPORTED_QUALITES:
+        if quality in SUPPORTED_QUALITIES:
             return
 
         self._fail(
             f"Unusual quality format '{quality}'. yt-dlp will attempt to handle it.",
-            f"Allowed formats: {', '.join(SUPPORTED_QUALITES)}",
+            f"Allowed formats: {', '.join(SUPPORTED_QUALITIES)}",
         )
 
     def _validate_path(self) -> None:
         """Validate download directory path."""
-        real_path = Path(self.path)
-
         self._check(
-            not real_path.is_file(),
+            not os.path.isfile(self.path),
             "The path must not be a file",
             "Enter the path to the folder",
         )
 
         self._check(
-            not (real_path.exists() and not real_path.is_dir()),
+            os.path.isdir(self.path),
             f"Path exists but is not a directory: '{self.path}'",
             "Enter a valid directory path",
-        )
-
-        parent = real_path.parent
-        self._check(
-            not (parent.exists() and not parent.is_dir()),
-            f"Parent path is not a directory: '{parent}'",
         )
 
     def _validate_cookies(self) -> None:
         """Validate cookies parameter (browser name or file path)."""
         if self.cookies is None:
             return
-
         self._check(
             bool(self.cookies),
             "Cookies parameter cannot be empty",
             "Provide a browser name or path to cookie file",
         )
 
-        cookies_path = Path(self.cookies)
+        SUPPORTED_BROWSERS = (
+            "brave",
+            "chrome",
+            "chromium",
+            "edge",
+            "opera",
+            "vivaldi",
+            "whale",
+            "firefox",
+            "safari",
+        )
 
-        if cookies_path.exists():
+        if self.cookies.lower() in SUPPORTED_BROWSERS:
+            return
+
+        if os.path.exists(self.cookies):
             self._check(
-                cookies_path.is_file(),
+                os.path.isfile(self.cookies),
                 f"Path exists but is not a file: '{self.cookies}'",
                 "Must be a path to a cookie file",
             )
 
             COOKIE_EXTENSIONS = (".txt", ".sqlite", ".db", ".cookies")
 
+            _, ext = os.path.splitext(self.cookies)
             self._check(
-                cookies_path.suffix.lower() in COOKIE_EXTENSIONS,
-                f"Cookie file has unusual extension: '{cookies_path.suffix}'",
+                ext.lower() in COOKIE_EXTENSIONS,
+                f"Cookie file has unusual extension: '{ext}'",
                 f"Supported extensions: {', '.join(COOKIE_EXTENSIONS)}",
             )
             self._check(
-                cookies_path.stat().st_size > 0,
+                os.path.getsize(self.cookies) > 0,
                 f"Cookie file is empty: '{self.cookies}'",
             )
-        else:
-            SUPPORTED_BROWSERS = (
-                "brave",
-                "chrome",
-                "chromium",
-                "edge",
-                "opera",
-                "vivaldi",
-                "whale",
-                "firefox",
-                "safari",
-            )
+            return
 
-            self._check(
-                self.cookies.lower() in SUPPORTED_BROWSERS,
-                f"Unsupported browser: '{self.cookies}'",
-                f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}. Or provide a path to a cookie file",
-            )
+        self._fail(
+            f"Unsupported browser or missing cookie file: '{self.cookies}'",
+            f"Supported browsers: {', '.join(sorted(SUPPORTED_BROWSERS))}. "
+            f"Or provide a path to a cookie file",
+        )
 
     def _validate_ffmpeg(self) -> None:
         """Verify FFmpeg is installed."""
@@ -167,9 +155,9 @@ class ValidateDownload:
 
     def _fail(self, msg: str, tip: str | None = None) -> None:
         """Print error message and exit."""
-        echo(error(msg), file=sys.stderr)
+        echo_error(msg, exit=False)
         if tip:
-            echo(hint(tip))
+            echo(info(tip))
         sys.exit(1)
 
     def _check(self, condition: bool, msg: str, tip: str | None = None) -> None:
@@ -179,8 +167,8 @@ class ValidateDownload:
 
     def validate(self) -> None:
         """Validate all download parameters."""
-        self._validate_url()
         self._validate_quality()
         self._validate_path()
         self._validate_cookies()
+        self._validate_url()
         self._validate_ffmpeg()
