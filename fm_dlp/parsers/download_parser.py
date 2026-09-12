@@ -1,10 +1,4 @@
-def create_download_parser(subparsers) -> None:
-    """Create and configure the download command parser.
-
-    Args:
-        subparsers: Subparsers object from argparse.ArgumentParser.
-    """
-
+def create_download_parser(subparsers):
     import os
 
     from fm_dlp_core.utils import ALL_CODECS

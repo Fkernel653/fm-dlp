@@ -1,10 +1,4 @@
-def create_config_parser(subparsers) -> None:
-    """Create and configure the config command parser.
-
-    Args:
-        subparsers: Subparsers object from argparse.ArgumentParser.
-    """
-
+def create_config_parser(subparsers):
     config_parser = subparsers.add_parser(
         "config",
         help="Configure the application settings",

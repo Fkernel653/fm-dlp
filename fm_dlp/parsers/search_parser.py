@@ -1,10 +1,4 @@
-def create_search_parser(subparsers) -> None:
-    """Create and configure the search command parser.
-
-    Args:
-        subparsers: Subparsers object from argparse.ArgumentParser.
-    """
-
+def create_search_parser(subparsers):
     search_parser = subparsers.add_parser(
         "search",
         help="Search for music tracks or videos on YouTube/YTMusic",
