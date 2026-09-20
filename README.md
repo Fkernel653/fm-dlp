@@ -22,6 +22,8 @@
 - [Examples](#-examples)
   - [Basic Download](#basic-download)
   - [Search Examples](#search-examples)
+  - [Subtitles](#-subtitles)
+  - [Raw yt-dlp Arguments](#-raw-yt-dlp-arguments)
 - [Search Output Examples](#-search-output-examples)
 - [License & Acknowledgments](#-license--acknowledgments)
 
@@ -41,7 +43,7 @@ fm-dlp download "URL"                 # Download audio
 ## ⚙️ Requirements
 
 - **Python 3.11+** - TOML support required
-- **FFmpeg** - Required for audio/video processing. Install via:
+- **FFmpeg** - Required for audio/video processing and subtitle embedding. Install via:
   - **macOS:** `brew install ffmpeg`
   - **Linux:**
     - **Debian:** `sudo apt install ffmpeg`
@@ -89,7 +91,7 @@ fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url
 Download audio or video content from supported platforms (YouTube, YTMusic, and 1000+ sites).
 
 ```bash
-fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs JOBS] [--quiet] [--no-metadata] [--keep] [--save] [--use-config] [--path PATH] [--only-video] [--cookies COOKIES] [--remote SOURCE]
+fm-dlp download <urls> [OPTIONS]
 ```
 
 | Option               | Default         | Description                                                                                                                                                             |
@@ -108,6 +110,11 @@ fm-dlp download <urls> [--codec CODEC] [--kbps KBPS] [--quality QUALITY] [--jobs
 | `--only-video`, `-v` | `False`         | Download video file without audio track                                                                                                                                 |
 | `--cookies`, `-C`    | `None`          | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
 | `--remote`, `-r`     | `None`          | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `ejs:github` (yt-dlp repo) or `ejs:npm` (NPM registry)                      |
+| `--subtitles`        | `False`         | Download subtitles for the video. Use `--subtitle-langs` to specify languages                                                                                           |
+| `--subtitle-langs`   | `en`            | Comma-separated subtitle language codes, e.g. `'en,ru,ja'`                                                                                                              |
+| `--embed-subs`       | `False`         | Embed subtitles into the video container (requires FFmpeg)                                                                                                              |
+| `--auto-subs`        | `False`         | Include auto-generated subtitles (in addition to manually uploaded ones)                                                                                                |
+| `--ytdlp-args`       | `None`          | Extra yt-dlp options as a dict object. Merged last; `postprocessors` are extended, other keys override                                                                  |
 
 > **ℹ️ CPU Detection:** When parsing the `download` command, fm-dlp automatically detects the number of CPU cores on your system. The `--jobs` option is capped at this value to prevent overloading your system. If detection fails, a fallback value is used instead.
 
@@ -225,6 +232,94 @@ fm-dlp search "artist" --raw
 
 # Get only URLs for batch processing
 fm-dlp search "artist" --only-url > urls.txt
+```
+
+</details>
+
+---
+
+<details>
+<summary><b>📝 Subtitles</b></summary>
+
+Download subtitles alongside the video, save them as separate files, or embed them directly into the video container.
+
+#### How it works
+
+| Flag           | yt-dlp option(s)                                           | Effect                                           |
+| -------------- | ---------------------------------------------------------- | ------------------------------------------------ |
+| `--subtitles`  | `writesubtitles=True`, `subtitleslangs=[...]`              | Downloads subtitle files for the given languages |
+| `--auto-subs`  | `writeautomaticsub=True`                                   | Includes auto-generated subtitles                |
+| `--embed-subs` | `embedsubtitles=True`, postprocessor `FFmpegEmbedSubtitle` | Muxes subtitles into the video container         |
+
+> ⚠️ **Embedding caveats**
+>
+> - Requires FFmpeg.
+> - Only makes sense for **video** codecs (`mp4`, `mkv`, `webm`, `mov`) or when `--only-video` is set.
+> - For audio-only codecs (mp3, flac, etc.) `--embed-subs` is silently skipped.
+
+#### Language selection
+
+`--subtitle-langs` is a **comma-separated** string, e.g. `"en,ru,ja"`. Whitespace is stripped. If empty, defaults to `["en"]`.
+
+#### Examples
+
+**Download video with English + Russian subtitles embedded into MKV**
+
+```bash
+fm-dlp download "URL" \
+  --codec mkv \
+  --quality 1080p \
+  --only-video \
+  --subtitles \
+  --subtitle-langs "en,ru" \
+  --embed-subs
+```
+
+**Download audio with subtitles saved as separate .srt files**
+
+```bash
+fm-dlp download "URL" \
+  --codec mp3 \
+  --kbps 320 \
+  --subtitles \
+  --subtitle-langs "en" \
+  --auto-subs
+```
+
+</details>
+
+---
+
+<details>
+<summary><b>🧩 Raw yt-dlp Arguments</b></summary>
+
+For anything not covered by the high-level CLI, you can pass arbitrary yt-dlp options via `--ytdlp-args`.
+
+#### Rules
+
+- Value must be a **dict** (Python literal).
+- Keys are **snake_case** yt-dlp option names (the same keys used by `YoutubeDL(opts)`).
+- Options are merged **last** into the built options dict → they **override** existing values.
+- **Exception:** `postprocessors` are **extended** (built-in postprocessors are preserved) rather than replaced.
+
+#### Examples
+
+**Add retries and a custom subtitle format**
+
+```bash
+fm-dlp download "URL" --ytdlp-args '{"retries": 10, "fragment_retries": 10, "subtitlesformat": "srt/best"}'
+```
+
+**Extend postprocessors without losing built-ins**
+
+```bash
+fm-dlp download "URL" --ytdlp-args '{"postprocessors": [{"key": "FFmpegMetadata"}, {"key": "SponsorBlock", "categories": ["sponsor"]}]}'
+```
+
+**Rate-limit requests**
+
+```bash
+fm-dlp download "URL" --ytdlp-args '{"sleep_interval_requests": 1, "sleep_interval": 2, "max_sleep_interval": 5}'
 ```
 
 </details>

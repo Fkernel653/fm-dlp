@@ -27,11 +27,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
 
       - name: Install dependencies
         run: |
-          uv pip install --system . pyinstaller
+          uv pip install --system . pyinstaller pystrip
 
       - name: Get version from pyproject.toml
         id: get_version
@@ -39,6 +39,11 @@ jobs:
         run: |
           VERSION=$(grep -m1 '^version = ' pyproject.toml | cut -d'"' -f2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Strip docstrings and comments
+        shell: bash
+        run: |
+          uv run pystrip fm_dlp/ --in-place
 
       - name: Build executable with PyInstaller
         shell: bash

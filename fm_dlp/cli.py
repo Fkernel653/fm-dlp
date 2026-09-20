@@ -51,7 +51,7 @@ def main():
             prog="fm-dlp",
             description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
         )
-        parser.add_argument("-V", "--version", action="version", version="4.6.5")
+        parser.add_argument("-V", "--version", action="version", version="4.6.6")
         parser.add_argument(
             "--no-color",
             action="store_true",
@@ -98,25 +98,32 @@ def main():
 
             import asyncio
 
-            from fm_dlp_core import run_downloader
+            from fm_dlp_core import DownloadParams, run_downloader
 
             asyncio.run(
                 run_downloader(
-                    url=args.url,
-                    codec=args.codec,
-                    kbps=args.kbps,
-                    quality=args.quality,
-                    jobs=args.jobs,
-                    quiet=args.quiet,
-                    metadata=args.metadata,
-                    keep=args.keep,
-                    save=args.save,
-                    use_config=args.use_config,
-                    path=path,
-                    only_video=args.only_video,
-                    cookies=args.cookies,
-                    remote=args.remote,
-                    color=color,
+                    DownloadParams(
+                        url=args.url,
+                        codec=args.codec,
+                        kbps=args.kbps,
+                        quality=args.quality,
+                        jobs=args.jobs,
+                        quiet=args.quiet,
+                        metadata=args.metadata,
+                        keep=args.keep,
+                        save=args.save,
+                        use_config=args.use_config,
+                        path=path,
+                        only_video=args.only_video,
+                        cookies=args.cookies,
+                        remote=args.remote,
+                        subtitles=args.subtitles,
+                        subtitle_langs=args.subtitle_langs,
+                        embed_subs=args.embed_subs,
+                        auto_subs=args.auto_subs,
+                        color=color,
+                        ytdlp_args=args.ytdlp_args,
+                    )
                 )
             )
 

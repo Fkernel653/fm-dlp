@@ -4,9 +4,7 @@ def create_download_parser(subparsers):
     from fm_dlp_core.utils import ALL_CODECS
 
     cpu_count = os.cpu_count() or 1
-    choices_jobs = range(1, cpu_count + 1)
     default_jobs = min(5, cpu_count)
-    metavar_jobs = f"1-{cpu_count}" if cpu_count > 1 else "1"
 
     download_parser = subparsers.add_parser(
         "download",
@@ -42,13 +40,14 @@ def create_download_parser(subparsers):
         default="best",
         help="Video quality preset: best, worst, 2160p, 1440p, 1080p, 720p, 480p, 360p, 240p, 144p, or custom height (e.g., 720). (default: best)",
     )
+
     add_arg(
         "-j",
         "--jobs",
         type=int,
-        choices=choices_jobs,
+        choices=range(1, cpu_count + 1),
         default=default_jobs,
-        metavar=metavar_jobs,
+        metavar=f"1-{cpu_count}" if cpu_count > 1 else "1",
         help=f"Maximum number of concurrent downloads. Increase for faster batch downloads. (default: {default_jobs})",
     )
     add_arg(
@@ -97,4 +96,38 @@ def create_download_parser(subparsers):
         "--remote",
         choices={"ejs:github", "ejs:npm"},
         help="Download external JavaScript components for bypassing anti-bot protections (e.g., JS challenges).\n'ejs:github' - download from yt-dlp GitHub repository,\n'ejs:npm' - download from NPM package registry.",
+    )
+
+    add_arg(
+        "--subtitles",
+        action="store_true",
+        help="Download subtitles for the video. Use --subtitle-langs to specify languages.",
+    )
+    add_arg(
+        "--subtitle-langs",
+        type=str,
+        default="en",
+        metavar="LANGS",
+        help="Comma-separated subtitle language codes, e.g. 'en,ru,ja'. (default: en)",
+    )
+    add_arg(
+        "--embed-subs",
+        action="store_true",
+        help="Embed subtitles into the video container (requires FFmpeg).",
+    )
+    add_arg(
+        "--auto-subs",
+        action="store_true",
+        help="Include auto-generated subtitles (in addition to manually uploaded ones).",
+    )
+
+    add_arg(
+        "--ytdlp-args",
+        type=dict,
+        default=None,
+        metavar="dict",
+        help=(
+            "Extra yt-dlp options as a dict object. "
+            "Merged last; 'postprocessors' are extended, other keys override."
+        ),
     )
