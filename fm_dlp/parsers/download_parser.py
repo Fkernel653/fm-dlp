@@ -94,8 +94,8 @@ def create_download_parser(subparsers):
     add_arg(
         "-r",
         "--remote",
-        choices={"ejs:github", "ejs:npm"},
-        help="Download external JavaScript components for bypassing anti-bot protections (e.g., JS challenges).\n'ejs:github' - download from yt-dlp GitHub repository,\n'ejs:npm' - download from NPM package registry.",
+        choices=("github", "npm"),
+        help="Download external JavaScript components for bypassing anti-bot protections (e.g., JS challenges).\n'github' - download from yt-dlp GitHub repository,\n'npm' - download from NPM package registry.",
     )
 
     add_arg(
