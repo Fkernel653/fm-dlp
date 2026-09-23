@@ -109,7 +109,7 @@ fm-dlp download <urls> [OPTIONS]
 | `--path`, `-p`       | Configured path | Custom download directory (overrides default config)                                                                                                                    |
 | `--only-video`, `-v` | `False`         | Download video file without audio track                                                                                                                                 |
 | `--cookies`, `-C`    | `None`          | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
-| `--remote`, `-r`     | `None`          | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `ejs:github` (yt-dlp repo) or `ejs:npm` (NPM registry)                      |
+| `--remote`, `-r`     | `None`          | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `github` (yt-dlp repo) or `npm` (NPM registry)                              |
 | `--subtitles`        | `False`         | Download subtitles for the video. Use `--subtitle-langs` to specify languages                                                                                           |
 | `--subtitle-langs`   | `en`            | Comma-separated subtitle language codes, e.g. `'en,ru,ja'`                                                                                                              |
 | `--embed-subs`       | `False`         | Embed subtitles into the video container (requires FFmpeg)                                                                                                              |
