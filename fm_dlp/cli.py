@@ -51,7 +51,7 @@ def main():
             prog="fm-dlp",
             description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
         )
-        parser.add_argument("-V", "--version", action="version", version="4.6.6")
+        parser.add_argument("-V", "--version", action="version", version="4.6.7")
         parser.add_argument(
             "--no-color",
             action="store_true",
@@ -68,9 +68,9 @@ def main():
         color = not args.no_color
 
         if args.command == "search":
-            from fm_dlp_core import echo, search
+            from fm_dlp_core import Search, echo
 
-            for result in search(
+            for result in Search(
                 args.query,
                 args.limit,
                 args.yt_video,
@@ -78,7 +78,7 @@ def main():
                 args.raw,
                 args.only_url,
                 color,
-            ):
+            ).search():
                 echo(result)
 
         elif args.command == "download":
