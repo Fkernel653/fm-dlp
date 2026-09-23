@@ -155,7 +155,7 @@ class ValidateDownload:
 
     def _fail(self, msg: str, tip: str | None = None) -> None:
         """Print error message and exit."""
-        echo_error(msg, exit=False)
+        echo_error(msg, False)
         if tip:
             echo(info(tip))
         sys.exit(1)
