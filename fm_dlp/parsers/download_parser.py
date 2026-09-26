@@ -3,9 +3,6 @@ def create_download_parser(subparsers):
 
     from fm_dlp_core.utils import ALL_CODECS
 
-    cpu_count = os.cpu_count() or 1
-    default_jobs = min(5, cpu_count)
-
     download_parser = subparsers.add_parser(
         "download",
         help="Download audio or video content from supported platforms",
@@ -40,6 +37,9 @@ def create_download_parser(subparsers):
         default="best",
         help="Video quality preset: best, worst, 2160p, 1440p, 1080p, 720p, 480p, 360p, 240p, 144p, or custom height (e.g., 720). (default: best)",
     )
+
+    cpu_count = os.cpu_count() or 1
+    default_jobs = min(5, cpu_count)
 
     add_arg(
         "-j",
@@ -81,14 +81,29 @@ def create_download_parser(subparsers):
         help="Custom download directory path. Uses configured default if not specified.",
     )
     add_arg(
+        "-fp",
+        "--ffmpeg-path",
+        type=str,
+        metavar="PATH",
+        help="Path to ffmpeg binary or directory containing ffmpeg/ffprobe. "
+        "Passed to yt-dlp as ffmpeg_location. If omitted, yt-dlp searches PATH.",
+    )
+    add_arg(
+        "-C",
+        "--config-file",
+        type=str,
+        metavar="PATH",
+        help="Path to a custom TOML config file. Overrides the platform-specific default.",
+    )
+    add_arg(
         "-v",
         "--only-video",
         action="store_true",
         help="Download a video file without audio track (video-only). Useful for editing, re-encoding, or when audio is not needed.",
     )
     add_arg(
-        "-C",
         "--cookies",
+        metavar="BROWSER or PATH",
         help="Path to cookies file (e.g., 'cookies.txt') for authenticated downloads, or browser name ('brave', 'chrome', 'chromium', 'edge', 'opera', 'vivaldi', 'whale', 'firefox', 'safari') to extract cookies from browser.",
     )
     add_arg(
@@ -122,6 +137,7 @@ def create_download_parser(subparsers):
     )
 
     add_arg(
+        "-y",
         "--ytdlp-args",
         type=dict,
         default=None,
