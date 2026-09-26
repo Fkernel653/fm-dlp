@@ -150,7 +150,7 @@ class ValidateDownload:
         self._check(
             shutil.which("ffmpeg") is not None,
             "FFmpeg is not installed or not found in system PATH!",
-            "Install FFmpeg and ensure it's accessible from the command line.",
+            "Install FFmpeg and ensure it's accessible from the command line or specify the path manually via ffmpeg_path.",
         )
 
     def _fail(self, msg: str, tip: str | None = None) -> None:
