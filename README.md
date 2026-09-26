@@ -22,9 +22,6 @@
 - [Examples](#-examples)
   - [Basic Download](#basic-download)
   - [Search Examples](#search-examples)
-  - [Subtitles](#-subtitles)
-  - [Raw yt-dlp Arguments](#-raw-yt-dlp-arguments)
-  - [Custom Paths](#-custom-paths)
 - [Search Output Examples](#-search-output-examples)
 - [License & Acknowledgments](#-license--acknowledgments)
 
@@ -170,7 +167,7 @@ fm-dlp config <path>
 Download a track from YouTube Music:
 
 ```bash
-fm-dlp download https://music.youtube.com/watch?v=0KNxOBerr_8
+fm-dlp download https://music.youtube.com/watch?v=DVDiOMoW0wU
 ```
 
 **With custom settings:**
@@ -197,22 +194,24 @@ fm-dlp download "URL" --only-video --keep
 
 ```text
 
-Starting: https://music.youtube.com/watch?v=0KNxOBerr_8
-[youtube] Extracting URL: https://music.youtube.com/watch?v=0KNxOBerr_8
-[youtube] 0KNxOBerr_8: Downloading webpage
-[youtube] 0KNxOBerr_8: Downloading android vr player API JSON
-[info] 0KNxOBerr_8: Downloading 1 format(s): 251
+Starting: https://music.youtube.com/watch?v=DVDiOMoW0wU
+[youtube] Extracting URL: https://music.youtube.com/watch?v=DVDiOMoW0wU
+[youtube] DVDiOMoW0wU: Downloading webpage
+[youtube] DVDiOMoW0wU: Downloading visionos player API JSON
+[youtube] DVDiOMoW0wU: Downloading m3u8 information
+[info] DVDiOMoW0wU: Downloading 1 format(s): 251
+[info] There are no subtitles for the requested languages
 [info] Downloading video thumbnail 41 ...
-[info] Writing video thumbnail 41 to: /home/user/Music/Lexapro Delirium.webp
-[download] Destination: /home/user/Music/Lexapro Delirium.webm
-[download] 100% of    6.53MiB in 00:00:01 at 5.74MiB/s
-[ExtractAudio] Destination: /home/user/Music/Lexapro Delirium.opus
-Deleting original file /home/user/Music/Lexapro Delirium.webm (pass -k to keep)
-[Metadata] Adding metadata to "/home/user/Music/Lexapro Delirium.opus"
-[ThumbnailsConvertor] Converting thumbnail "/home/user/Music/Lexapro Delirium.webp" to png
-[EmbedThumbnail] mutagen: Adding thumbnail to "/home/user/Music/Lexapro Delirium.opus"
+[info] Writing video thumbnail 41 to: /home/kernel/Music/A Dream.webp
+[download] Destination: /home/kernel/Music/A Dream.webm
+[download] 100% of    2.55MiB in 00:00:00 at 2.73MiB/s
+[ExtractAudio] Destination: /home/kernel/Music/A Dream.opus
+Deleting original file /home/kernel/Music/A Dream.webm (pass -k to keep)
+[Metadata] Adding metadata to "/home/kernel/Music/A Dream.opus"
+[ThumbnailsConvertor] Converting thumbnail "/home/kernel/Music/A Dream.webp" to png
+[EmbedThumbnail] mutagen: Adding thumbnail to "/home/kernel/Music/A Dream.opus"
 
-Success: https://music.youtube.com/watch?v=0KNxOBerr_8
+Success: https://music.youtube.com/watch?v=DVDiOMoW0wU
 
 ```
 
@@ -239,146 +238,6 @@ fm-dlp search "Willix" --raw
 
 # Get only URLs for batch processing
 fm-dlp search "ativansocial" --only-url > urls.txt
-```
-
-</details>
-
----
-
-<details>
-<summary><b>📝 Subtitles</b></summary>
-
-Download subtitles alongside the video, save them as separate files, or embed them directly into the video container.
-
-#### How it works
-
-| Flag           | yt-dlp option(s)                                           | Effect                                           |
-| -------------- | ---------------------------------------------------------- | ------------------------------------------------ |
-| `--subtitles`  | `writesubtitles=True`, `subtitleslangs=[...]`              | Downloads subtitle files for the given languages |
-| `--auto-subs`  | `writeautomaticsub=True`                                   | Includes auto-generated subtitles                |
-| `--embed-subs` | `embedsubtitles=True`, postprocessor `FFmpegEmbedSubtitle` | Muxes subtitles into the video container         |
-
-> ⚠️ **Embedding caveats**
->
-> - Requires FFmpeg.
-> - Only makes sense for **video** codecs (`mp4`, `mkv`, `webm`, `mov`) or when `--only-video` is set.
-> - For audio-only codecs (mp3, flac, etc.) `--embed-subs` is silently skipped.
-
-#### Language selection
-
-`--subtitle-langs` is a **comma-separated** string, e.g. `"en,ru,ja"`. Whitespace is stripped. If empty, defaults to `["en"]`.
-
-#### Examples
-
-**Download video with English + Russian subtitles embedded into MKV**
-
-```bash
-fm-dlp download "URL" \
-  --codec mkv \
-  --quality 1080p \
-  --only-video \
-  --subtitles \
-  --subtitle-langs "en,ru" \
-  --embed-subs
-```
-
-**Download audio with subtitles saved as separate .srt files**
-
-```bash
-fm-dlp download "URL" \
-  --codec mp3 \
-  --kbps 320 \
-  --subtitles \
-  --subtitle-langs "en" \
-  --auto-subs
-```
-
-</details>
-
----
-
-<details>
-<summary><b>🧩 Raw yt-dlp Arguments</b></summary>
-
-For anything not covered by the high-level CLI, you can pass arbitrary yt-dlp options via `--ytdlp-args` (short: `-y`).
-
-#### Rules
-
-- Value must be a **dict** (Python literal).
-- Keys are **snake_case** yt-dlp option names (the same keys used by `YoutubeDL(opts)`).
-- Options are merged **last** into the built options dict → they **override** existing values.
-- **Exception:** `postprocessors` are **extended** (built-in postprocessors are preserved) rather than replaced.
-
-#### Examples
-
-**Add retries and a custom subtitle format**
-
-```bash
-fm-dlp download "URL" -y '{"retries": 10, "fragment_retries": 10, "subtitlesformat": "srt/best"}'
-```
-
-**Extend postprocessors without losing built-ins**
-
-```bash
-fm-dlp download "URL" -y '{"postprocessors": [{"key": "FFmpegMetadata"}, {"key": "SponsorBlock", "categories": ["sponsor"]}]}'
-```
-
-**Rate-limit requests**
-
-```bash
-fm-dlp download "URL" -y '{"sleep_interval_requests": 1, "sleep_interval": 2, "max_sleep_interval": 5}'
-```
-
-</details>
-
----
-
-<details>
-<summary><b>📁 Custom Paths</b></summary>
-
-#### `--ffmpeg-path`, `-fp`
-
-Point fm-dlp to a specific `ffmpeg` binary or to a directory containing `ffmpeg`/`ffprobe`. Passed to yt-dlp as `ffmpeg_location`. Useful when `ffmpeg` is not on your `PATH`.
-
-```bash
-# Directory containing ffmpeg/ffprobe
-fm-dlp download "URL" --ffmpeg-path /usr/local/bin
-
-# Specific ffmpeg binary
-fm-dlp download "URL" --ffmpeg-path /opt/ffmpeg/bin/ffmpeg
-```
-
-#### `--config-file`
-
-Use a TOML config file at a custom location. Overrides the platform-specific default path (see [`config`](#config)).
-
-```bash
-fm-dlp download "URL" --config-file ~/my-fm-dlp.toml
-```
-
-#### `--path`, `-p`
-
-Override the configured download directory for a single run.
-
-```bash
-fm-dlp download "URL" --path ~/Music/Downloads
-```
-
-</details>
-
----
-
-<details>
-<summary><b>💾 Saving Settings</b></summary>
-
-Persist your download preferences (everything except the URL) into the config file, then reuse them later with `--use-config`.
-
-```bash
-# Save current settings
-fm-dlp download "URL" --codec flac --kbps 320 --save
-
-# Reuse them for the next download
-fm-dlp download "URL" --use-config
 ```
 
 </details>
