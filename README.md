@@ -24,6 +24,7 @@
   - [Search Examples](#search-examples)
   - [Subtitles](#-subtitles)
   - [Raw yt-dlp Arguments](#-raw-yt-dlp-arguments)
+  - [Custom Paths](#-custom-paths)
 - [Search Output Examples](#-search-output-examples)
 - [License & Acknowledgments](#-license--acknowledgments)
 
@@ -34,7 +35,7 @@
 ```bash
 pip install fm-dlp                    # Python 3.11+ & FFmpeg required
 fm-dlp config ~/Music                 # Set download directory
-fm-dlp search "Sewerslvt"             # Search tracks
+fm-dlp search "Ambient"               # Search tracks
 fm-dlp download "URL"                 # Download audio
 ```
 
@@ -50,6 +51,8 @@ fm-dlp download "URL"                 # Download audio
     - **Fedora:** `sudo dnf install ffmpeg`
     - **Arch Linux:** `sudo pacman -S ffmpeg`
   - **Windows:** Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH
+
+> 💡 If `ffmpeg` is not on your `PATH`, you can point fm-dlp directly to it with `--ffmpeg-path` (see [`download`](#download)).
 
 ---
 
@@ -94,27 +97,29 @@ Download audio or video content from supported platforms (YouTube, YTMusic, and 
 fm-dlp download <urls> [OPTIONS]
 ```
 
-| Option               | Default         | Description                                                                                                                                                             |
-| -------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `urls`               | **Required**    | Single URL, comma/space-separated list, or path to text file with URLs (one per line)                                                                                   |
-| `--codec`, `-c`      | `opus`          | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv`                                         |
-| `--kbps`, `-K`       | `256`           | Audio bitrate in kbps (64, 128, 192, 256, 320). Higher = better quality, larger file                                                                                    |
-| `--quality`, `-Q`    | `best`          | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`)                                |
-| `--jobs`, `-j`       | `5`             | Maximum number of concurrent downloads (1-24) for faster batch processing. The upper limit is automatically capped at your CPU core count (detected at runtime)         |
-| `--quiet`, `-q`      | `False`         | Suppress yt-dlp output messages (errors still shown)                                                                                                                    |
-| `--no-metadata`      | `False`         | Disable embedding metadata (title, artist, album) and thumbnail into audio files                                                                                        |
-| `--keep`, `-k`       | `False`         | Keep the original downloaded file after conversion/post-processing                                                                                                      |
-| `--save`, `-s`       | `False`         | Save settings (except URL) to config file                                                                                                                               |
-| `--use-config`, `-u` | `False`         | Use saved parameters from config file as defaults                                                                                                                       |
-| `--path`, `-p`       | Configured path | Custom download directory (overrides default config)                                                                                                                    |
-| `--only-video`, `-v` | `False`         | Download video file without audio track                                                                                                                                 |
-| `--cookies`, `-C`    | `None`          | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
-| `--remote`, `-r`     | `None`          | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `github` (yt-dlp repo) or `npm` (NPM registry)                              |
-| `--subtitles`        | `False`         | Download subtitles for the video. Use `--subtitle-langs` to specify languages                                                                                           |
-| `--subtitle-langs`   | `en`            | Comma-separated subtitle language codes, e.g. `'en,ru,ja'`                                                                                                              |
-| `--embed-subs`       | `False`         | Embed subtitles into the video container (requires FFmpeg)                                                                                                              |
-| `--auto-subs`        | `False`         | Include auto-generated subtitles (in addition to manually uploaded ones)                                                                                                |
-| `--ytdlp-args`       | `None`          | Extra yt-dlp options as a dict object. Merged last; `postprocessors` are extended, other keys override                                                                  |
+| Option                 | Default         | Description                                                                                                                                                             |
+| ---------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `urls`                 | **Required**    | Single URL, comma/space-separated list, or path to text file with URLs (one per line)                                                                                   |
+| `--codec`, `-c`        | `opus`          | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv`                                         |
+| `--kbps`, `-K`         | `256`           | Audio bitrate in kbps (64, 128, 192, 256, 320). Higher = better quality, larger file                                                                                    |
+| `--quality`, `-Q`      | `best`          | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`)                                |
+| `--jobs`, `-j`         | `5`             | Maximum number of concurrent downloads (1-24) for faster batch processing. The upper limit is automatically capped at your CPU core count (detected at runtime)         |
+| `--quiet`, `-q`        | `False`         | Suppress yt-dlp output messages (errors still shown)                                                                                                                    |
+| `--no-metadata`        | `False`         | Disable embedding metadata (title, artist, album) and thumbnail into audio files                                                                                        |
+| `--keep`, `-k`         | `False`         | Keep the original downloaded file after conversion/post-processing                                                                                                      |
+| `--save`, `-s`         | `False`         | Save settings (except URL) to config file                                                                                                                               |
+| `--use-config`, `-u`   | `False`         | Use saved parameters from config file as defaults                                                                                                                       |
+| `--path`, `-p`         | Configured path | Custom download directory (overrides default config)                                                                                                                    |
+| `--ffmpeg-path`, `-fp` | `None`          | Path to ffmpeg binary or directory containing `ffmpeg`/`ffprobe`. Passed to yt-dlp as `ffmpeg_location`. If omitted, yt-dlp searches `PATH`                             |
+| `--config-file`        | `None`          | Path to a custom TOML config file. Overrides the platform-specific default                                                                                              |
+| `--only-video`, `-v`   | `False`         | Download video file without audio track                                                                                                                                 |
+| `--cookies`            | `None`          | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
+| `--remote`, `-r`       | `None`          | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `github` (yt-dlp repo) or `npm` (NPM registry)                              |
+| `--subtitles`          | `False`         | Download subtitles for the video. Use `--subtitle-langs` to specify languages                                                                                           |
+| `--subtitle-langs`     | `en`            | Comma-separated subtitle language codes, e.g. `'en,ru,ja'`                                                                                                              |
+| `--embed-subs`         | `False`         | Embed subtitles into the video container (requires FFmpeg)                                                                                                              |
+| `--auto-subs`          | `False`         | Include auto-generated subtitles (in addition to manually uploaded ones)                                                                                                |
+| `--ytdlp-args`, `-y`   | `None`          | Extra yt-dlp options as a dict object. Merged last; `postprocessors` are extended, other keys override                                                                  |
 
 > **ℹ️ CPU Detection:** When parsing the `download` command, fm-dlp automatically detects the number of CPU cores on your system. The `--jobs` option is capped at this value to prevent overloading your system. If detection fails, a fallback value is used instead.
 
@@ -153,6 +158,8 @@ fm-dlp config <path>
 - **macOS:** `~/Library/Application Support/fm-dlp/config.toml`
 - **Linux:** `~/.config/fm-dlp/config.toml`
 
+> 💡 To use a config file at a custom location, pass `--config-file /path/to/config.toml` to the `download` command.
+
 ---
 
 ## 💡 Examples
@@ -170,7 +177,7 @@ fm-dlp download https://music.youtube.com/watch?v=0KNxOBerr_8
 
 ```bash
 # Download as high-quality MP3 with metadata
-fm-dlp download "URL" --codec mp3 --kbps 320 --path ~/Music/Downloads
+fm-dlp download "URL" --codec mp3 --kbps 320 --path ~/Music
 
 # Download video in 1080p
 fm-dlp download "URL" --quality 1080p --codec mp4
@@ -222,16 +229,16 @@ Search for tracks, albums, and videos:
 fm-dlp search "Sewerslvt" --limit 5
 
 # Search for albums
-fm-dlp search "Draining Love Story" --album --limit 1
+fm-dlp search "Skitzofrenia Simulation" --album --limit 1
 
 # Search for videos on YouTube
-fm-dlp search "Sewerslvt goodbye" --yt-video --limit 1
+fm-dlp search "Psychology" --yt-video --limit 1
 
 # Get raw data for scripting
-fm-dlp search "artist" --raw
+fm-dlp search "Willix" --raw
 
 # Get only URLs for batch processing
-fm-dlp search "artist" --only-url > urls.txt
+fm-dlp search "ativansocial" --only-url > urls.txt
 ```
 
 </details>
@@ -293,7 +300,7 @@ fm-dlp download "URL" \
 <details>
 <summary><b>🧩 Raw yt-dlp Arguments</b></summary>
 
-For anything not covered by the high-level CLI, you can pass arbitrary yt-dlp options via `--ytdlp-args`.
+For anything not covered by the high-level CLI, you can pass arbitrary yt-dlp options via `--ytdlp-args` (short: `-y`).
 
 #### Rules
 
@@ -307,19 +314,71 @@ For anything not covered by the high-level CLI, you can pass arbitrary yt-dlp op
 **Add retries and a custom subtitle format**
 
 ```bash
-fm-dlp download "URL" --ytdlp-args '{"retries": 10, "fragment_retries": 10, "subtitlesformat": "srt/best"}'
+fm-dlp download "URL" -y '{"retries": 10, "fragment_retries": 10, "subtitlesformat": "srt/best"}'
 ```
 
 **Extend postprocessors without losing built-ins**
 
 ```bash
-fm-dlp download "URL" --ytdlp-args '{"postprocessors": [{"key": "FFmpegMetadata"}, {"key": "SponsorBlock", "categories": ["sponsor"]}]}'
+fm-dlp download "URL" -y '{"postprocessors": [{"key": "FFmpegMetadata"}, {"key": "SponsorBlock", "categories": ["sponsor"]}]}'
 ```
 
 **Rate-limit requests**
 
 ```bash
-fm-dlp download "URL" --ytdlp-args '{"sleep_interval_requests": 1, "sleep_interval": 2, "max_sleep_interval": 5}'
+fm-dlp download "URL" -y '{"sleep_interval_requests": 1, "sleep_interval": 2, "max_sleep_interval": 5}'
+```
+
+</details>
+
+---
+
+<details>
+<summary><b>📁 Custom Paths</b></summary>
+
+#### `--ffmpeg-path`, `-fp`
+
+Point fm-dlp to a specific `ffmpeg` binary or to a directory containing `ffmpeg`/`ffprobe`. Passed to yt-dlp as `ffmpeg_location`. Useful when `ffmpeg` is not on your `PATH`.
+
+```bash
+# Directory containing ffmpeg/ffprobe
+fm-dlp download "URL" --ffmpeg-path /usr/local/bin
+
+# Specific ffmpeg binary
+fm-dlp download "URL" --ffmpeg-path /opt/ffmpeg/bin/ffmpeg
+```
+
+#### `--config-file`
+
+Use a TOML config file at a custom location. Overrides the platform-specific default path (see [`config`](#config)).
+
+```bash
+fm-dlp download "URL" --config-file ~/my-fm-dlp.toml
+```
+
+#### `--path`, `-p`
+
+Override the configured download directory for a single run.
+
+```bash
+fm-dlp download "URL" --path ~/Music/Downloads
+```
+
+</details>
+
+---
+
+<details>
+<summary><b>💾 Saving Settings</b></summary>
+
+Persist your download preferences (everything except the URL) into the config file, then reuse them later with `--use-config`.
+
+```bash
+# Save current settings
+fm-dlp download "URL" --codec flac --kbps 320 --save
+
+# Reuse them for the next download
+fm-dlp download "URL" --use-config
 ```
 
 </details>
@@ -334,12 +393,12 @@ Examples of formatting search results from different sources. Click each example
 <summary>🎵 YTMusic (Track)</summary>
 
 ```
-    1. Mr. Kill Myself
-        ├─ Sewerslvt
-        ├─ Draining Love Story
-        ├─ 13M │ 7:52
-        └─ https://music.youtube.com/watch?v=y55fzyXZDSE
-           ──────────────────────────────────────────────────
+    1. A Dream
+        ├─ Flatsound
+        ├─ Somewhere in the Distance, Somewhere Toward the Mountains
+        ├─ 4M │ 2:51
+        └─ https://music.youtube.com/watch?v=DVDiOMoW0wU
+          ──────────────────────────────────────────────────
 
     N. Title
         ├─ Artist
@@ -355,11 +414,11 @@ Examples of formatting search results from different sources. Click each example
 <summary>💿 YTMusic (Album)</summary>
 
 ```
-    1. Draining Love Story
+    1. Skitzofrenia Simulation
         ├─ Sewerslvt
-        ├─ 2020
-        └─ https://music.youtube.com/playlist?list=OLAK5uy_lwWVcID2Sw8o6Jfa9vz8-a2hqEFffKb-g
-           ──────────────────────────────────────────────────
+        ├─ 2021
+        └─ https://music.youtube.com/playlist?list=OLAK5uy_kXLBb5YlVizbrgXAHwTgarL5HYC3usuYA
+          ──────────────────────────────────────────────────
 
     N. Title
         ├─ Artist
@@ -374,11 +433,11 @@ Examples of formatting search results from different sources. Click each example
 <summary>▶️ YouTube (Video)</summary>
 
 ```
-    1. Sewerslvt - goodbye
-        ├─ Sewerslvt
-        ├─ 2,405,647 │ 17:01
-        └─ https://youtu.be/ABBpsy6rlVU
-           ──────────────────────────────────────────────────
+    1. Silence , I'm Dying.
+        ├─ Willix
+        ├─ 587,740 │ 2:05
+        └─ https://youtu.be/oSOaz5yaBM8
+          ──────────────────────────────────────────────────
 
     N. Title
         ├─ Artist
