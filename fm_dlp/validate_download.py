@@ -5,8 +5,6 @@ from fm_dlp_core.utils import echo, echo_error, info, set_colors
 
 
 class ValidateDownload:
-    """Validator for download parameters."""
-
     def __init__(
         self,
         url: str,
