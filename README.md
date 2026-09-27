@@ -143,12 +143,14 @@ fm-dlp download <urls> [OPTIONS]
 Configure the default download directory path.
 
 ```bash
-fm-dlp config <path>
+fm-dlp config <path> [OPTIONS]
 ```
 
-| Option | Default      | Description                                                                                                       |
-| ------ | ------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `path` | **Required** | Default directory path for downloads. Use absolute path for best results (e.g., `/home/user/Music` or `C:\Music`) |
+| Option                | Default      | Description                                                                                                       |
+| --------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `path`                | **Required** | Default directory path for downloads. Use absolute path for best results (e.g., `/home/user/Music` or `C:\Music`) |
+| `--quiet`, `-q`       | `False`      | Suppress output messages.                                                                                         |
+| `--config-file`, `-C` | `None`       | Path to a custom TOML config file. Overrides the platform-specific default.                                       |
 
 **Config Location:**
 
