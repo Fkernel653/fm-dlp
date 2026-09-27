@@ -79,7 +79,7 @@ fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url
 | Option             | Default | Description                                               |
 | ------------------ | ------- | --------------------------------------------------------- |
 | `query`            | **Req** | Search query string                                       |
-| `--limit N`, `-l`  | `10`    | Maximum number of results to return (1-100)               |
+| `--limit`, `-l`    | `10`    | Maximum number of results to return (1-100)               |
 | `--yt-video`, `-v` | `False` | Search for YouTube videos instead of music tracks         |
 | `--album`, `-a`    | `False` | Search for albums instead of individual tracks            |
 | `--raw`, `-r`      | `False` | Output results in raw format (Python dict representation) |

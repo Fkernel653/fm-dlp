@@ -51,7 +51,7 @@ def main():
             prog="fm-dlp",
             description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
         )
-        parser.add_argument("-V", "--version", action="version", version="4.6.8.3")
+        parser.add_argument("-V", "--version", action="version", version="4.6.8.4")
         parser.add_argument(
             "--no-color",
             action="store_true",
@@ -82,7 +82,7 @@ def main():
                 echo(result)
 
         elif args.command == "download":
-            from fm_dlp_core.utils.config.path import ConfigParams, PathManager
+            from fm_dlp_core.utils.config import ConfigParams, PathManager
 
             from .validate_download import ValidateDownload
 
@@ -130,7 +130,7 @@ def main():
             )
 
         elif args.command == "config":
-            from fm_dlp_core.utils.config.path import ConfigParams, PathManager
+            from fm_dlp_core.utils.config import ConfigParams, PathManager
 
             PathManager(ConfigParams(color=color)).set_path(args.path)
 
