@@ -12,6 +12,7 @@ def create_download_parser(subparsers):
 
     add_arg(
         "url",
+        type=str,
         help="Single URL or comma/space-separated list of URLs. Can also be a path to a text file containing URLs (one per line).",
     )
     add_arg(

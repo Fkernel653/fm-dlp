@@ -6,7 +6,7 @@ def create_search_parser(subparsers):
     )
     add_arg = search_parser.add_argument
 
-    add_arg("query", help="Search query string")
+    add_arg("query", type=str, help="Search query string")
     add_arg(
         "-l",
         "--limit",

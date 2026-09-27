@@ -6,5 +6,6 @@ def create_config_parser(subparsers):
     )
     config_parser.add_argument(
         "path",
+        type=str,
         help="Default directory path where downloaded files will be saved. Use absolute path for best results (e.g., '/home/user/Music' or 'C:\\Music').",
     )
