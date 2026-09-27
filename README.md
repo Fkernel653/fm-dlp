@@ -10,24 +10,25 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Quick Start](#-quick-start)
-- [Requirements](#️-requirements)
-- [Color Output](#-color-output)
-- [Commands](#-commands)
+- [Quick Start](#quick-start)
+- [Requirements](#requirements)
+- [Color Output](#color-output)
+- [Commands](#commands)
   - [`search`](#search)
   - [`download`](#download)
   - [`config`](#config)
-- [Examples](#-examples)
+- [Examples](#examples)
   - [Basic Download](#basic-download)
   - [Search Examples](#search-examples)
-- [Search Output Examples](#-search-output-examples)
-- [License & Acknowledgments](#-license--acknowledgments)
+- [Search Output Examples](#search-output-examples)
+  - [Format Elements](#format-elements)
+- [License & Acknowledgments](#license--acknowledgments)
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 pip install fm-dlp                    # Python 3.11+ & FFmpeg required
@@ -38,7 +39,7 @@ fm-dlp download "URL"                 # Download audio
 
 ---
 
-## ⚙️ Requirements
+## Requirements
 
 - **Python 3.11+** - TOML support required
 - **FFmpeg** - Required for audio/video processing and subtitle embedding. Install via:
@@ -49,11 +50,11 @@ fm-dlp download "URL"                 # Download audio
     - **Arch Linux:** `sudo pacman -S ffmpeg`
   - **Windows:** Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH
 
-> 💡 If `ffmpeg` is not on your `PATH`, you can point fm-dlp directly to it with `--ffmpeg-path` (see [`download`](#download)).
+> If `ffmpeg` is not on your `PATH`, you can point fm-dlp directly to it with `--ffmpeg-path` (see [`download`](#download)).
 
 ---
 
-## 🌈 Color Output
+## Color Output
 
 By default, fm-dlp uses colored output for better readability. To disable colors globally, use the `--no-color` flag **before** the command:
 
@@ -65,7 +66,7 @@ fm-dlp --no-color config ~/Music
 
 ---
 
-## 📋 Commands
+## Commands
 
 ### `search`
 
@@ -100,7 +101,7 @@ fm-dlp download <urls> [OPTIONS]
 | `--codec`, `-c`        | `opus`          | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv`                                         |
 | `--kbps`, `-K`         | `256`           | Audio bitrate in kbps (64, 128, 192, 256, 320). Higher = better quality, larger file                                                                                    |
 | `--quality`, `-Q`      | `best`          | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`)                                |
-| `--jobs`, `-j`         | `5`             | Maximum number of concurrent downloads (1-24) for faster batch processing. The upper limit is automatically capped at your CPU core count (detected at runtime)         |
+| `--jobs`, `-j`         | `5`             | Maximum number of concurrent downloads for faster batch processing. Defaults to the lower of `5` and your CPU core count (detected at runtime)                          |
 | `--quiet`, `-q`        | `False`         | Suppress yt-dlp output messages (errors still shown)                                                                                                                    |
 | `--no-metadata`        | `False`         | Disable embedding metadata (title, artist, album) and thumbnail into audio files                                                                                        |
 | `--keep`, `-k`         | `False`         | Keep the original downloaded file after conversion/post-processing                                                                                                      |
@@ -108,7 +109,7 @@ fm-dlp download <urls> [OPTIONS]
 | `--use-config`, `-u`   | `False`         | Use saved parameters from config file as defaults                                                                                                                       |
 | `--path`, `-p`         | Configured path | Custom download directory (overrides default config)                                                                                                                    |
 | `--ffmpeg-path`, `-fp` | `None`          | Path to ffmpeg binary or directory containing `ffmpeg`/`ffprobe`. Passed to yt-dlp as `ffmpeg_location`. If omitted, yt-dlp searches `PATH`                             |
-| `--config-file`        | `None`          | Path to a custom TOML config file. Overrides the platform-specific default                                                                                              |
+| `--config-file`, `-C`  | `None`          | Path to a custom TOML config file. Overrides the platform-specific default                                                                                              |
 | `--only-video`, `-v`   | `False`         | Download video file without audio track                                                                                                                                 |
 | `--cookies`            | `None`          | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
 | `--remote`, `-r`       | `None`          | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `github` (yt-dlp repo) or `npm` (NPM registry)                              |
@@ -118,7 +119,7 @@ fm-dlp download <urls> [OPTIONS]
 | `--auto-subs`          | `False`         | Include auto-generated subtitles (in addition to manually uploaded ones)                                                                                                |
 | `--ytdlp-args`, `-y`   | `None`          | Extra yt-dlp options as a dict object. Merged last; `postprocessors` are extended, other keys override                                                                  |
 
-> **ℹ️ CPU Detection:** When parsing the `download` command, fm-dlp automatically detects the number of CPU cores on your system. The `--jobs` option is capped at this value to prevent overloading your system. If detection fails, a fallback value is used instead.
+> **CPU Detection:** When parsing the `download` command, fm-dlp automatically detects the number of CPU cores on your system. The `--jobs` option is capped at this value to prevent overloading your system. If detection fails, a fallback value is used instead.
 
 **Audio Codec Details:**
 
@@ -155,11 +156,11 @@ fm-dlp config <path>
 - **macOS:** `~/Library/Application Support/fm-dlp/config.toml`
 - **Linux:** `~/.config/fm-dlp/config.toml`
 
-> 💡 To use a config file at a custom location, pass `--config-file /path/to/config.toml` to the `download` command.
+> To use a config file at a custom location, pass `--config-file /path/to/config.toml` to the `download` command.
 
 ---
 
-## 💡 Examples
+## Examples
 
 <details>
 <summary>Basic Download</summary>
@@ -190,7 +191,7 @@ fm-dlp download "URL" --only-video --keep
 ```
 
 <details>
-<summary>📦 Example Output</summary>
+<summary>Example Output</summary>
 
 ```text
 
@@ -244,12 +245,12 @@ fm-dlp search "ativansocial" --only-url > urls.txt
 
 ---
 
-## 📊 Search Output Examples
+## Search Output Examples
 
 Examples of formatting search results from different sources. Click each example to expand.
 
 <details>
-<summary>🎵 YTMusic (Track)</summary>
+<summary>YTMusic (Track)</summary>
 
 ```
     1. A Dream
@@ -270,7 +271,7 @@ Examples of formatting search results from different sources. Click each example
 </details>
 
 <details>
-<summary>💿 YTMusic (Album)</summary>
+<summary>YTMusic (Album)</summary>
 
 ```
     1. Skitzofrenia Simulation
@@ -289,7 +290,7 @@ Examples of formatting search results from different sources. Click each example
 </details>
 
 <details>
-<summary>▶️ YouTube (Video)</summary>
+<summary>YouTube (Video)</summary>
 
 ```
     1. Silence , I'm Dying.
@@ -323,9 +324,9 @@ Examples of formatting search results from different sources. Click each example
 
 ---
 
-## 📄 License & Acknowledgments
+## License & Acknowledgments
 
-AGPLv3 License — Built with:
+[AGPLv3 License](LICENSE) — Built with:
 
 | Library                                                  | Purpose   |
 | -------------------------------------------------------- | --------- |
