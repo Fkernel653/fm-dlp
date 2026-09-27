@@ -141,7 +141,6 @@ def create_download_parser(subparsers):
         "-y",
         "--ytdlp-args",
         type=dict,
-        default=None,
         metavar="dict",
         help=(
             "Extra yt-dlp options as a dict object. "
