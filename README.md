@@ -73,17 +73,17 @@ fm-dlp --no-color config ~/Music
 Search for music tracks, albums, or videos on YouTube/YTMusic.
 
 ```bash
-fm-dlp search <query> [--limit LIMIT] [--yt-video] [--album] [--raw] [--only-url]
+fm-dlp search <query> [OPTIONS]
 ```
 
-| Option             | Default | Description                                               |
-| ------------------ | ------- | --------------------------------------------------------- |
-| `query`            | **Req** | Search query string                                       |
-| `--limit`, `-l`    | `10`    | Maximum number of results to return (1-100)               |
-| `--yt-video`, `-v` | `False` | Search for YouTube videos instead of music tracks         |
-| `--album`, `-a`    | `False` | Search for albums instead of individual tracks            |
-| `--raw`, `-r`      | `False` | Output results in raw format (Python dict representation) |
-| `--only-url`, `-u` | `False` | Output only the URLs without any formatting               |
+| Option             | Default      | Description                                               |
+| ------------------ | ------------ | --------------------------------------------------------- |
+| `query`            | **Required** | Search query string                                       |
+| `--limit`, `-l`    | `10`         | Maximum number of results to return (1-100)               |
+| `--yt-video`, `-v` | `False`      | Search for YouTube videos instead of music tracks         |
+| `--album`, `-a`    | `False`      | Search for albums instead of individual tracks            |
+| `--raw`, `-r`      | `False`      | Output results in raw format (Python dict representation) |
+| `--only-url`, `-u` | `False`      | Output only the URLs without any formatting               |
 
 ---
 
