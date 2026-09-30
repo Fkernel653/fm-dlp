@@ -10,12 +10,14 @@ class ValidateDownload:
         url: str,
         quality: str,
         path: str,
+        ffmpeg_path: str | None,
         cookies: str | None,
         color: bool,
     ) -> None:
         self.url = url
         self.quality = quality
         self.path = path
+        self.ffmpeg_path = ffmpeg_path
         self.cookies = cookies
         self.color = color
 
@@ -143,6 +145,9 @@ class ValidateDownload:
 
     def _validate_ffmpeg(self) -> None:
         """Verify FFmpeg is installed."""
+        if self.ffmpeg_path:
+            return
+
         import shutil
 
         self._check(
