@@ -115,11 +115,13 @@ def create_download_parser(subparsers):
     )
 
     add_arg(
+        "-S",
         "--subtitles",
         action="store_true",
         help="Download subtitles for the video. Use --subtitle-langs to specify languages.",
     )
     add_arg(
+        "-Sl",
         "--subtitle-langs",
         type=str,
         default="en",
@@ -127,11 +129,13 @@ def create_download_parser(subparsers):
         help="Comma-separated subtitle language codes, e.g. 'en,ru,ja'. (default: en)",
     )
     add_arg(
+        "-eS",
         "--embed-subs",
         action="store_true",
         help="Embed subtitles into the video container (requires FFmpeg).",
     )
     add_arg(
+        "-aS",
         "--auto-subs",
         action="store_true",
         help="Include auto-generated subtitles (in addition to manually uploaded ones).",

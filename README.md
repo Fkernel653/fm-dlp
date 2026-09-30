@@ -79,11 +79,11 @@ fm-dlp search <query> [OPTIONS]
 | Option             | Default      | Description                                               |
 | ------------------ | ------------ | --------------------------------------------------------- |
 | `query`            | **Required** | Search query string                                       |
-| `--limit`, `-l`    | `10`         | Maximum number of results to return (1-100)               |
-| `--yt-video`, `-v` | `False`      | Search for YouTube videos instead of music tracks         |
-| `--album`, `-a`    | `False`      | Search for albums instead of individual tracks            |
-| `--raw`, `-r`      | `False`      | Output results in raw format (Python dict representation) |
-| `--only-url`, `-u` | `False`      | Output only the URLs without any formatting               |
+| `-l`, `--limit`    | `10`         | Maximum number of results to return                       |
+| `-v`, `--yt-video` | `False`      | Search for YouTube videos instead of music tracks         |
+| `-a`, `--album`    | `False`      | Search for albums instead of individual tracks            |
+| `-r`, `--raw`      | `False`      | Output results in raw format (Python dict representation) |
+| `-u`, `--only-url` | `False`      | Output only the URLs without any formatting               |
 
 ---
 
@@ -95,29 +95,29 @@ Download audio or video content from supported platforms (YouTube, YTMusic, and 
 fm-dlp download <urls> [OPTIONS]
 ```
 
-| Option                 | Default         | Description                                                                                                                                                             |
-| ---------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `urls`                 | **Required**    | Single URL, comma/space-separated list, or path to text file with URLs (one per line)                                                                                   |
-| `--codec`, `-c`        | `opus`          | **Audio:** `mp3`, `aac`, `flac`, `m4a`, `opus`, `vorbis`, `wav`, `alac`<br>**Video:** `mp4`, `mov`, `mkv`, `webm`, `avi`, `flv`                                         |
-| `--kbps`, `-K`         | `256`           | Audio bitrate in kbps (64, 128, 192, 256, 320). Higher = better quality, larger file                                                                                    |
-| `--quality`, `-Q`      | `best`          | Video quality preset: `best`, `worst`, `2160p`, `1440p`, `1080p`, `720p`, `480p`, `360p`, `240p`, `144p`, or custom height (e.g., `720`)                                |
-| `--jobs`, `-j`         | `5`             | Maximum number of concurrent downloads for faster batch processing. Defaults to the lower of `5` and your CPU core count (detected at runtime)                          |
-| `--quiet`, `-q`        | `False`         | Suppress yt-dlp output messages (errors still shown)                                                                                                                    |
-| `--no-metadata`        | `False`         | Disable embedding metadata (title, artist, album) and thumbnail into audio files                                                                                        |
-| `--keep`, `-k`         | `False`         | Keep the original downloaded file after conversion/post-processing                                                                                                      |
-| `--save`, `-s`         | `False`         | Save settings (except URL) to config file                                                                                                                               |
-| `--use-config`, `-u`   | `False`         | Use saved parameters from config file as defaults                                                                                                                       |
-| `--path`, `-p`         | Configured path | Custom download directory (overrides default config)                                                                                                                    |
-| `--ffmpeg-path`, `-fp` | `None`          | Path to ffmpeg binary or directory containing `ffmpeg`/`ffprobe`. Passed to yt-dlp as `ffmpeg_location`. If omitted, yt-dlp searches `PATH`                             |
-| `--config-file`, `-C`  | `None`          | Path to a custom TOML config file. Overrides the platform-specific default                                                                                              |
-| `--only-video`, `-v`   | `False`         | Download video file without audio track                                                                                                                                 |
-| `--cookies`            | `None`          | Browser name: `brave`, `chrome`, `chromium`, `edge`, `opera`, `vivaldi`, `whale`, `firefox`, `safari`<br>Or path to cookies file (`.txt`, `.sqlite`, `.db`, `.cookies`) |
-| `--remote`, `-r`       | `None`          | Download external JavaScript components for bypassing anti-bot protections.<br>**Options:** `github` (yt-dlp repo) or `npm` (NPM registry)                              |
-| `--subtitles`          | `False`         | Download subtitles for the video. Use `--subtitle-langs` to specify languages                                                                                           |
-| `--subtitle-langs`     | `en`            | Comma-separated subtitle language codes, e.g. `'en,ru,ja'`                                                                                                              |
-| `--embed-subs`         | `False`         | Embed subtitles into the video container (requires FFmpeg)                                                                                                              |
-| `--auto-subs`          | `False`         | Include auto-generated subtitles (in addition to manually uploaded ones)                                                                                                |
-| `--ytdlp-args`, `-y`   | `None`          | Extra yt-dlp options as a dict object. Merged last; `postprocessors` are extended, other keys override                                                                  |
+| Option                    | Default         | Description                                                                                                                                                                                                        |
+| ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `url`                     | **Required**    | Single URL or comma/space-separated list of URLs. Can also be a path to a text file containing URLs (one per line).                                                                                                |
+| `-c`, `--codec`           | `opus`          | Audio codec or video container. Default depends on platform. For audio: mp3, aac, flac, m4a, opus, vorbis, wav, alac. For video: mp4, mov, mkv, webm, avi, flv.                                                    |
+| `-K`, `--kbps`            | `256`           | Audio bitrate in kbps (64–320). Higher bitrate = better quality but larger file size.                                                                                                                              |
+| `-Q`, `--quality`         | `best`          | Video quality preset: best, worst, 2160p, 1440p, 1080p, 720p, 480p, 360p, 240p, 144p, or custom height (e.g., 720).                                                                                                |
+| `-j`, `--jobs`            | `5`             | Maximum number of concurrent downloads. Increase for faster batch downloads.                                                                                                                                       |
+| `-q`, `--quiet`           | `False`         | Suppress yt-dlp output messages. Errors will still be shown.                                                                                                                                                       |
+| `--no-metadata`           | `False`         | Disable embedding metadata (title, artist, album) and thumbnail into audio files.                                                                                                                                  |
+| `-k`, `--keep`            | `False`         | Keep the original downloaded file after conversion/post-processing. Useful when you want to retain both the original and converted versions.                                                                       |
+| `-s`, `--save`            | `False`         | Saving settings (except URL)                                                                                                                                                                                       |
+| `-u`, `--use-config`      | `False`         | Use saved parameters from config file as defaults.                                                                                                                                                                 |
+| `-p`, `--path`            | Configured path | Custom download directory path. Uses configured default if not specified.                                                                                                                                          |
+| `-fp`, `--ffmpeg-path`    | `None`          | Path to ffmpeg binary or directory containing ffmpeg/ffprobe. Passed to yt-dlp as ffmpeg_location. If omitted, yt-dlp searches PATH.                                                                               |
+| `-C`, `--config-file`     | `None`          | Path to a custom TOML config file. Overrides the platform-specific default.                                                                                                                                        |
+| `-v`, `--only-video`      | `False`         | Download a video file without audio track (video-only). Useful for editing, re-encoding, or when audio is not needed.                                                                                              |
+| `--cookies`               | `None`          | Path to cookies file (e.g., 'cookies.txt') for authenticated downloads, or browser name ('brave', 'chrome', 'chromium', 'edge', 'opera', 'vivaldi', 'whale', 'firefox', 'safari') to extract cookies from browser. |
+| `-r`, `--remote`          | `None`          | Download external JavaScript components for bypassing anti-bot protections (e.g., JS challenges). 'github' - download from yt-dlp GitHub repository, 'npm' - download from NPM package registry.                   |
+| `-S`, `--subtitles`       | `False`         | Download subtitles for the video. Use --subtitle-langs to specify languages.                                                                                                                                       |
+| `-Sl`, `--subtitle-langs` | `en`            | Comma-separated subtitle language codes, e.g. 'en,ru,ja'.                                                                                                                                                          |
+| `-eS`, `--embed-subs`     | `False`         | Embed subtitles into the video container (requires FFmpeg).                                                                                                                                                        |
+| `-aS`, `--auto-subs`      | `False`         | Include auto-generated subtitles (in addition to manually uploaded ones).                                                                                                                                          |
+| `-y`, `--ytdlp-args`      | `None`          | Extra yt-dlp options as a dict object. Merged last; 'postprocessors' are extended, other keys override.                                                                                                            |
 
 > **CPU Detection:** When parsing the `download` command, fm-dlp automatically detects the number of CPU cores on your system. The `--jobs` option is capped at this value to prevent overloading your system. If detection fails, a fallback value is used instead.
 
@@ -146,11 +146,11 @@ Configure the default download directory path.
 fm-dlp config <path> [OPTIONS]
 ```
 
-| Option                | Default      | Description                                                                                                       |
-| --------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `path`                | **Required** | Default directory path for downloads. Use absolute path for best results (e.g., `/home/user/Music` or `C:\Music`) |
-| `--quiet`, `-q`       | `False`      | Suppress output messages.                                                                                         |
-| `--config-file`, `-C` | `None`       | Path to a custom TOML config file. Overrides the platform-specific default.                                       |
+| Option                | Default      | Description                                                                                                                               |
+| --------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `path`                | **Required** | Default directory path where downloaded files will be saved. Use absolute path for best results (e.g., '/home/user/Music' or 'C:\Music'). |
+| `-q`, `--quiet`       | `False`      | Suppress output messages.                                                                                                                 |
+| `-C`, `--config-file` | `None`       | Path to a custom TOML config file. Overrides the platform-specific default.                                                               |
 
 **Config Location:**
 
