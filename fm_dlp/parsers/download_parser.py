@@ -124,9 +124,8 @@ def create_download_parser(subparsers):
         "-Sl",
         "--subtitle-langs",
         type=str,
-        default="en",
         metavar="LANGS",
-        help="Comma-separated subtitle language codes, e.g. 'en,ru,ja'. (default: en)",
+        help="Comma-separated subtitle language codes, e.g. 'en,ru,ja'.",
     )
     add_arg(
         "-eS",
