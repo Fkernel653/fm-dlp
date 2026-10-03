@@ -1,10 +1,12 @@
 import os
 import sys
 
-from .core.fm_dlp_core.utils import echo, echo_error, info, set_colors
+from fm_dlp_core.utils import echo, echo_error, info, set_colors
 
 
 class ValidateDownload:
+    """Pre-flight validation of download parameters before invoking the downloader."""
+
     def __init__(
         self,
         url: str,
@@ -14,6 +16,7 @@ class ValidateDownload:
         cookies: str | None,
         color: bool,
     ) -> None:
+        """Store parameters and configure colored output."""
         self.url = url
         self.quality = quality
         self.path = path

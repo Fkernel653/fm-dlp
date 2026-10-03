@@ -45,7 +45,7 @@ jobs:
       - name: Strip docstrings and comments
         shell: bash
         run: |
-          uv run pystrip --in-place fm_dlp/
+          uv run pystrip --in-place src/cli/
 
       - name: Build executable with PyInstaller
         shell: bash
@@ -53,7 +53,7 @@ jobs:
           uv run pyinstaller --onefile \
             --collect-data ytmusicapi \
             --name fm-dlp \
-            fm_dlp/__main__.py
+            src/cli/__main__.py
 
       - name: Rename executable with version
         shell: bash
