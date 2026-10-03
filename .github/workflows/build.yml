@@ -42,6 +42,16 @@ jobs:
           VERSION=$(grep -m1 '^version = ' pyproject.toml | cut -d'"' -f2)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Debug paths
+        shell: bash
+        run: |
+          echo "=== src/ ==="
+          ls -la src/
+          echo "=== src/core/ ==="
+          ls -la src/core/ || echo "no src/core"
+          echo "=== find py files ==="
+          find src -name "*.py" | head -50
+
       - name: Strip docstrings and comments
         shell: bash
         run: |
