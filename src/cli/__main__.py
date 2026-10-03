@@ -1,5 +1,5 @@
 try:
-    from src.cli.cli import main
+    from cli.cli import main
 
     main()
 except KeyboardInterrupt:
