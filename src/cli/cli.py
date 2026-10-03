@@ -28,7 +28,7 @@ def main():
             prog="fm-dlp",
             description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
         )
-        parser.add_argument("-V", "--version", action="version", version="4.7.7")
+        parser.add_argument("-V", "--version", action="version", version="4.7.8")
         parser.add_argument(
             "--no-color",
             action="store_true",
