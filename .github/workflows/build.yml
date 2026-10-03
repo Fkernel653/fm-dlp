@@ -54,7 +54,7 @@ jobs:
           uv run pyinstaller --onefile \
             --collect-data ytmusicapi \
             --name fm-dlp \
-            src/cli/__main__.py
+            run.py
 
       - name: Rename executable with version
         shell: bash
