@@ -43,7 +43,7 @@ jobs:
       - name: Strip docstrings and comments
         shell: bash
         run: |
-          uv run pystrip --in-place src/cli/ src/core/fm_dlp_core/
+          uv run pystrip --in-place src/cli/ && uv run pystrip --in-place src/core/fm_dlp_core
 
       - name: Build executable with PyInstaller
         shell: bash
