@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "fm-dlp"
-version = "4.7.5"
+version = "4.7.6"
 description = "CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -53,8 +53,7 @@ Repository = "https://github.com/Fkernel653/fm-dlp.git"
 Documentation = "https://github.com/Fkernel653/fm-dlp#readme"
 
 [project.scripts]
-fm-dlp = "cli.cli:main"
+fm-dlp = "fm_dlp.cli:main"
 
 [tool.uv.build-backend]
-module-root = "src"
-module-name = "cli"
+module-root = ""
