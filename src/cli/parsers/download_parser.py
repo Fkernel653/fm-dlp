@@ -1,7 +1,7 @@
 def create_download_parser(subparsers):
     import os
 
-    from fm_dlp_core.utils import ALL_CODECS
+    from ...core.fm_dlp_core.utils import ALL_CODECS
 
     download_parser = subparsers.add_parser(
         "download",

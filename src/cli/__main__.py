@@ -1,5 +1,5 @@
 try:
-    from fm_dlp.cli import main
+    from src.cli.cli import main
 
     main()
 except KeyboardInterrupt:
