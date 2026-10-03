@@ -1,7 +1,7 @@
 import os
 import sys
 
-from ..core.fm_dlp_core.utils import echo, echo_error, info, set_colors
+from fm_dlp_core.utils import echo, echo_error, info, set_colors
 
 
 class ValidateDownload:

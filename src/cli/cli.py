@@ -68,7 +68,7 @@ def main():
         color = not args.no_color
 
         if args.command == "search":
-            from ..core.fm_dlp_core import Search, echo
+            from fm_dlp_core import Search, echo
 
             for result in Search(
                 args.query,
@@ -82,7 +82,8 @@ def main():
                 echo(result)
 
         elif args.command == "download":
-            from ..core.fm_dlp_core.utils.config import ConfigParams, PathManager
+            from fm_dlp_core.utils.config import ConfigParams, PathManager
+
             from .validate_download import ValidateDownload
 
             path = args.path or PathManager(ConfigParams(color=color)).get_path()
@@ -98,7 +99,7 @@ def main():
 
             import asyncio
 
-            from ..core.fm_dlp_core import DownloadParams, run_downloader
+            from fm_dlp_core import DownloadParams, run_downloader
 
             asyncio.run(
                 run_downloader(
@@ -130,7 +131,7 @@ def main():
             )
 
         elif args.command == "config":
-            from ..core.fm_dlp_core.utils.config import ConfigParams, PathManager
+            from fm_dlp_core.utils.config import ConfigParams, PathManager
 
             PathManager(ConfigParams(args.quiet, color, args.config_path)).set_path(
                 args.path

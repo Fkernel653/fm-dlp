@@ -53,7 +53,7 @@ Repository = "https://github.com/Fkernel653/fm-dlp.git"
 Documentation = "https://github.com/Fkernel653/fm-dlp#readme"
 
 [project.scripts]
-fm-dlp = "src.cli.cli:main"
+fm-dlp = "cli.cli:main"
 
 [tool.uv.build-backend]
 module-root = "src"
