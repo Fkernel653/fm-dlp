@@ -1,4 +1,4 @@
-[submodule "fm_dlp/core"]
-	path = fm_dlp/core
+[submodule "src/core"]
+	path = src/core
 	url = https://github.com/Fkernel653/fm-dlp-core.git
 	branch = main
