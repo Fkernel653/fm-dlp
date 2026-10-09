@@ -173,8 +173,8 @@ class ValidateDownload:
 
     def validate(self) -> None:
         """Validate all download parameters."""
+        self._validate_url()
         self._validate_quality()
         self._validate_path()
         self._validate_cookies()
-        self._validate_url()
         self._validate_ffmpeg()
