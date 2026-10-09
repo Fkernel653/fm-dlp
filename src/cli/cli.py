@@ -29,8 +29,8 @@ Environment:
 
 Usage Examples:
     fm-dlp config ~/Music
-    fm-dlp search "Flatsound - A dream" --limit 1
-    fm-dlp download https://music.youtube.com/watch?v=DVDiOMoW0wU
+    fm-dlp search "query"
+    fm-dlp download "URL"
 
 For more information, visit: https://github.com/Fkernel653/fm-dlp
 """
@@ -66,7 +66,7 @@ def main():
             prog="fm-dlp",
             description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
         )
-        parser.add_argument("-V", "--version", action="version", version="4.7.8.1")
+        parser.add_argument("-V", "--version", action="version", version="4.7.8.2")
         parser.add_argument(
             "--no-color",
             action="store_true",
