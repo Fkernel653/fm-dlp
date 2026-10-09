@@ -16,12 +16,12 @@
 - [Requirements](#requirements)
 - [Color Output](#color-output)
 - [Commands](#commands)
+  - [`config`](#config)
   - [`search`](#search)
   - [`download`](#download)
-  - [`config`](#config)
 - [Examples](#examples)
-  - [Basic Download](#basic-download)
   - [Search Examples](#search-examples)
+  - [Basic Download](#basic-download)
 - [Search Output Examples](#search-output-examples)
   - [Format Elements](#format-elements)
 - [License & Acknowledgments](#license--acknowledgments)
@@ -31,10 +31,10 @@
 ## Quick Start
 
 ```bash
-pip install fm-dlp                    # Python 3.11+ & FFmpeg required
-fm-dlp config ~/Music                 # Set download directory
-fm-dlp search "Ambient"               # Search tracks
-fm-dlp download "URL"                 # Download audio
+pip install fm-dlp      # Python 3.11+ & FFmpeg required
+fm-dlp config ~/Music   # Set download directory
+fm-dlp search "query"   # Search tracks
+fm-dlp download "URL"   # Download audio
 ```
 
 ---
@@ -59,14 +59,38 @@ fm-dlp download "URL"                 # Download audio
 By default, fm-dlp uses colored output for better readability. To disable colors globally, use the `--no-color` flag **before** the command:
 
 ```bash
-fm-dlp --no-color search "artist"
-fm-dlp --no-color download "URL"
 fm-dlp --no-color config ~/Music
+fm-dlp --no-color search "query"
+fm-dlp --no-color download "URL"
 ```
 
 ---
 
 ## Commands
+
+### `config`
+
+Configure the default download directory path.
+
+```bash
+fm-dlp config <path> [OPTIONS]
+```
+
+| Option                | Default      | Description                                                                                                                               |
+| --------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `path`                | **Required** | Default directory path where downloaded files will be saved. Use absolute path for best results (e.g., '/home/user/Music' or 'C:\Music'). |
+| `-q`, `--quiet`       | `False`      | Suppress output messages.                                                                                                                 |
+| `-C`, `--config-file` | `None`       | Path to a custom TOML config file. Overrides the platform-specific default.                                                               |
+
+**Config Location:**
+
+- **Windows:** `%LOCALAPPDATA%/fm-dlp/config.toml`
+- **macOS:** `~/Library/Application Support/fm-dlp/config.toml`
+- **Linux:** `~/.config/fm-dlp/config.toml`
+
+> To use a config file at a custom location, pass `--config-file /path/to/config.toml` to the `download` command.
+
+---
 
 ### `search`
 
@@ -138,31 +162,31 @@ fm-dlp download <urls> [OPTIONS]
 
 ---
 
-### `config`
+## Examples
 
-Configure the default download directory path.
+<details>
+<summary>Search Examples</summary>
+
+Search for tracks, albums, and videos:
 
 ```bash
-fm-dlp config <path> [OPTIONS]
+# Search for tracks on YouTube Music
+fm-dlp search "Sewerslvt" --limit 5
+
+# Search for albums
+fm-dlp search "Skitzofrenia Simulation" --album --limit 1
+
+# Search for videos on YouTube
+fm-dlp search "Psychology" --yt-video --limit 1
+
+# Get raw data for scripting
+fm-dlp search "Willix" --raw
+
+# Get only URLs for batch processing
+fm-dlp search "ativansocial" --only-url > urls.txt
 ```
 
-| Option                | Default      | Description                                                                                                                               |
-| --------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `path`                | **Required** | Default directory path where downloaded files will be saved. Use absolute path for best results (e.g., '/home/user/Music' or 'C:\Music'). |
-| `-q`, `--quiet`       | `False`      | Suppress output messages.                                                                                                                 |
-| `-C`, `--config-file` | `None`       | Path to a custom TOML config file. Overrides the platform-specific default.                                                               |
-
-**Config Location:**
-
-- **Windows:** `%LOCALAPPDATA%/fm-dlp/config.toml`
-- **macOS:** `~/Library/Application Support/fm-dlp/config.toml`
-- **Linux:** `~/.config/fm-dlp/config.toml`
-
-> To use a config file at a custom location, pass `--config-file /path/to/config.toml` to the `download` command.
-
----
-
-## Examples
+</details>
 
 <details>
 <summary>Basic Download</summary>
@@ -219,30 +243,6 @@ Success: https://music.youtube.com/watch?v=DVDiOMoW0wU
 ```
 
 </details>
-</details>
-
-<details>
-<summary>Search Examples</summary>
-
-Search for tracks, albums, and videos:
-
-```bash
-# Search for tracks on YouTube Music
-fm-dlp search "Sewerslvt" --limit 5
-
-# Search for albums
-fm-dlp search "Skitzofrenia Simulation" --album --limit 1
-
-# Search for videos on YouTube
-fm-dlp search "Psychology" --yt-video --limit 1
-
-# Get raw data for scripting
-fm-dlp search "Willix" --raw
-
-# Get only URLs for batch processing
-fm-dlp search "ativansocial" --only-url > urls.txt
-```
-
 </details>
 
 ---
