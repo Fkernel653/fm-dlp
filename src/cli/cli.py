@@ -1,14 +1,14 @@
 """
-fm-dlp - CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites.
+fm-dlp — Python CLI wrapper over yt-dlp.
 
 This module serves as the main entry point for the fm-dlp CLI application, providing
 functionality to search YouTube/YTMusic for tracks and albums, download audio/video
 content from over 1000+ platforms, and configure application settings.
 
 The CLI is built using the argparse library and offers three primary commands:
+- config: Configure the default download directory path
 - search: Search for music tracks, albums, or videos on YouTube/YTMusic
 - download: Download audio or video content from various supported platforms
-- config: Configure the default download directory path
 
 Features:
     - Search YouTube Music and YouTube with customizable result limits
@@ -23,9 +23,9 @@ Features:
     - Colored terminal output for better user experience
 
 Environment:
+    - Python 3.11+ with tomllib support
     - Platform-agnostic (Windows, macOS, Linux)
-    - Requires ffmpeg for audio/video processing
-    - Python 3.11+ with toml support
+    - Requires ffmpeg for audio/video processing (required for conversion)
 
 Usage Examples:
     fm-dlp config ~/Music
@@ -66,7 +66,7 @@ def main():
             prog="fm-dlp",
             description="CLI tool for searching YouTube/YTMusic and downloading audio/video from 1000+ sites",
         )
-        parser.add_argument("-V", "--version", action="version", version="4.7.8.2")
+        parser.add_argument("-V", "--version", action="version", version="4.7.8.3")
         parser.add_argument(
             "--no-color",
             action="store_true",
@@ -75,14 +75,22 @@ def main():
 
         subparsers = parser.add_subparsers(dest="command", required=True)
 
+        create_config_parser(subparsers)
         create_search_parser(subparsers)
         create_download_parser(subparsers)
-        create_config_parser(subparsers)
 
         args = parser.parse_args()
         color = not args.no_color
 
-        if args.command == "search":
+        if args.command == "config":
+            """Persist the download directory to the config file."""
+            from fm_dlp_core.utils.config import ConfigParams, PathManager
+
+            PathManager(ConfigParams(args.quiet, color, args.config_file)).set_path(
+                args.path
+            )
+
+        elif args.command == "search":
             """Search YouTube/YTMusic and echo each formatted result."""
             from fm_dlp_core import Search, echo
 
@@ -145,14 +153,6 @@ def main():
                         ytdlp_args=args.ytdlp_args,
                     )
                 )
-            )
-
-        elif args.command == "config":
-            """Persist the download directory to the config file."""
-            from fm_dlp_core.utils.config import ConfigParams, PathManager
-
-            PathManager(ConfigParams(args.quiet, color, args.config_file)).set_path(
-                args.path
             )
 
     except KeyboardInterrupt:
