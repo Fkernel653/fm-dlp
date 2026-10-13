@@ -32,7 +32,7 @@
 
 ```bash
 pip install fm-dlp      # Python 3.11+ & FFmpeg required
-fm-dlp config ~/Music   # Set download directory
+fm-dlp config ~/path    # Set download directory
 fm-dlp search "query"   # Search tracks
 fm-dlp download "URL"   # Download audio/video
 ```
@@ -41,8 +41,8 @@ fm-dlp download "URL"   # Download audio/video
 
 ## Requirements
 
-- **Python 3.11+** - TOML support required
-- **FFmpeg** - Required for audio/video processing and subtitle embedding. Install via:
+- **Python 3.11+** - tomllib support
+- **FFmpeg** - Requires for audio/video processing. Install via:
   - **macOS:** `brew install ffmpeg`
   - **Linux:**
     - **Debian:** `sudo apt install ffmpeg`
@@ -59,7 +59,7 @@ fm-dlp download "URL"   # Download audio/video
 By default, fm-dlp uses colored output for better readability. To disable colors globally, use the `--no-color` flag **before** the command:
 
 ```bash
-fm-dlp --no-color config ~/Music
+fm-dlp --no-color config ~/path
 fm-dlp --no-color search "query"
 fm-dlp --no-color download "URL"
 ```
