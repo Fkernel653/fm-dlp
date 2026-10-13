@@ -48,7 +48,7 @@ fm-dlp download "URL"   # Download audio/video
     - **Debian:** `sudo apt install ffmpeg`
     - **Fedora:** `sudo dnf install ffmpeg`
     - **Arch Linux:** `sudo pacman -S ffmpeg`
-  - **Windows:** Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH
+  - **Windows:** Download from [ffmpeg.org](https://ffmpeg.org/download.html#build-windows) and add to PATH
 
 > If `ffmpeg` is not on your `PATH`, you can point fm-dlp directly to it with `--ffmpeg-path` (see [`download`](#download)).
 
