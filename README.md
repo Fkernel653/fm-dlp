@@ -330,9 +330,9 @@ Examples of formatting search results from different sources. Click each example
 
 [AGPLv3 License](LICENSE) — Built with:
 
-| Library                                                  | Purpose   |
-| -------------------------------------------------------- | --------- |
-| [fm-dlp-core](https://github.com/Fkernel653/fm-dlp-core) | Main core |
+| Library                                                  | Purpose   | License                                                               |
+| -------------------------------------------------------- | --------- | --------------------------------------------------------------------- |
+| [fm-dlp-core](https://github.com/Fkernel653/fm-dlp-core) | Main core | [AGPLv3](https://github.com/Fkernel653/fm-dlp-core/blob/main/LICENSE) |
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 
