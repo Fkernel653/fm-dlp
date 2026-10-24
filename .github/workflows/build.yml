@@ -1,0 +1,84 @@
+name: Build and Release Executables
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.14"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+
+      - name: Install dependencies
+        run: |
+          uv pip install --system . pyinstaller pystrip
+
+      - name: Get version from pyproject.toml
+        id: get_version
+        shell: bash
+        run: |
+          VERSION=$(grep -m1 '^version = ' pyproject.toml | cut -d'"' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Strip docstrings and comments
+        shell: bash
+        run: |
+          uv run pystrip --in-place fm_dlp/
+
+      - name: Build executable with PyInstaller
+        shell: bash
+        run: |
+          uv run pyinstaller --onefile \
+            --collect-data ytmusicapi \
+            --name fm-dlp \
+            fm_dlp/__main__.py
+
+      - name: Rename executable with version
+        shell: bash
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
+            mv dist/fm-dlp.exe dist/fm-dlp-$VERSION-windows.exe
+          elif [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            mv dist/fm-dlp dist/fm-dlp-$VERSION-linux
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            mv dist/fm-dlp dist/fm-dlp-$VERSION-macos
+          fi
+
+      - name: Upload executables to Release
+        uses: softprops/action-gh-release@v3
+        if: github.event_name == 'release'
+        with:
+          files: |
+            dist/fm-dlp-*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload executables as Artifacts
+        uses: actions/upload-artifact@v7
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          name: fm-dlp-${{ matrix.os }}
+          path: dist/fm-dlp-*

@@ -1,0 +1,12 @@
+# Python-generated files
+__pycache__/
+*.pyc
+*.spec
+build/
+dist/
+
+# Virtual environments
+.venv/
+
+# Ruff-generated files
+.ruff_cache/
