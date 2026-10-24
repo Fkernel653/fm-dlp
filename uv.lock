@@ -169,7 +169,7 @@ wheels = [
 
 [[package]]
 name = "fm-dlp"
-version = "4.7.8.6"
+version = "4.7.8.9"
 source = { editable = "." }
 dependencies = [
     { name = "fm-dlp-core" },
