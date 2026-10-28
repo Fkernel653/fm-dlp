@@ -256,15 +256,15 @@ Examples of formatting search results from different sources. Click each example
 
 ```
     1. A Dream
-        ├─ Flatsound
         ├─ Somewhere in the Distance, Somewhere Toward the Mountains
+        ├─ Flatsound
         ├─ 4M │ 2:51
         └─ https://music.youtube.com/watch?v=DVDiOMoW0wU
           ──────────────────────────────────────────────────
 
     N. Title
-        ├─ Artist
         ├─ Album
+        ├─ Artist
         ├─ Views │ Duration
         └─ URL
            ──────────────────────────────────────────────────
@@ -330,9 +330,11 @@ Examples of formatting search results from different sources. Click each example
 
 [AGPLv3 License](LICENSE) — Built with:
 
-| Library                                                  | Purpose   | License                                                               |
-| -------------------------------------------------------- | --------- | --------------------------------------------------------------------- |
-| [fm-dlp-core](https://github.com/Fkernel653/fm-dlp-core) | Main core | [AGPLv3](https://github.com/Fkernel653/fm-dlp-core/blob/main/LICENSE) |
+| Library                                             | Purpose                      | License                         |
+| :-------------------------------------------------- | :--------------------------- | :------------------------------ |
+| [yt-dlp](https://github.com/yt-dlp/yt-dlp)          | Video/Audio downloader       | Unlicense (source & PyPI wheel) |
+| [mutagen](https://github.com/quodlibet/mutagen)     | Audio metadata handling      | GPL-2.0-or-later                |
+| [ytmusicapi](https://github.com/sigma67/ytmusicapi) | Unofficial YouTube Music API | MIT                             |
 
 **Author:** [Fkernel653](https://github.com/Fkernel653)
 
