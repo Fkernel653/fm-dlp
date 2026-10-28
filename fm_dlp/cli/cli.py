@@ -1,41 +1,3 @@
-"""
-fm-dlp — Python CLI wrapper over yt-dlp.
-
-This module serves as the main entry point for the fm-dlp CLI application, providing
-functionality to search YouTube/YTMusic for tracks and albums, download audio/video
-content from over 1000+ platforms, and configure application settings.
-
-The CLI is built using the argparse library and offers three primary commands:
-- config: Configure the default download directory path
-- search: Search for music tracks, albums, or videos on YouTube/YTMusic
-- download: Download audio or video content from various supported platforms
-
-Features:
-    - Search YouTube Music and YouTube with customizable result limits
-    - Download from 1000+ platforms using yt-dlp backend
-    - Multiple audio codec support (mp3, aac, flac, m4a, opus, vorbis, wav, alac)
-    - Video format support (mp4, mov, mkv, webm, avi, flv)
-    - Video-only download mode (without audio track)
-    - Concurrent downloads with configurable job limits
-    - Metadata embedding with thumbnails for audio files
-    - Keep original files after conversion
-    - Cookie-based authentication for platform-specific downloads
-    - Colored terminal output for better user experience
-
-Environment:
-    - Python 3.11+ with tomllib support
-    - Platform-agnostic (Windows, macOS, Linux)
-    - Requires ffmpeg for audio/video processing (required for conversion)
-
-Usage Examples:
-    fm-dlp config ~/Music
-    fm-dlp search "query"
-    fm-dlp download "URL"
-
-For more information, visit: https://github.com/Fkernel653/fm-dlp
-"""
-
-
 def main():
     """
     Main entry point for fm-dlp CLI.
@@ -84,7 +46,7 @@ def main():
 
         if args.command == "config":
             """Persist the download directory to the config file."""
-            from fm_dlp_core.utils.config import ConfigParams, PathManager
+            from fm_dlp.core.utils.config import ConfigParams, PathManager
 
             PathManager(ConfigParams(args.quiet, color, args.config_file)).set_path(
                 args.path
@@ -92,7 +54,7 @@ def main():
 
         elif args.command == "search":
             """Search YouTube/YTMusic and echo each formatted result."""
-            from fm_dlp_core import Search, echo
+            from fm_dlp.core import Search, echo
 
             for result in Search(
                 args.query,
@@ -107,11 +69,21 @@ def main():
 
         elif args.command == "download":
             """Resolve path, validate request, then run the async downloader."""
-            from fm_dlp_core.utils.config import ConfigParams, PathManager
+            from fm_dlp.core import (
+                ConfigParams,
+                DownloadParams,
+                PathManager,
+                run_downloader,
+            )
 
             from .validate_download import ValidateDownload
 
-            path = args.path or PathManager(ConfigParams(color=color)).get_path()
+            path = (
+                args.path
+                or PathManager(
+                    ConfigParams(args.quiet, color, args.config_file)
+                ).get_path()
+            )
 
             ValidateDownload(
                 args.url,
@@ -123,8 +95,6 @@ def main():
             ).validate()
 
             import asyncio
-
-            from fm_dlp_core import DownloadParams, run_downloader
 
             asyncio.run(
                 run_downloader(
