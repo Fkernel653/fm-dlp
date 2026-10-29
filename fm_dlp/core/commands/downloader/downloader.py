@@ -102,7 +102,7 @@ class Download:
                 echo(info("WAV format doesn't support metadata embedding"))
 
         if not self.quiet:
-            echo(f"{styled('Starting: ', BOLD_YELLOW)} {url}\n")
+            echo(f"{styled('Starting:', BOLD_YELLOW)} {url}\n")
 
         await asyncio.to_thread(self._sync_download, url)
 
