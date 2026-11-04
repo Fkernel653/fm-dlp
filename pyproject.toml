@@ -37,7 +37,11 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
-dependencies = ["yt-dlp", "ytmusicapi", "mutagen"]
+dependencies = [
+    "yt-dlp",
+    "ytmusicapi",
+    "mutagen",
+]
 
 [project.optional-dependencies]
 dev = ["ruff", "uv", "pyinstaller", "pystrip"]
